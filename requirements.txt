@@ -20,11 +20,6 @@ cachetools==4.2.4
 certifi==2021.10.8
 charset-normalizer==2.0.7
 cloudpickle==1.6.0
-conda==4.10.3
-conda-build==3.0.22
-conda-verify==3.4.2
-contextlib2==0.6.0.post1
-cvxopt==1.2.5
 cvxpy==1.0.14
 cycler==0.10.0
 dash==2.3.0
