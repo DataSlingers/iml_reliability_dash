@@ -1,5 +1,4 @@
 absl-py==0.14.1
-aiohttp @ file:///opt/concourse/worker/volumes/live/7459ede7-4127-4002-7052-a1f885262714/volume/aiohttp_1614360978938/work
 appdirs==1.4.4
 appnope==0.1.2
 argon2-cffi==20.1.0
