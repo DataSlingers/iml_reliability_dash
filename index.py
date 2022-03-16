@@ -2,7 +2,8 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import dash_bootstrap_components as dbc
+#import dash_bootstrap_components as dbc
+from dash import dcc
 from util import display_figure,sync_checklists,parse_contents
 from app_ins import App_ins
 from app1 import App1,build_scatter,build_bump,build_heat_summary,build_line,build_fit,build_cor
