@@ -5,8 +5,8 @@ import pickle
 import plotly.graph_objects as go
 ### Dash
 import dash
-from dash import dcc, html
-
+import dash_core_components as dcc
+import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input
 ## Navbar
@@ -118,7 +118,7 @@ def description_card():
         ],
     )
 plot_summary_options = ['heatmap','line','bump','fit','cor']
-plot_raw_options = ['scatters','lines']
+plot_raw_options = ['scatter_raw','line_raw']
 
 
 
@@ -283,11 +283,16 @@ def App3():
 
             html.Div(id='output-datatable'),
             ###### summary plots
+            html.Div(id='title_summary'),
             html.Div(id='show_heatmap'),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
             html.Div(id='show_fit'),
             html.Div(id='show_cor'),
+            ######### raw plots 
+            html.Div(id='title_summary_raw'),
+            html.Div(id='show_line_raw'),
+            html.Div(id='show_scatter_raw'),
             
            
         ], 
@@ -567,7 +572,124 @@ def build_cor_dr(data_sel, method_sel,
                      
 
 
+def build_line_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None):
 
+
+    dff=df[(df.data.isin(data_sel))
+            &(df.method.isin(method_sel))
+            &(df.noise ==noise_sel)
+            &(df['rank'] ==rank_sel)
+            &(df.criteria==criteria_sel)]  
+    this_palette = palette.copy()
+    this_line_choice= line_choice.copy()
+    ###### input new data
+    if new_data is not None:
+        new_data = pd.DataFrame(new_data)
+        neww = new_data[
+            (new_data.noise ==noise_sel)&
+             (new_data['rank'] ==rank_sel)&
+            (new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww]) 
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_line_choice[mm]='solid'
+            
+    fig = px.line(dff,x="sigma", y='Consistency',color = 'method',
+
+                            color_discrete_map=this_palette,
+                                line_dash = 'method',
+                      line_dash_map = this_line_choice,
+                      labels={
+                             "method": "Method"
+                         },
+                      facet_col="data",facet_col_wrap=3,
+                  #width=1000, height=800,
+            category_orders={'data':list(palette_data.keys())})
+    fig.update_xaxes(matches=None,showticklabels=True)
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+    fig.update_traces(line=dict(width=3))
+      
+    if new_data is not None:
+        fig.add_trace(
+                go.Scatter(
+                    x=neww['data'],
+                    y=neww['Consistency'],
+                    mode='markers',
+                    marker=dict(
+                        color=[this_palette[i] for i in neww['method']],
+                        size=20
+                    ),
+                    showlegend=False,
+                    hoverinfo='none',                                                                              
+                )
+            )
+
+        
+    return fig
+                
+def build_scatter_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None):
+
+ 
+#     dff=df[(df.data.isin(data_sel))
+#             &(df.method.isin(method_sel))
+#           #  &(df.K ==k_sel)
+#             &(df.criteria==criteria_sel)]
+    dff=df[(df.data.isin(data_sel))
+            &(df.method.isin(method_sel))
+            &(df.noise ==noise_sel)
+            &(df.sigma ==float(sigma_sel))
+            &(df['rank'] ==rank_sel)
+            &(df.criteria==criteria_sel)]     
+    
+    this_palette = palette.copy()
+    this_markers_choice=markers_choice.copy()
+    ###### input new data
+    if new_data is not None:
+        new_data = pd.DataFrame(new_data)
+        neww = new_data[
+            #(new_data.K ==k_sel)
+             #   &
+            (new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww]) 
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_markers_choice[mm]='star'
+            
+            
+            
+    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+#                      trendline="ols",
+                     facet_col="data",facet_col_wrap=3,
+                     #width=1000, height=800,
+                color_discrete_map=this_palette,
+                symbol='method', symbol_map= this_markers_choice,
+                 category_orders={"method":list(this_palette.keys())},
+               labels=dict(Consistency=criteria_sel, method="Method"),
+
+                )
+   
+    fig.update_traces(line=dict(width=3))
+    
+    if new_data is not None:
+        fig.add_trace(
+        go.Scatter(
+            x=neww['Accuracy'],
+            y=neww['Consistency'],
+            mode='markers',
+            marker=dict(
+                color=[this_palette[i] for i in neww['method']],
+                symbol=[this_markers_choice[i] for i in neww['method']], 
+                size=20
+            ),
+            showlegend=False,
+            hoverinfo='none'
+        )
+        )
+    
+    return fig
+           
 
                      
                      

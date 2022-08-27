@@ -5,8 +5,8 @@ import pickle
 import plotly.graph_objects as go
 ### Dash
 import dash
-from dash import dcc, html
-
+import dash_core_components as dcc
+import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input
 ## Navbar
@@ -114,7 +114,7 @@ def description_card():
         ],
     )
 plot_summary_options = ['line','bump']
-plot_raw_options = ['scatters','lines']
+plot_raw_options = ['scatter_raw','line_raw']
 
 
 
@@ -277,9 +277,14 @@ def App3_2():
         dbc.Col(children=[
 
             html.Div(id='output-datatable'),
+            html.Div(id='title_summary_knn'),
             ###### summary plots
             html.Div(id='show_line_knn'),
             html.Div(id='show_bump_knn'),
+            ######### raw plots 
+            html.Div(id='title_summary_raw'),
+            html.Div(id='show_line_raw'),
+            html.Div(id='show_scatter_raw'),
           
            
         ], 
@@ -424,3 +429,33 @@ def build_bump_knn(data_sel, method_sel,
                     )
 
     return fig  
+
+
+# def build_line_knn_raw(data_sel, method_sel,
+#                   noise_sel,sigma_sel,rank_sel
+#                  ):
+
+# ####### filter data
+#     dff=df[
+#         (df.data.isin(data_sel))
+#                &(df.method.isin(method_sel))
+#                &(df.noise ==noise_sel)
+#                &(df.sigma ==float(sigma_sel))
+#                &(df['rank'] ==int(rank_sel))
+#              ]
+        
+
+#     fig = px.line(dff,x="data", y='AUC',color = 'method',markers=True,
+
+#                         color_discrete_map=palette,
+#                             line_dash = 'method',
+#                   line_dash_map = line_choice,
+#                   labels={
+#                          "method": "Method"
+#                      },
+#                  # title=
+#                  )
+#     fig.update_traces(line=dict(width=3))
+#     return fig
+
+

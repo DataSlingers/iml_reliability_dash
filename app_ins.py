@@ -5,10 +5,11 @@ import pickle
 import plotly.graph_objects as go
 ### Dash
 import dash
-from dash import dcc, html
-
+import dash_core_components as dcc
+import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input
+# from dash import Dash, dcc
 ## Navbar
 from nav import Navbar
 import numpy as np
@@ -18,184 +19,74 @@ from dash import dash_table
 
 
 nav = Navbar()
+body = dcc.Markdown(
+'''
+# Introduction 
+## Goal
+   **We aim to design a clear large-scale empirical framework to evaluate the reliability of interpretabilities of popular interpretable machine learning(IML) models. **
+## Contribution
+  Through this project, we make the following constributions:
 
-def description_card():
-    """
-    :return: A Div containing dashboard title & descriptions.
-    """
-    return html.Div(
-        id="description-card",
-        children=[
-#             html.H1("Interpretable Machine Learning"),
-            html.Div(
-                id="intro",
-                children="Explore IML reliability.",
-            ),
-        ],
-    )
+* Designed a clear large-scale framework to evaluate the reliability of interpretability of popular interpretable machine learning (IML) models 
+* Incorporated rigorous empirical analysis and developing reliable metrics via sensitivity tests
+* Implemented the aforementioned framework and evaluated the interpretability of 50+ IML & deep learning models in the fields of both supervised (e.g., random forest, SVM, MLP) and unsupervised learnings (e.g., autoencoder, PCA, t-SNE)
 
-plot_summary_options = ['heatmap','line','bump','fit','cor']
-plot_raw_options = ['scatters','lines']
+## This Dashboard
+
+This dashboard provides an interactive platform to present our results. In addition, we provide functions for users to evaluate their own data set and/or IML methods of interests. 
 
 
-def generate_control_card():
-    """
-    :return: A Div containing controls for graphs.
-    """
-    return html.Div(
-        id="control-card",
-        children=[
-            
-            
-            
-            
-            
-            #################################
-            ########### select figures 
-            #################################
+## IML tasks
+We focus on three major types machine learning tasks, including: 
 
-            html.Hr(),
-            html.P("Select Summary Graphs you want to show"),
-            dcc.Checklist(id="all_summary",
-                          options=[{"label": 'All', "value":'All_summary' }],value= []),
-            dcc.Checklist(id="select_summary",
-                options=[{"label": i, "value": i} for i in plot_summary_options],
-                value=[],
-            ),        
-            
-            html.Hr(),
-            html.P("Select Raw Graphs you want to show"),
-            dcc.Checklist(id="all_raw",
-                          options=[{"label": 'All', "value":'All_raw' }],value= []),
-            dcc.Checklist(id="select_raw",
-                options=[{"label": i, "value": i} for i in plot_raw_options],
-                value=[],
-            ),                    
+* Feature Importance 
+* Clustering (interpretability of observations groups)
+* Dimension Reduction (provide interpretations of observations patterns)
+## Sensitivity Tests
 
-            
+   We define the interpretability to be reliable if the same or similar interpretations can be derived from new data of the same distribution. Therefore, the reliability of a machine learning model can be measured by the consistency of its derived interpretations.  For example, in supervised learning, researchers usually conduct train/test split before fitting a predictive model so as to avoid overfitting. The predictive model has reliable interpretability if the resulting feature importance scores can remain unchanged and consistent with different random train/test splits. Therefore, a reliable machine learning model should not be over over-sensitive to small changes in the data or parameters of the model. To this end, the first step of our framework is to design sensitivity tests to obtain interpretations from machine learning models under different circumstance. 
 
-            html.Hr(),
-           
-            html.Button('Submit', id='submit-button'),
-            html.Hr(),
-          
-            ###############################
-            ###############################            
-            
-            #############################
-            ####### upload new data
-            ############################
-            html.P("Upload your reliability results"), 
-            
-           
-            
-            dcc.Upload(
-                id='upload-data',
-                children=html.Div([
-                    'Drag and Drop or ',
-                    html.A('Select Files')
-                ]),
-                style={
-                    'width': '100%',
-                    'height': '60px',
-                    'lineHeight': '60px',
-                    'borderWidth': '1px',
-                    'borderStyle': 'dashed',
-                    'borderRadius': '5px',
-                    'textAlign': 'center',
-                    'margin': '10px'
-                },
-                # Allow multiple files to be uploaded
-                multiple=True
-            ),
-            
-            html.Div(id='new_options'),
+   We have two types of sensitivity test:
 
-            
-            
-            html.Hr(),
-            html.P("Select Data"),
-            dcc.Dropdown(
-                id="data-select",
-                options=[{"label": i, "value": i} for i in data_options],
-                value=data_options[:],
-                multi=True,
-            ),
-            html.Br(),
-            html.Br(),
-            html.Hr(),
+   * Random train/test splits
+   * Noise addition. 
 
-            html.P("Select Method"),
-            dcc.Dropdown(
-                id="method-select",
-                options=[{"label": i, "value": i} for i in meths],
-                value=meths[0:10],
-                multi=True,
-            ),
-            html.Br(),
-            html.Br(),
-            html.Hr(),
-            html.P("Select Critetia"),
-            dcc.RadioItems(
-                id="criteria-select",
-                    
-                options=[{"label": i, "value": i} for i in criteria_options],
-                value=criteria_options[1],
-            ),            
-            html.Br(),
-            html.Br(),
-            html.Hr(),
-            html.P("Select Top K"),
-            dcc.Dropdown(
-                id="k-select",
-                options=[{"label": i, "value": i} for i in k_options],
-                
-                value=10,
-            ),
-                
-            html.Br(),
-            html.Br(),
-            html.Hr(),
-            
-        ],
-    )
+   The random train/test splits is used sorely for supervised models. The consistency of interpretations and its resistance to additional noise can be obtained by adding random noise to the data of interest. In addition, with increasing levels of noise added, we are able to illustrate how the consistency would change with more difficult data. Additionally, we may also test how the interpretations changes with different parameter settings.  
+
+## Metrics of reliability 
+We include three categories of interpretabilities: 1). feature importance/ranking derived from supervised learning; 2). clustering results, which implies underlying connections among observations; 3). interpretations in reduced dimension. In each category, we develop robust metrics to measure the reliability of the resulting interpretations. 
+
+### Feature Importance Metrics
+As researcher are generally more interested in the most important features, we focus on top-K rank consistency in the case of feature importance. One of the metric is the Jaccard similarity \citep{real1996probabilistic} of top-K features. With ranks $A$ and $B$, the Jaccard similarity is given by 
+$$
+    J(A,B)@k = \frac{|A_k\cap B_k|}{|A_k\cup B_k|}. 
+$$
+
+where $A_k$ and $B_k$ contain only the top k features. However, the Jaccard similarity considers whether two sets contains the same elements rather than the consistency of ranking. Hence, we also propose another metric Rank biased overlap (RBO) \citet{webber2010similarity}, which is a weighted non-conjoint measure that focuses on the specific rankings of the elements. Specifically, RBO is calculated as the average agreement of $A$ and $B$ of each depth and is given by
+$$
+    RBO@k  = \frac{1}{k} \sum_d=1^k \frac{|A_d\cap B_d|}{d}
+$$
 
 
+
+### Clustering Metrics
+
+Clustering results are generated with the oracle number of clusters. We utilize the \textit{Adjusted Rand Index} (ARI) \citep{rand1971objective}, which is a widely used metric in clustering problem. The accuracy of clustering methods is measured by the ARI of clustering results with the true label, and the clustering consistency is calculated as the pairwise ARI of two clustering results. We also include additional common clustering metrics such mutual information \citep{kraskov2004estimating}, V\_measure \citep{rosenberg2007v} and fowlkes mallows \citep{fowlkes1983method}
+
+### Dimension Reduction Metrics 
+
+One of the main goal of dimension reduction techniques is to draw inference from the visualization, which implies relative distances among the observations in the reduced dimension. Or researchers aim to conduct further downstream analysis such as clustering. Therefore, with focus on these two purposes, we measure the reliability of dimension reduction techniques in two directions: K-nearest neighbor consistency in the reduced dimension, and clustering consistency after dimension reduction. The K-nearest neighbor (KNN) consistency provides a quantitative consistency metric to exam the local similarity among given reduced dimensions. Given one specific observation, we can find its nearest neighbors of in each reduced dimension, and calculate the similarity of two sets of nearest neighbors by the Jaccard score \citep{real1996probabilistic}. Note that for $K = N$, the consistency measured by Jaccard score is always $1$ as the N-nearest neighbor contains the whole set of observations. The curve of Jaccard scores computed with $K = 1$ to $K=N$ against $K$ can be regarded as a receiver operating characteristic curve, we can further obtain area under the curve ($AUC$) of the Jaccard scores curve.  $AUC  = 1$ indicates that the dimension reduction method is perfectly consistent in terms of local similarity under any $K$ range. Higher value of $AUC$ indicates higher similarities between two reduced dimensions. On the other hand, we also measure the dimension reduction + clustering consistency by applying clustering algorithms to the reduced dimensions with oracle number of clusters. Following the same framework in the clustering consistency, we measure the accuracy of dimension reduction + clustering results by the ARI between true labels, and the consistency by pairwise ARI between clustering results. All of the metrics range from $[0,1]$, with large values indicating stronger consistency.
+''',
+    mathjax=True, style={'marginLeft': '5%', 'width': '90%'})
 
 
 
 def App_ins():
     layout = html.Div([
         nav,
-        dbc.Container([
-   html.H1('Feature Importance (Classification)'),
-
-    dbc.Row([
-        dbc.Col([
-            # Left column
-        html.Div(
-            id="left-column",
-            children=[description_card(), generate_control_card()],
-            className="four columns",
-          ),
-        ],
-            md=4),
-        dbc.Col(children=[
-
-            html.Div(id='output-datatable'),
-            ###### summary plots
-            html.Div(id='show_heatmap'),
-            html.Div(id='show_line'),
-            html.Div(id='show_bump'),
-            html.Div(id='show_fit'),
-            html.Div(id='show_cor'),
-            
-           
-        ]
-                        
-        )])])
-        
+        body,
     ])
+       
     return layout
 
 
@@ -212,292 +103,3 @@ def App_ins():
 
 
 
-
-
-def build_scatter(data_sel, method_sel,
-                 k_sel, criteria_sel
-                 ):
-    dff=df[(df.data.isin(data_sel))
-                &(df.method.isin(method_sel))
-                &(df.K ==k_sel)
-                &(df.criteria==criteria_sel)]
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
-                 facet_col='data',
-                 facet_col_wrap=3, 
-                color_discrete_map=(palette),
-                symbol='method', symbol_map= markers_choice,
-                 text = 'method',
-                 category_orders={"method":list(palette.keys())},
-               labels=dict(Consistency=criteria_sel, method="Method")
-
-                )
-    fig.update_layout(legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=-.2,
-        xanchor="right",
-        x=1
-        ))
-    fig.update_traces(    
-       textfont=dict(
-                family="sans serif",
-                size=10,
-           #opacity=0.1,
-                color="darkgrey"),
-            marker=dict(size=20,
-                        #opacity=0.1,
-                        line=dict(width=2,
-                        color='DarkSlateGrey')),
-                  selector=dict(mode='markers'),
-     
-)
-    return fig
-# def show_data(new_data=None):
-    
-#     if new_data is None:
-#         return df.to_dict('records'), [{"name": i, "id": i} for i in df.columns]
-#     else:
-#         return new_data.to_dict('records'), [{"name": i, "id": i} for i in df.columns]
-    
-    
-    
-def build_bump(data_sel, method_sel,
-                 k_sel, criteria_sel,new_data=None):
-####### filter data
-    
-    dff=df[(df.data.isin(data_sel))
-                &(df.method.isin(method_sel))
-                &(df.K ==k_sel)
-                &(df.criteria==criteria_sel)]
-    this_palette = palette.copy()
-    if new_data is not None:
-        new_data = pd.DataFrame(new_data)
-        neww = new_data[(new_data.K ==k_sel)
-                &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(neww['method']):
-            this_palette[mm]='black'
-        
-    ##### bump plot 
-    df_ave = dff.groupby(['method','K','criteria'],as_index=False).mean()
-    df_ave['data']='Average'
-    df_ave=df_ave[['data','method','Consistency']]
-    dff=pd.concat([dff,df_ave])
-
-########################
-                       
-
-    rankk = dff.sort_values(['Consistency'],ascending=False).sort_values(['data','Consistency'],ascending=False)[['data','method']]
-    rankk['ranking'] = (rankk.groupby('data').cumcount()+1)
-    rankk=pd.merge(dff,rankk,how='left',on = ['data','method'])
-    top= rankk[rankk["data"] == 'Average'].nsmallest(len(set(rankk.method)), "ranking")
-    rankk['ranking']=[str(i) for i in rankk['ranking']]
-    
-    fig = px.line(rankk, 
-        x="data", y="ranking",
-             color='method',markers=True,
-             color_discrete_map=this_palette,
-             category_orders={"data":list(dff.data.unique()),
-                              'ranking':[str(i) for i in range(1,len(set(rankk['ranking']))+1)]
-                              },
-                        labels=dict(data="Data",ranking='Rank')
-             )
-    fig.update_layout(showlegend=False)
-    y_annotation = list(top['method'])[::-1]
-    intervals = list(top['ranking'])
-    for k in intervals:
-        fig.add_annotation(dict(font=dict(color="black",size=10),
-                            #x=x_loc,
-                            x=1,
-                            y=str(k-1),
-                            showarrow=False,
-                            text=y_annotation[k-1],
-                            textangle=0,
-                            xanchor='left',
-                            xref="paper",
-                            yref="y"
-                           ))
-    fig.update_layout(margin=dict( r=150))
-    
-    if new_data is not None:
-        new_rankk = rankk[rankk.data.isin(set(neww.data))]
-        fig.add_trace(
-            go.Scatter(
-                x=new_rankk['data'],
-                y=new_rankk['ranking'],
-                mode='markers',
-                marker=dict(
-                    color=[this_palette[i] for i in new_rankk['method']],
-                    size=20
-                ),
-                showlegend=False,
-                hoverinfo='none',                                                                               )
-                    )
-
-
-    
-    return fig  
-
-
-def build_heat_summary(method_sel,
-                 k_sel, criterial_sel,new_data=None):
-    
-        sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
-        sub = sub[(sub['K']==k_sel)&(cross_ave['criteria']==criterial_sel)]
-        sub = sub.pivot("method1", "method2", "value")
-        sub = sub.fillna(0)+sub.fillna(0).T
-        np.fill_diagonal(sub.values, 1)
-        sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
-        
-        
-        fig = px.imshow(sub, text_auto=True, aspect="auto",color_continuous_scale='Purp',
-               labels=dict(x="Method", y="Method", color="Consistency"))
-        return fig
-        
-def build_line(data_sel, method_sel,
-                 k_sel, criteria_sel,new_data=None):
-
-    dff=df[(df.data.isin(data_sel))
-                &(df.method.isin(method_sel))
-                &(df.K ==k_sel)
-                &(df.criteria==criteria_sel)]
-
-    this_palette = palette.copy()
-    this_line_choice= line_choice.copy()
-    ###### input new data
-    if new_data is not None:
-        new_data = pd.DataFrame(new_data)
-        neww = new_data[(new_data.K ==k_sel)
-                &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(new_data['method']):
-            this_palette[mm]='black'
-            this_line_choice[mm]='solid'
-            
-    fig = px.line(dff,x="data", y='Consistency',color = 'method',markers=True,
-
-                            color_discrete_map=this_palette,
-                                line_dash = 'method',
-                      line_dash_map = this_line_choice,
-                      labels={
-                             "method": "Method"
-                         },
-                     # title=
-                     )
-    fig.update_traces(line=dict(width=3))
-      
-    if new_data is not None:
-        fig.add_trace(
-                go.Scatter(
-                    x=neww['data'],
-                    y=neww['Consistency'],
-                    mode='markers',
-                    marker=dict(
-                        color=[this_palette[i] for i in neww['method']],
-                        size=20
-                    ),
-                    showlegend=False,
-                    hoverinfo='none',                                                                              
-                )
-            )
-
-        
-    return fig
-            
-        
-def build_fit(data_sel, method_sel,
-                 k_sel, criteria_sel,new_data=None):
-
- 
-    dff=df[(df.data.isin(data_sel))
-            &(df.method.isin(method_sel))
-            &(df.K ==k_sel)
-            &(df.criteria==criteria_sel)]
-    
-    
-    this_palette = palette.copy()
-    this_markers_choice=markers_choice.copy()
-    ###### input new data
-    if new_data is not None:
-        new_data = pd.DataFrame(new_data)
-        neww = new_data[(new_data.K ==k_sel)
-                &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(new_data['method']):
-            this_palette[mm]='black'
-            this_markers_choice[mm]='star'
-            
-            
-            
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
-                     trendline="ols",
-                color_discrete_map=this_palette,
-                symbol='method', symbol_map= this_markers_choice,
-                 category_orders={"method":list(this_palette.keys())},
-               labels=dict(Consistency=criteria_sel, method="Method"),
-
-                )
-   
-    fig.update_traces(line=dict(width=3))
-    
-    if new_data is not None:
-        fig.add_trace(
-        go.Scatter(
-            x=neww['Accuracy'],
-            y=neww['Consistency'],
-            mode='markers',
-            marker=dict(
-                color=[this_palette[i] for i in neww['method']],
-                symbol=[this_markers_choice[i] for i in neww['method']], 
-                size=20
-            ),
-            showlegend=False,
-            hoverinfo='none'
-        )
-        )
-    
-    return fig
-        
-        
-def build_cor(data_sel, method_sel,
-                 k_sel, criteria_sel,new_data=None
-                 ):
-
- 
-    dff=df[(df.data.isin(data_sel))
-            &(df.method.isin(method_sel))
-            &(df.K ==k_sel)
-            &(df.criteria==criteria_sel)]
-
-    
-    this_palette = palette.copy()
-    ###### input new data
-    if new_data is not None:
-        new_data = pd.DataFrame(new_data)
-        neww = new_data[(new_data.K ==k_sel)
-                &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(new_data['method']):
-            this_palette[mm]='black'
-            
-                
-    
-    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
-    corr.columns = [' '.join(col).strip() for col in corr.columns.values]
-    corr=corr[['method','Consistency Accuracy']]
-    corr = sort(corr,'method',list(this_palette.keys()))
-
-
-
-    fig = px.bar(corr, x='method', y='Consistency Accuracy',
-             range_y = [-1,1],
-             color='method',color_discrete_map=this_palette,
-             labels={'method':'Method', 'Consistency Accuracy':'Correlation'},
-             title="Correlation between Accuracy and Consistency"
-            )
-    return fig
-          
-        
-    
-    
-    
