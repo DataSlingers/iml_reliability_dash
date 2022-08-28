@@ -21,61 +21,69 @@ from dash import dash_table
 nav = Navbar()
 body = dcc.Markdown(
 '''
-# Introduction 
-## Goal
-   **We aim to design a clear large-scale empirical framework to evaluate the reliability of interpretabilities of popular interpretable machine learning(IML) models. **
-## Contribution
-  Through this project, we make the following constributions:
+# Instruction  
+### Dash Board 
+   We have interactive results of three sections: 
+   
+   * feature importance (classification and regression), 
+   * clustering, 
+   * dimension reduction (+clustering, +local neighbors) 
+   
+    Each section has the same layout, with options on the left and summary and raw plots on the right. 
+       
+### Options 
 
-* Designed a clear large-scale framework to evaluate the reliability of interpretability of popular interpretable machine learning (IML) models 
-* Incorporated rigorous empirical analysis and developing reliable metrics via sensitivity tests
-* Implemented the aforementioned framework and evaluated the interpretability of 50+ IML & deep learning models in the fields of both supervised (e.g., random forest, SVM, MLP) and unsupervised learnings (e.g., autoencoder, PCA, t-SNE)
+* Users can select Summary Graphs and/or Raw plots of interest. Click 'Submit' bottum to show the figures, click 'Reset' button to unselect all figures. 
 
-## This Dashboard
+* Users can upload their own data set, which has to satisfy the format requirement. ...
 
-This dashboard provides an interactive platform to present our results. In addition, we provide functions for users to evaluate their own data set and/or IML methods of interests. 
+* Data selection: we have results of all the data sets we used in this empirical study. User can show the results of selected data. 
 
+* Method selection: show the results of selected methods. 
 
-## IML tasks
-We focus on three major types machine learning tasks, including: 
-
-* Feature Importance 
-* Clustering (interpretability of observations groups)
-* Dimension Reduction (provide interpretations of observations patterns)
-## Sensitivity Tests
-
-   We define the interpretability to be reliable if the same or similar interpretations can be derived from new data of the same distribution. Therefore, the reliability of a machine learning model can be measured by the consistency of its derived interpretations.  For example, in supervised learning, researchers usually conduct train/test split before fitting a predictive model so as to avoid overfitting. The predictive model has reliable interpretability if the resulting feature importance scores can remain unchanged and consistent with different random train/test splits. Therefore, a reliable machine learning model should not be over over-sensitive to small changes in the data or parameters of the model. To this end, the first step of our framework is to design sensitivity tests to obtain interpretations from machine learning models under different circumstance. 
-
-   We have two types of sensitivity test:
-
-   * Random train/test splits
-   * Noise addition. 
-
-   The random train/test splits is used sorely for supervised models. The consistency of interpretations and its resistance to additional noise can be obtained by adding random noise to the data of interest. In addition, with increasing levels of noise added, we are able to illustrate how the consistency would change with more difficult data. Additionally, we may also test how the interpretations changes with different parameter settings.  
-
-## Metrics of reliability 
-We include three categories of interpretabilities: 1). feature importance/ranking derived from supervised learning; 2). clustering results, which implies underlying connections among observations; 3). interpretations in reduced dimension. In each category, we develop robust metrics to measure the reliability of the resulting interpretations. 
-
-### Feature Importance Metrics
-As researcher are generally more interested in the most important features, we focus on top-K rank consistency in the case of feature importance. One of the metric is the Jaccard similarity \citep{real1996probabilistic} of top-K features. With ranks $A$ and $B$, the Jaccard similarity is given by 
-$$
-    J(A,B)@k = \frac{|A_k\cap B_k|}{|A_k\cup B_k|}. 
-$$
-
-where $A_k$ and $B_k$ contain only the top k features. However, the Jaccard similarity considers whether two sets contains the same elements rather than the consistency of ranking. Hence, we also propose another metric Rank biased overlap (RBO) \citet{webber2010similarity}, which is a weighted non-conjoint measure that focuses on the specific rankings of the elements. Specifically, RBO is calculated as the average agreement of $A$ and $B$ of each depth and is given by
-$$
-    RBO@k  = \frac{1}{k} \sum_d=1^k \frac{|A_d\cap B_d|}{d}
-$$
+* Select criteria: figures are generated with the selected criteria.   
+    * There are two options in Feature Importance section: RBO and ARI. 
+    * There are four options in Clustering Importance section: ARI, Mutual Information (MI), fowlkes mallows, and V measuer(v_measure)
+    * There are four options in Dimension Reduction+Clustering section: ARI, Mutual Information (MI), fowlkes mallows, and V measuer(v_measure)
+    *  There is one options in Dimension Reduction+Local Neighbor section: Jaccard similarity. 
 
 
+* Select Noise Level (sigma): control the level of noise addition, where the added noise has variance sigma. 
 
-### Clustering Metrics
+* Select Noise Type: normal or laplace noise. 
 
-Clustering results are generated with the oracle number of clusters. We utilize the \textit{Adjusted Rand Index} (ARI) \citep{rand1971objective}, which is a widely used metric in clustering problem. The accuracy of clustering methods is measured by the ARI of clustering results with the true label, and the clustering consistency is calculated as the pairwise ARI of two clustering results. We also include additional common clustering metrics such mutual information \citep{kraskov2004estimating}, V\_measure \citep{rosenberg2007v} and fowlkes mallows \citep{fowlkes1983method}
+* Section Specific options:
+ * Select Top K in Feature Importance section: select the number of most important features we want to compare. 
+ * Select Rank in Dimension Reduction: select the rank of reduced dimension we aim to evaluate with. 
 
-### Dimension Reduction Metrics 
 
-One of the main goal of dimension reduction techniques is to draw inference from the visualization, which implies relative distances among the observations in the reduced dimension. Or researchers aim to conduct further downstream analysis such as clustering. Therefore, with focus on these two purposes, we measure the reliability of dimension reduction techniques in two directions: K-nearest neighbor consistency in the reduced dimension, and clustering consistency after dimension reduction. The K-nearest neighbor (KNN) consistency provides a quantitative consistency metric to exam the local similarity among given reduced dimensions. Given one specific observation, we can find its nearest neighbors of in each reduced dimension, and calculate the similarity of two sets of nearest neighbors by the Jaccard score \citep{real1996probabilistic}. Note that for $K = N$, the consistency measured by Jaccard score is always $1$ as the N-nearest neighbor contains the whole set of observations. The curve of Jaccard scores computed with $K = 1$ to $K=N$ against $K$ can be regarded as a receiver operating characteristic curve, we can further obtain area under the curve ($AUC$) of the Jaccard scores curve.  $AUC  = 1$ indicates that the dimension reduction method is perfectly consistent in terms of local similarity under any $K$ range. Higher value of $AUC$ indicates higher similarities between two reduced dimensions. On the other hand, we also measure the dimension reduction + clustering consistency by applying clustering algorithms to the reduced dimensions with oracle number of clusters. Following the same framework in the clustering consistency, we measure the accuracy of dimension reduction + clustering results by the ARI between true labels, and the consistency by pairwise ARI between clustering results. All of the metrics range from $[0,1]$, with large values indicating stronger consistency.
+### Figures 
+
+#### Summary figures: 
+* Heatmap: to evaluate the consistency of interpretations among different methods. The heatmap shows the cross-method average consistency of interpretations obtain from each pair of IML methods. For example, the cell of method i and method j represents the consistency between the interpretations of i and j, averaged over 100 repeats and different data sets.
+
+* Line: to evaluate consisteny of interpretations of one method among repeats. The line plot shows the data sets versus the average pairwise consistency of 100 repeats of an IML method, with colors representing different methods. The x-axis is the data sets we used, ordered by # feature/# observation ratio, and the y-axis is the consistency score of this task, ranging in \[0,1\].
+
+* Bump: to evaluate the consistency of methods among different data sets. The bump plot ranks IML methods by their consistency score for each data, averaged over 100 repeats. 
+
+* Fit: to evaluate the relationship between prediction accuracy and interpretation consistency. The scatterplot shows the consistency score vs. predictive accuracy, with colors representing different IML methods. The points with the same color represent data sets, averaged over 100 repeats. The fitted regression lines between consistency score and predictive accuracy does not necessarily have positive coefficients.
+
+* Cor: to evaluate the relationship between prediction accuracy and interpretation consistency. The histogram plots the correlation between consistency score and predictive accuracy for each method, average over different data sets and 100 repeats.
+
+
+#### Raw Figures: 
+* Scatter_raw: to evaluate the relationship between prediction accuracy and interpretation consistency for each data set. The scatterplots show interpretation consistency scores vs. predictive accuracy for each data set, colored by IML methods.
+
+* Line_raw: to evaluate the change of consistency under different settings. 
+    * Featue Importance Section: Line plot of interpretation consistency scores of each data versus number of importance featuers, colored by IML methods.
+    
+    * Clustering & Dimension Reduction+Clustering sections: Line plot of interpretation consistency scores of each data versus noise level, colored by IML methods.
+    
+    * Dimension Reduction+Local Neighbors: Line plot of interpretation consistency scores of each data versus number of neighbors, colored by IML methods.
+
+
+
+
 ''',
     mathjax=True, style={'marginLeft': '5%', 'width': '90%'})
 
