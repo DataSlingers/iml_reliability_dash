@@ -30,6 +30,7 @@ app.layout = html.Div([
 
 @app.callback(Output('page-content', 'children'),
             [Input('url', 'pathname')])
+server = app.server
 
 def display_page(pathname):
     if pathname == '/instruction':
@@ -1361,7 +1362,5 @@ def update_bump_knn2(data_sel_knn,
 #     return 0
 
     
-
-
-# if __name__ == '__main__':
-app.run_server()
+if __name__ == '__main__':
+    app.run_server()
