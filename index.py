@@ -28,9 +28,11 @@ app.layout = html.Div([
     html.Div(id = 'page-content')
 ])
 
+server = app.server
+
+
 @app.callback(Output('page-content', 'children'),
             [Input('url', 'pathname')])
-server = app.server
 
 def display_page(pathname):
     if pathname == '/instruction':
