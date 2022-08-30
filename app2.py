@@ -624,7 +624,6 @@ def build_cor_clus(data_sel, method_sel,
              labels={'method':'Method', 'Consistency Accuracy':'Correlation'},
              title="Correlation between Accuracy and Consistency"
             )
-    fig.show()
     return fig                     
                      
 
