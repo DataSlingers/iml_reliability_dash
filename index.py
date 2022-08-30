@@ -1,17 +1,15 @@
 import dash
-# import dash_core_components as dcc
-# import dash_html_components as html
+import dash_core_components as dcc
+import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
-from dash import dcc, html
-
 from util import display_figure,sync_checklists,parse_contents
 from app_ins import App_ins
-from app1 import App1,build_scatter,build_bump,build_heat_summary,build_line,build_fit,build_cor
-from app1_2 import App1_2,build_scatter_reg,build_bump_reg,build_heat_summary_reg,build_line_reg,build_fit_reg,build_cor_reg
-from app2 import App2,build_scatter_clus,build_bump_clus,build_heat_summary_clus,build_line_clus,build_cor_clus,build_fit_clus
-from app3 import App3,build_scatter_dr,build_bump_dr,build_heat_summary_dr,build_line_dr,build_cor_dr,build_fit_dr
-from app3_2 import App3_2,build_line_knn,build_raw_knn,build_bump_knn
+from app1 import App1,build_scatter,build_bump,build_heat_summary,build_line,build_fit,build_cor,build_line_raw,build_scatter_raw
+from app1_2 import App1_2,build_scatter_reg,build_bump_reg,build_heat_summary_reg,build_line_reg,build_fit_reg,build_cor_reg,build_scatter_raw_reg,build_line_raw_reg
+from app2 import App2,build_scatter_clus,build_bump_clus,build_heat_summary_clus,build_line_clus,build_cor_clus,build_fit_clus,build_line_raw_clus,build_scatter_raw_clus
+from app3 import App3,build_scatter_dr,build_bump_dr,build_heat_summary_dr,build_line_dr,build_cor_dr,build_fit_dr,build_line_raw_dr,build_scatter_raw_dr
+from app3_2 import App3_2,build_line_knn,build_bump_knn,build_line_raw_knn,build_k_raw_knn
 from home import Homepage
 import plotly.express as px
 from dash.dependencies import Input, Output, State, ClientsideFunction
@@ -19,7 +17,8 @@ from dash.exceptions import PreventUpdate
 
 plot_summary_options = ['heatmap','line','bump','fit','cor']
 plot_summary_new_options = ['line_new','bump_new','fit_new','cor_new']
-plot_raw_options = ['scatters','lines']
+plot_raw_options = ['scatter_raw','line_raw','k_raw']
+# plot_raw_options_knn = ['line_raw','k_raw']
 
 #app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
@@ -28,7 +27,6 @@ app.layout = html.Div([
     dcc.Location(id = 'url', refresh = False),
     html.Div(id = 'page-content')
 ])
-server = app.server
 
 @app.callback(Output('page-content', 'children'),
             [Input('url', 'pathname')])
@@ -79,6 +77,7 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
     
 ######## make figures 
 @app.callback(    
+    Output("title_summary", "children"),
     Output("show_heatmap", "children"),
     Output("show_line", "children"),
     Output("show_bump", "children"),
@@ -96,11 +95,43 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
 def show(pathname,plot_selected,click):
 
     if click and click>0 and pathname!='/knn':
-        options = ['heatmap','line','bump','fit','cor']      
-        return list([display_figure(pp,plot_selected,click,pathname) for pp in options])
+        
+        options = ['heatmap','line','bump','fit','cor']
+        title = []
+        if len(plot_selected)>0:
+            title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center'})
+            
+        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
     raise PreventUpdate
+    
+    
+    
+@app.callback(    
+    Output("title_summary_raw", "children"),
+    Output("show_line_raw", "children"),
+    Output("show_scatter_raw", "children"),
+
+    [Input('url', 'pathname'),
+    State("select_raw", "value"),
+     Input('submit-button','n_clicks'),        
+    ],
+    prevent_initial_call=True
+
+)
+
+def show_raw(pathname,plot_selected,click):
+
+    if click and click>0 and pathname!='/knn':
+        options = ['scatter_raw','line_raw']
+        title = []
+        if len(plot_selected)>0:
+            title=html.H4("Raw Figures", style={"color": "slateblue",'text-align':'center'})
+            
+        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+    raise PreventUpdate    
 
 @app.callback(    
+    Output("title_summary_knn", "children"),
     Output("show_line_knn", "children"),
     Output("show_bump_knn", "children"),
 
@@ -113,11 +144,35 @@ def show(pathname,plot_selected,click):
 def show_knn(pathname,plot_selected,click):
 
     if click and click>0 and pathname=='/knn':
-        options = ['line','bump']      
-        return [display_figure(pp,plot_selected,click,pathname) for pp in options]
+        options = ['line','bump']  
+        title = []
+        if len(plot_selected)>0:
+            title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center'})
+
+        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
     raise PreventUpdate    
     
+@app.callback(    
+    Output("title_raw_knn", "children"),
+    Output("show_line_raw_knn", "children"),
+    Output("show_k_raw_knn", "children"),
 
+    [State('url', 'pathname'),
+     State("select_raw", "value"),
+     Input('submit-button','n_clicks'),        
+    ],
+    prevent_initial_call=True)
+
+def show_raw_knn(pathname,plot_selected,click):
+
+    if click and click>0 and pathname=='/knn':
+        options = ['line_raw','k_raw']  
+        title = []
+        if len(plot_selected)>0:
+            title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center'})
+
+        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+    raise PreventUpdate    
 ########################################
 ######## make figures for new data 
 ########################################
@@ -209,6 +264,7 @@ def update_summary_checklists(select_summary, all_summary,reset):
 
 
 @app.callback(    
+    Output("title_summary_new", "children"),
     Output("show_line_new", "children"),
     Output("show_bump_new", "children"),
     Output("show_fit_new", "children"),
@@ -225,11 +281,17 @@ def update_summary_checklists(select_summary, all_summary,reset):
 def show_new(pathname,plot_selected,click):
 
     if click and click>0 and pathname!='/knn':
-        options = ['line_new','bump_new','fit_new','cor_new']  
-        return [display_figure(pp,plot_selected,click,pathname) for pp in options]
+        options = ['line_new','bump_new','fit_new','cor_new'] 
+        title = []
+        if len(plot_selected)>0:
+            title=html.H4("Summary Figures with New Data", style={"color": "slateblue",'text-align':'center'})
+
+        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+        
     raise PreventUpdate    
 
 @app.callback(    
+    Output("title_summary_knn_new", "children"),
     Output("show_line_knn_new", "children"),
     Output("show_bump_knn_new", "children"),
 
@@ -245,7 +307,11 @@ def show_knn_new(pathname,plot_selected,click):
 
     if click and click>0 and pathname=='/knn':
         options = ['line_new','bump_new']      
-        return [display_figure(pp,plot_selected,click,pathname) for pp in options]
+        title = []
+        if len(plot_selected)>0:
+            title=html.H4("Summary Figures with New Data", style={"color": "slateblue",'text-align':'center'})
+
+        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
     
     raise PreventUpdate    
     
@@ -378,6 +444,34 @@ def update_line2(pathname,data_sel, method_sel,
         return fig        
     raise PreventUpdate    
         
+   
+    
+@app.callback(
+    Output("line_raw", "figure"),
+    [Input('url', 'pathname'),
+        Input("data-select", "value"),
+        Input("method-select", "value"),
+        Input("k-select", "value"),
+        Input("criteria-select", "value"),
+    ],
+)
+
+def update_line_raw(pathname,data_sel,method_sel,
+                 k_sel, criteria_sel
+                #,noise_sel,sigma_sel
+                 ):
+    
+    if pathname == '/feature_importance_classification':
+        fig=build_line_raw(data_sel, method_sel,
+                 k_sel, criteria_sel)
+        return fig
+    if pathname == '/feature_importance_regression':
+        fig=build_line_raw_reg(data_sel,method_sel,
+                 k_sel, criteria_sel)
+        return fig
+        
+        
+        
         
 @app.callback(
     Output("fit", "figure"),
@@ -428,7 +522,34 @@ def update_fit2(pathname,data_sel, method_sel,
         return fig        
     raise PreventUpdate    
            
+#########################
+
+@app.callback(
+    Output("scatter_raw", "figure"),
+    [Input('url', 'pathname'),
+        Input("data-select", "value"),
+        Input("method-select", "value"),
+        Input("k-select", "value"),
+        Input("criteria-select", "value"),
+    ],
+)
+
+def update_scatter_raw(pathname,data_sel,method_sel,
+                 k_sel, criteria_sel
+                #,noise_sel,sigma_sel
+                 ):
     
+    if pathname == '/feature_importance_classification':
+        fig=build_scatter_raw(data_sel, method_sel,
+                 k_sel, criteria_sel)
+        return fig
+    if pathname == '/feature_importance_regression':
+        fig=build_scatter_raw_reg(data_sel,method_sel,
+                 k_sel, criteria_sel)
+        return fig 
+    raise PreventUpdate    
+    
+#####################################
     
 @app.callback(
     Output("cor", "figure"),
@@ -712,6 +833,47 @@ def update_cor_clus2(data_sel_clus,
                         sigma_sel_clus,data)
     return fig
             
+    
+    
+    
+    
+@app.callback(
+    Output("scatter_raw_clus", "figure"),
+    [Input("data-select_clus", "value"),
+        Input("method-select_clus", "value"),
+        Input("criteria-select_clus", "value"),
+        Input("noise-select_clus", "value"),
+        Input("sigma-select_clus", "value"),
+    ],
+)
+
+def update_scatter_raw_clus(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel
+                 ):
+    
+    
+    fig=build_scatter_raw_clus(data_sel,method_sel,
+                criteria_sel, noise_sel,sigma_sel)
+    return fig 
+    raise PreventUpdate    
+    
+@app.callback(
+    Output("line_raw_clus", "figure"),
+   [Input("data-select_clus", "value"),
+        Input("method-select_clus", "value"),
+        Input("criteria-select_clus", "value"),
+        Input("noise-select_clus", "value"),
+        Input("sigma-select_clus", "value"),
+    ],
+)
+
+def update_line_raw_clus(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel):
+    
+    fig=build_line_raw_clus(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel)
+    return fig
+            
 ###############################
         
 ###### DR page 
@@ -992,31 +1154,92 @@ def update_cor_dr2(data_sel_dr,
                    rank_select_dr,data)
     return fig            
 
+
+
+@app.callback(
+    Output("scatter_raw_dr", "figure"),
+   [
+     Input("data-select_dr", "value"),
+        Input("method-select_dr", "value"),
+        Input("criteria-select_dr", "value"),
+        Input("noise-select_dr", "value"),
+        Input("sigma-select_dr", "value"),
+        Input("rank-select_dr", "value"),
+    ],
+)
+
+def update_scatter_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel
+                 ):
+    
+    
+    fig=build_scatter_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel)
+    return fig 
+    raise PreventUpdate    
+    
+@app.callback(
+    Output("line_raw_dr", "figure"),
+[
+     Input("data-select_dr", "value"),
+        Input("method-select_dr", "value"),
+        Input("criteria-select_dr", "value"),
+        Input("noise-select_dr", "value"),
+        Input("sigma-select_dr", "value"),
+        Input("rank-select_dr", "value"),
+    ],
+)
+
+def update_line_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel):
+    
+    fig=build_line_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel)
+    return fig
+
+
+
 ##########################
 ########## DR+KNN
 #########################
 
 @app.callback(
-    Output("knn_raw", "figure"),
-    [
-        Input("data-select_knn", "value"),
+    Output("line_raw_knn", "figure"),
+[
+     Input("data-select_knn", "value"),
         Input("method-select_knn", "value"),
         Input("noise-select_knn", "value"),
         Input("rank-select_knn", "value"),
     ],
 )
 
-def update_knn_raw(data_sel_knn, 
-                     method_sel_knn,
-                    noise_sel_knn,
-                   rank_select_knn
-                 ):
-    fig=build_raw_knn(data_sel_knn, 
-                        method_sel_knn,
-                        noise_sel_knn,
-                      rank_select_knn
-                    )
+def update_line_raw_knn(data_sel, method_sel,
+                noise_sel,rank_sel):
+    
+    fig=build_line_raw_knn(data_sel, method_sel,
+                 noise_sel,rank_sel)
     return fig
+
+@app.callback(
+    Output("k_raw_knn", "figure"),
+[
+     Input("data-select_knn", "value"),
+        Input("method-select_knn", "value"),
+        Input("noise-select_knn", "value"),
+        Input("sigma-select_knn", "value"),
+        Input("rank-select_knn", "value"),
+    ],
+)
+
+def update_k_raw_knn(data_sel, method_sel,
+                noise_sel,sigma_sel,rank_sel):
+    
+    fig=build_k_raw_knn(data_sel, method_sel,
+                 noise_sel,sigma_sel,rank_sel)
+    return fig
+
+
+
 
 
 @app.callback(
@@ -1130,7 +1353,7 @@ def update_bump_knn2(data_sel_knn,
 #              [Input('submit_button','n_clicks'),
 #                  Input('reset_button','n_clicks')])
 # def update(input_clicks,submit):
-# #     if input_clicks>0:
+# #     if input_clicks>0:«
 #     return f'there are {input_clicks} input clicks. {submit} submits '
 
 # @app.callback(Output('submit_button','n_clicks'),
@@ -1140,5 +1363,5 @@ def update_bump_knn2(data_sel_knn,
     
 
 
-if __name__ == '__main__':
-    app.run_server()
+# if __name__ == '__main__':
+app.run_server()

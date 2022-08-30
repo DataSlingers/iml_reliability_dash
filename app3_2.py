@@ -23,6 +23,7 @@ nav = Navbar()
 
 df = pd.read_csv("dr_auc.csv")
 
+dr_knn=pd.read_csv('dr_knn.csv')
 
 data_options = df['data'].unique().tolist()
 method_options = df['method'].unique().tolist()
@@ -114,7 +115,7 @@ def description_card():
         ],
     )
 plot_summary_options = ['line','bump']
-plot_raw_options = ['scatter_raw','line_raw']
+plot_raw_options_knn = ['line_raw','k_raw']
 
 
 
@@ -146,7 +147,7 @@ def generate_control_card():
             dcc.Checklist(id="all_raw",
                           options=[{"label": 'All', "value":'All_raw' }],value= []),
             dcc.Checklist(id="select_raw",
-                options=[{"label": i, "value": i} for i in plot_raw_options],
+                options=[{"label": i, "value": i} for i in plot_raw_options_knn],
                 value=[],
             ),                    
 
@@ -282,9 +283,9 @@ def App3_2():
             html.Div(id='show_line_knn'),
             html.Div(id='show_bump_knn'),
             ######### raw plots 
-            html.Div(id='title_summary_raw'),
-            html.Div(id='show_line_raw'),
-            html.Div(id='show_scatter_raw'),
+            html.Div(id='title_raw_knn'),
+            html.Div(id='show_line_raw_knn'),
+            html.Div(id='show_k_raw_knn'),
           
            
         ], 
@@ -302,31 +303,51 @@ def App3_2():
     ])
     return layout
 
-def build_raw_knn(data_sel, method_sel,
-                 noise_sel,rank_sel
+def build_line_raw_knn(data_sel, method_sel,
+                  noise_sel,rank_sel,new_data=None
                  ):
    
     aauc=df[
         (df.data.isin(data_sel))
                &(df.method.isin(method_sel))
                &(df.noise ==noise_sel)
-               &(df['rank'] ==int(rank_sel))
-             ]
-        
-    
-    fig = px.line(aauc, x='sigma', y='AUC', color='method', markers=True,
-              facet_col='data',
-                 facet_col_wrap=3, 
-                color_discrete_map=(palette),
-                line_dash='method', line_dash_map= markers_choice,
-                 category_orders={"method":list(palette.keys())},
-               labels=dict( method="Method")
-                )
+               &(df['rank'] ==int(rank_sel)
 
-    fig.update_layout(yaxis_range=[0,1])
-    fig.update_xaxes(matches=None)
-    fig.for_each_xaxis(lambda xaxis: xaxis.update(showticklabels=True))
+                )
+             ]
+    this_palette = palette.copy()
+    this_line_choice= line_choice.copy()    
+    fig = px.line(aauc,x="sigma", y='AUC',color = 'method',
+
+                            color_discrete_map=this_palette,
+                                line_dash = 'method',
+                      line_dash_map = this_line_choice,
+                      labels={
+                             "method": "Method"
+                         },
+                      facet_col="data",facet_col_wrap=3,
+                  #width=1000, height=800,
+            category_orders={'data':list(palette_data.keys())})
+    fig.update_xaxes(matches=None,showticklabels=True)
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+    fig.update_traces(line=dict(width=3))
+      
+    if new_data is not None:
+        fig.add_trace(
+                go.Scatter(
+                    x=neww['data'],
+                    y=neww['AUC'],
+                    mode='markers',
+                    marker=dict(
+                        color=[this_palette[i] for i in neww['method']],
+                        size=20
+                    ),
+                    showlegend=False,
+                    hoverinfo='none',                                                                              
+                )
+            )
     return fig
+
 def build_line_knn(data_sel, method_sel,
                   noise_sel,sigma_sel,rank_sel
                  ):
@@ -429,33 +450,65 @@ def build_bump_knn(data_sel, method_sel,
                     )
 
     return fig  
+              
+                     
+def build_k_raw_knn(data_sel, method_sel,
+                 noise_sel,sigma_sel,rank_sel,new_data=None):
 
 
-# def build_line_knn_raw(data_sel, method_sel,
-#                   noise_sel,sigma_sel,rank_sel
-#                  ):
+    dff=dr_knn[(dr_knn.data.isin(data_sel))
+            &(dr_knn.method.isin(method_sel))
+            &(dr_knn.noise ==noise_sel)
+            &(dr_knn['rank'] ==rank_sel)
+            &(dr_knn.sigma ==float(sigma_sel))]
+    this_palette = palette.copy()
+    this_line_choice= line_choice.copy()
+    ###### input new data
+    if new_data is not None:
+        new_data = pd.DataFrame(new_data)
+        neww = new_data[
+            (new_data.noise ==noise_sel)&
+             (new_data['rank'] ==rank_sel)&
+           
+            (new_data.sigma==float(sigma_sel))]
+        dff = pd.concat([dff, neww]) 
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_line_choice[mm]='solid'
+            
+    fig = px.line(dff,x="K", y='Consistency',color = 'method',
 
-# ####### filter data
-#     dff=df[
-#         (df.data.isin(data_sel))
-#                &(df.method.isin(method_sel))
-#                &(df.noise ==noise_sel)
-#                &(df.sigma ==float(sigma_sel))
-#                &(df['rank'] ==int(rank_sel))
-#              ]
+                            color_discrete_map=this_palette,
+                                line_dash = 'method',
+                      line_dash_map = this_line_choice,
+                      labels={
+                             "method": "Method"
+                         },
+                      facet_col="data",facet_col_wrap=3,
+                  #width=1000, height=800,
+            category_orders={'data':list(palette_data.keys())})
+    fig.update_xaxes(matches=None,showticklabels=True)
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+    fig.update_traces(line=dict(width=3))
+      
+    if new_data is not None:
+        fig.add_trace(
+                go.Scatter(
+                    x=neww['data'],
+                    y=neww['Consistency'],
+                    mode='markers',
+                    marker=dict(
+                        color=[this_palette[i] for i in neww['method']],
+                        size=20
+                    ),
+                    showlegend=False,
+                    hoverinfo='none',                                                                              
+                )
+            )
+
         
+    return fig
 
-#     fig = px.line(dff,x="data", y='AUC',color = 'method',markers=True,
 
-#                         color_discrete_map=palette,
-#                             line_dash = 'method',
-#                   line_dash_map = line_choice,
-#                   labels={
-#                          "method": "Method"
-#                      },
-#                  # title=
-#                  )
-#     fig.update_traces(line=dict(width=3))
-#     return fig
 
 
