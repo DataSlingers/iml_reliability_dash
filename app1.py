@@ -24,7 +24,6 @@ nav = Navbar()
 
 df = pd.read_csv("feature_impo.csv")
 cross = pd.read_csv('cross_fi.csv')
-cross_ave = cross.groupby(['method1','method2','criteria','K'],as_index=False)['value'].mean()
 
 
 data_options = df['data'].unique().tolist()
@@ -298,8 +297,16 @@ def App1():
             html.Div(id='output-datatable'),
             ###### summary plots
             html.Div(id='title_summary'),
-            
             html.Div(id='show_heatmap'),
+
+            
+#             html.Div(
+#                 [
+#                 html.Div([
+#             dcc.Graph(id=''),
+#                 html.Div([
+#             dcc.Graph(id='show_acc_bar'),
+#                 ]),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
             html.Div(id='show_fit'),
@@ -316,7 +323,8 @@ def App1():
 #                 width='auto'
                 #,align='center'
                         
-        )])])
+        )])
+       ],fluid=True)
         
     ])
     return layout
@@ -462,11 +470,12 @@ def build_bump(data_sel, method_sel,
     return fig  
 
 
-def build_heat_summary(method_sel,
+def build_heat_summary(data_sel, method_sel,
                  k_sel, criterial_sel,new_data=None):
-    
+        cross_ave = cross[cross.data.isin(data_sel)]
+        cross_ave=cross_ave.groupby(['method1','method2','criteria','K'],as_index=False)['value'].mean()
         sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
-        sub = sub[(sub['K']==k_sel)&(cross_ave['criteria']==criterial_sel)]
+        sub = sub[(sub['K']==k_sel)&(sub['criteria']==criterial_sel)]
         sub = sub.pivot("method1", "method2", "value")
         sub = sub.fillna(0)+sub.fillna(0).T
         np.fill_diagonal(sub.values, 1)
@@ -477,6 +486,28 @@ def build_heat_summary(method_sel,
                labels=dict(x="Method", y="Method", color="Consistency"))
         return fig
         
+        
+def build_acc_bar(data_sel, method_sel,
+                 k_sel, new_data=None):
+    this_palette = palette.copy()
+    dff=df[(df.data.isin(data_sel))
+            &(df.method.isin(method_sel))
+            &(df.K ==k_sel)]
+    dff = dff.groupby(['method']).mean().reset_index()
+    fig = px.bar(dff, x='method', y='Accuracy',
+                 range_y = [0,1],
+                 color='method',text_auto='.3',
+                 color_discrete_map=this_palette,
+                 labels={'method':'Method', 'Accuracy':'Predictive Accuracy'},
+                 title="Predictive Accuracy"
+                )
+    fig.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
+    fig.update_layout(height=300,showlegend=False)
+
+    return fig
+
+
+
 def build_line(data_sel, method_sel,
                  k_sel, criteria_sel,new_data=None):
 
