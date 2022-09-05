@@ -22,7 +22,6 @@ def sync_checklists(selected, all_selected,options,kind):
 
 
 
-
 def display_figure(pp,plot_selected, click,pathname):
     if click is None:
         raise PreventUpdate
@@ -67,9 +66,58 @@ def display_figure(pp,plot_selected, click,pathname):
                     }
         
         
+        if pp in plot_selected and pp=='heatmap':
+        
+            fig_id = pp+'_'+paths[pathname] if pathname in paths else pp
+#             if pp=='heatmap':
+            id2 = 'acc_'+paths[pathname] if pathname in paths else 'acc'
+ 
+            return html.Div([
+                    html.B(heads[pp]),
+                    html.Details([
+                        html.Summary('Description'),
+                        html.Div(children=describ[pp], className='desc',
+                                 id='my-description')
+                    ],
+                        id="desc-dropdown",
+                        open=False
+                    ), 
+                 dbc.Row([
+
+                    dbc.Col([
+                        html.Div(
+                            dls.Hash(                        
+                                dcc.Graph(id=fig_id,
+                                      style={'width': '60vh', 'height': '40vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                            )
+                        )],  width={"size": 4}),
+                     #width=3),
+
+                    dbc.Col([
+                         html.Div(
+                        dls.Hash(                        
+                            dcc.Graph(id=id2,
+                                  style={'width': '40vh', 'height': '30vh'}
+                                     ),
+                            color="#435278",
+                            speed_multiplier=2,
+                            size=100,
+
+                        )
+                       )], width={"size": 4, "offset": 4}),
+                 ],className="g-0",),
+
+                     html.Hr(),  # horizontal line
+                            
+                ])
+
+            
         if pp in plot_selected:
             fig_id = pp+'_'+paths[pathname] if pathname in paths else pp
-           
             return html.Div([
                     html.B(heads[pp]),
                     html.Details([
@@ -87,8 +135,158 @@ def display_figure(pp,plot_selected, click,pathname):
                         speed_multiplier=2,
                         size=100,
                     ),
+
                     html.Hr(),  # horizontal line
                 ])
+
+                
+        
+
+
+# def display_figure(pp,plot_selected, click,pathname):
+#     if click is None:
+#         raise PreventUpdate
+ 
+#     if click>0:
+#         paths = {'/clustering':'clus',
+#                  '/dimension_reduction_clustering':'dr',
+#                    '/knn':'knn'
+#                 }
+#         heads = {'heatmap':'Interpretations are unreliable (cross methods)',
+#                  'line':'Interpretations are unreliable (within methods)',
+#                  'bump':'Each data has its own most consistent method (No free lunch)',
+#                  'fit':'Predictive accuracy does not lead to consistent interpretation',
+#                  'cor':'Predictive accuracy does not lead to consistent interpretation',
+#                  'line_new':'Line with new data',
+#                  'bump_new':'Bump with new data',
+#                  'fit_new':'Fit with new data',
+#                  'cor_new':'Cor with new data',
+                 
+#                  'line_raw':'Line plot of Raw Results',
+#                  'scatter_raw':'Scatter plot of Raw Results',
+#                  'k_raw': 'Consistency vs. number of local neighbors'
+#                 }
+        
+        
+        
+#         describ = {'heatmap':['Among different methods, we aim to evaluate whether different methods would result in similar interpretations, the heatmap shows the cross-method average consistency of interpretations obtain from each pair of IML methods. For example, the cell of method i and method j represents the consistency between the interpretations of i and j, averaged over 100 repeats and different data sets.'],
+#                  'line':['Within each method, we aim to measure whether interpretations are consistent among repeats. The line plot shows the data sets versus the average pairwise consistency of 100 repeats of an IML method, with colors representing different methods. The x-axis is the data sets we used, ordered by # feature/# observation ratio, and the y-axis is the consistency score of this task, ranging in [0,1]. '],
+#                  'bump':['The bump plot ranks IML methods by their consistency score for each data, averaged over 100 repeats.'],
+#                      'fit':['The scatterplot shows the consistency score vs. predictive accuracy, with colors representing different IML methods. The points with the same color represent data sets, averaged over 100 repeats. The fitted regression lines between consistency score and predictive accuracy does not necessarily have positive coefficients.'],
+#                  'cor':['The histogram plots the correlation between consistency score and predictive accuracy for each method, average over different data sets and 100 repeats. '],
+#                  'line_new':['Line with new data'],
+#                  'bump_new':['Bump with new data'],
+#                  'fit_new':['Fit with new data'],
+#                  'cor_new':['Cor with new data'],
+#                  'line_raw':['Line plot of interpretation consistency scores of each data, colored by IML methods. '],
+#                  'scatter_raw':['Scatter plots of interpretation consistency scores vs. predictive accuracy for each data set, colored by IML methods. '],
+#                    'k_raw':['Line plots of interpretation consistency scores vs. number of local neighbors K for each data set, colored by IML methods. ']
+            
+            
+            
+#                     }
+        
+        
+#         if pp in plot_selected and pp=='heatmap':
+        
+#             fig_id = pp+'_'+paths[pathname] if pathname in paths else pp
+# #             if pp=='heatmap':
+#             id2 = 'acc_'+paths[pathname] if pathname in paths else 'acc'
+
+#             return html.Div([
+#                     html.B(heads[pp]),
+#                     html.Details([
+#                         html.Summary('Description'),
+#                         html.Div(children=describ[pp], className='desc',
+#                                  id='my-description')
+#                     ],
+#                         id="desc-dropdown",
+#                         open=False
+#                     ), 
+
+#                 dbc.Col([
+#                     html.Div(
+#                         dls.Hash(                        
+#                             dcc.Graph(id=fig_id,
+#                                   style={'width': '80vh', 'height': '50vh'}),
+#                             color="#435278",
+#                             speed_multiplier=2,
+#                             size=100,
+#                         )
+#                     )],width={"size": 4},),
+
+#                 dbc.Col([
+#                      html.Div(
+#                     dls.Hash(                        
+#                         dcc.Graph(id=id2,
+#                               style={'width': '80vh', 'height': '30vh'}),
+#                         color="#435278",
+#                         speed_multiplier=2,
+#                         size=50,
+
+#                     )
+#                    )],width={"size": 4},),
+
+
+#                     html.Hr(),  # horizontal line
+
+#                 ])
+
+            
+#         if pp in plot_selected and pp!='heatmap':
+#             fig_id = pp+'_'+paths[pathname] if pathname in paths else pp
+#             return html.Div([
+#                     html.B(heads[pp]),
+#                     html.Details([
+#                         html.Summary('Description'),
+#                         html.Div(children=describ[pp], className='desc',
+#                                  id='my-description')
+#                     ],
+#                         id="desc-dropdown",
+#                         open=False
+#                     ), 
+#                     dls.Hash(                        
+#                         dcc.Graph(id=fig_id,
+#                               style={'width': '80vh', 'height': '50vh'}),
+#                         color="#435278",
+#                         speed_multiplier=2,
+#                         size=100,
+#                     ),
+
+#                     html.Hr(),  # horizontal line
+#                 ])
+
+                
+                
+# #                 return html.Div([
+# #                         html.B(heads[pp]),
+# #                         html.Details([
+# #                             html.Summary('Description'),
+# #                             html.Div(children=describ[pp], className='desc',
+# #                                      id='my-description')
+# #                         ],
+# #                             id="desc-dropdown",
+# #                             open=False
+# #                         ), 
+                    
+                    
+                    
+# #                         dls.Hash(                        
+# #                             dcc.Graph(id=fig_id,
+# #                                   style={'width': '80vh', 'height': '50vh'}),
+# #                             color="#435278",
+# #                             speed_multiplier=2,
+# #                             size=100,
+# #                         ),
+# #                         dls.Hash(                        
+# #                             dcc.Graph(id=id2,
+# #                                   style={'width': '80vh', 'height': '30vh'}),
+# #                             color="#435278",
+# #                             speed_multiplier=2,
+# #                             size=100,
+# #                         ),
+# #                         html.Hr(),  # horizontal line
+# #                     ])
         
 ########upload data 
 def parse_contents(contents, filename, date,pathname):
