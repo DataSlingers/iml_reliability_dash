@@ -5,10 +5,10 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 from util import display_figure,sync_checklists,parse_contents
 from app_ins import App_ins
-from app1 import App1,build_scatter,build_bump,build_heat_summary,build_line,build_fit,build_cor,build_line_raw,build_scatter_raw
-from app1_2 import App1_2,build_scatter_reg,build_bump_reg,build_heat_summary_reg,build_line_reg,build_fit_reg,build_cor_reg,build_scatter_raw_reg,build_line_raw_reg
-from app2 import App2,build_scatter_clus,build_bump_clus,build_heat_summary_clus,build_line_clus,build_cor_clus,build_fit_clus,build_line_raw_clus,build_scatter_raw_clus
-from app3 import App3,build_scatter_dr,build_bump_dr,build_heat_summary_dr,build_line_dr,build_cor_dr,build_fit_dr,build_line_raw_dr,build_scatter_raw_dr
+from app1 import App1,build_scatter,build_bump,build_heat_summary,build_line,build_fit,build_cor,build_line_raw,build_scatter_raw,build_acc_bar
+from app1_2 import App1_2,build_scatter_reg,build_bump_reg,build_heat_summary_reg,build_line_reg,build_fit_reg,build_cor_reg,build_scatter_raw_reg,build_line_raw_reg,build_acc_bar_reg
+from app2 import App2,build_scatter_clus,build_bump_clus,build_heat_summary_clus,build_line_clus,build_cor_clus,build_fit_clus,build_line_raw_clus,build_scatter_raw_clus,build_acc_bar_clus
+from app3 import App3,build_scatter_dr,build_bump_dr,build_heat_summary_dr,build_line_dr,build_cor_dr,build_fit_dr,build_line_raw_dr,build_scatter_raw_dr,build_acc_bar_dr
 from app3_2 import App3_2,build_line_knn,build_bump_knn,build_line_raw_knn,build_k_raw_knn
 from home import Homepage
 import plotly.express as px
@@ -27,9 +27,7 @@ app.layout = html.Div([
     dcc.Location(id = 'url', refresh = False),
     html.Div(id = 'page-content')
 ])
-
 server = app.server
-
 
 @app.callback(Output('page-content', 'children'),
             [Input('url', 'pathname')])
@@ -98,12 +96,17 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
 def show(pathname,plot_selected,click):
 
     if click and click>0 and pathname!='/knn':
-        
         options = ['heatmap','line','bump','fit','cor']
+
+#         options = ['heatmap','line','bump','fit','cor']
         title = []
         if len(plot_selected)>0:
             title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center'})
-            
+        
+#         if 'heatmap' in plot_selected:
+#             hm = display_figure_heatmap('heatmap',plot_selected,click,pathname)
+#             return list([title]+[hm]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+#         else:
         return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
     raise PreventUpdate
     
@@ -374,26 +377,49 @@ def update_bump2(pathname,data_sel, method_sel,
 @app.callback(
     Output("heatmap", "figure"),
     [Input('url', 'pathname'),
+        Input("data-select", "value"),
         Input("method-select", "value"),
         Input("k-select", "value"),
         Input("criteria-select", "value"),
     ],
 )
 
-def update_heatmap(pathname,method_sel,
+def update_heatmap(pathname,data_sel,method_sel,
                  k_sel, criteria_sel
                 #,noise_sel,sigma_sel
                  ):
     
     if pathname == '/feature_importance_classification':
-        fig=build_heat_summary(method_sel,
+        fig=build_heat_summary(data_sel,method_sel,
                  k_sel, criteria_sel)
         return fig
     if pathname == '/feature_importance_regression':
-        fig=build_heat_summary_reg(method_sel,
+        fig=build_heat_summary_reg(data_sel,method_sel,
                  k_sel, criteria_sel)
         return fig
     
+@app.callback(
+    Output("acc", "figure"),
+    [Input('url', 'pathname'),
+        Input("data-select", "value"),
+        Input("method-select", "value"),
+        Input("k-select", "value"),
+    ],
+)
+
+def update_bar_acc(pathname,data_sel,method_sel,
+                 k_sel
+                #,noise_sel,sigma_sel
+                 ):
+    
+    if pathname == '/feature_importance_classification':
+        fig=build_acc_bar(data_sel,method_sel,
+                 k_sel)
+        return fig
+    if pathname == '/feature_importance_regression':
+        fig=build_acc_bar(data_sel,method_sel,
+                 k_sel)
+        return fig    
     
    
     
@@ -615,6 +641,7 @@ def update_cor2(pathname,data_sel, method_sel,
 @app.callback(
     Output("heatmap_clus", "figure"),
     [
+        Input("data-select_clus", "value"),
         Input("method-select_clus", "value"),
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
@@ -622,18 +649,39 @@ def update_cor2(pathname,data_sel, method_sel,
     ],
 )
 
-def update_heatmap_clus(method_sel_clus,
+def update_heatmap_clus(data_sel_clus,method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
                      sigma_sel_clus
                  ):
     
-    fig=build_heat_summary_clus(method_sel_clus,
+    fig=build_heat_summary_clus(data_sel_clus,method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
                      sigma_sel_clus)
     return fig
+@app.callback(
+    Output("acc_clus", "figure"),
+    [
+        Input("data-select_clus", "value"),
+        Input("method-select_clus", "value"),
+        Input("criteria-select_clus", "value"),
+        Input("noise-select_clus", "value"),
+        Input("sigma-select_clus", "value"),
+    ],
+)
 
+def update_acc_bar_clus(data_sel_clus,method_sel_clus,
+                    criteria_sel_clus,
+                    noise_sel_clus,
+                     sigma_sel_clus
+                 ):
+    
+    fig=build_acc_bar_clus(data_sel_clus,method_sel_clus,
+                    criteria_sel_clus,
+                    noise_sel_clus,
+                     sigma_sel_clus)
+    return fig
     
 @app.callback(
     Output("line_clus", "figure"),
@@ -888,6 +936,7 @@ def update_line_raw_clus(data_sel, method_sel,
 @app.callback(
     Output("heatmap_dr", "figure"),
     [
+        Input("data-select_dr", "value"),
         Input("method-select_dr", "value"),
         Input("criteria-select_dr", "value"),
         Input("noise-select_dr", "value"),
@@ -896,20 +945,44 @@ def update_line_raw_clus(data_sel, method_sel,
     ],
 )
     
-def update_heatmap_dr(method_sel_dr,
+def update_heatmap_dr(data_sel_dr,method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
                       rank_select_dr
                  ):
     
-    fig=build_heat_summary_dr(method_sel_dr,
+    fig=build_heat_summary_dr(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
                       rank_select_dr)
     return fig    
+@app.callback(
+    Output("acc_dr", "figure"),
+    [
+        Input("data-select_dr", "value"),
+        Input("method-select_dr", "value"),
+        Input("criteria-select_dr", "value"),
+        Input("noise-select_dr", "value"),
+        Input("sigma-select_dr", "value"),
+        Input("rank-select_dr", "value"),
+    ],
+)
     
+def update_acc_bar_dr(data_sel_dr,method_sel_dr,
+                    criteria_sel_dr,
+                    noise_sel_dr,
+                     sigma_sel_dr,
+                      rank_select_dr
+                 ):
+    
+    fig=build_acc_bar_dr(data_sel_dr, method_sel_dr,
+                    criteria_sel_dr,
+                    noise_sel_dr,
+                     sigma_sel_dr,
+                      rank_select_dr)
+    return fig      
 @app.callback(
     Output("acc_vs_consis_scatter_dr", "figure"),
     [
@@ -1352,17 +1425,7 @@ def update_bump_knn2(data_sel_knn,
 
 
 
-# @app.callback(Output('output','children'),
-#              [Input('submit_button','n_clicks'),
-#                  Input('reset_button','n_clicks')])
-# def update(input_clicks,submit):
-# #     if input_clicks>0:«
-#     return f'there are {input_clicks} input clicks. {submit} submits '
 
-# @app.callback(Output('submit_button','n_clicks'),
-#              [Input('reset_button','n_clicks')])
-#     return 0
 
-    
 if __name__ == '__main__':
     app.run_server()

@@ -101,8 +101,43 @@ One of the main goal of dimension reduction techniques is to draw inference from
 The K-nearest neighbor (KNN) consistency provides a quantitative consistency metric to exam the local similarity among given reduced dimensions. Given one specific observation, we can find its nearest neighbors of in each reduced dimension, and calculate the similarity of two sets of nearest neighbors by the Jaccard score \citep{real1996probabilistic}. Note that for $K = N$, the consistency measured by Jaccard score is always $1$ as the N-nearest neighbor contains the whole set of observations. The curve of Jaccard scores computed with $K = 1$ to $K=N$ against $K$ can be regarded as a receiver operating characteristic curve, we can further obtain area under the curve ($AUC$) of the Jaccard scores curve. $AUC  = 1$ indicates that the dimension reduction method is perfectly consistent in terms of local similarity under any $K$ range. Higher value of $AUC$ indicates higher similarities between two reduced dimensions. 
 
 On the other hand, we also measure the dimension reduction + clustering consistency by applying clustering algorithms to the reduced dimensions with oracle number of clusters. Following the same framework in the clustering consistency, we measure the accuracy of dimension reduction + clustering results by the ARI between true labels, and the consistency by pairwise ARI between clustering results. All of the metrics range from $[0,1]$, with large values indicating stronger consistency.
+
+
+### Data
+#### Classification Data Sets
+|Data | # observations |   # features |  # classes | Type | Citation |
+|:--- |    :----:      |    :----:    |     :----: |:----:|---:      |
+|Asian Religions | 590 | 8266 | 8 |    | \cite{sah2019asian} |
+|PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq | \citet{weinstein2013cancer}|
+|DNase | 386 | 2000 | 6 | high dimensional DNase      | \citet{encode2012integrated} | 
+|madelon | 2000 | 500 | 2 | artificial dataset | \citet{guyon2004result}|
+|Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam | \citet{} |
+|Author | 841 | 69 | 4 | word counts from chapters written by four famous
+|Bean | 13611 | 16 | 7 | Images of 13,611 grains of 7 different registered dry beans 
+
+#### Regression Data Sets
+|Data |  # observations |  # features |  Type  | Citation |
+|:--- |    :----:      |    :----:    |     :----: |:----:| 
+|Riboflavin |71|4088 | genomics data set about riboflavin production rate|\cite{buhlmann2014high}|
+|RNA-seq | 475 | 48803 | high dimensional, from ROSMAP, biological data | \citet{} |
+|BlogFeedback |52397 |280 |to predict how many comments the post will receive | \citet{buza2014feedback} |
+|Online News Popularity | 39644 | 59 | predict \# of shares in social networks | \citet{fernandes2015proactive} |
+|STAR | 2161 | 39 | Tennessee Student Teacher Achievement Ratio (STAR) project | \citet{DVN/SIWH9F_2008}|
+|Word |523 | 526 | binary; A word occurrence data to predict the length of a newsgroup record | \citet{} |
+|Communities and crime| 1993 | 99 | predict \# of violent crimes | \citet{}|
+
+
+#### Clustering & Dimension Reduction Data Sets
+|Data | # observations |# features |# classes |Type |Citation|
+|:--- |    :----:      |    :----:  |    :----:    |     :----: |:----:| 
+|PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq | \citet{weinstein2013cancer} |
+|DNase | 386 | 2000 | 30 | high dimensional DNase | \citet{encode2012integrated}| 
+|Asian Religions | 590 | 8266 | 8 | | \cite{sah2019asian}|
+|Author | 841 | 69 | 4 | word counts from chapters written by four famous
+|Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam | \citet{} |
+|statlog | 2310 | 19 | 7 | image segmentation database | \citet{} |
 ''',
-    mathjax=True, style={'marginLeft': '5%', 'width': '90%'})
+    mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
 
 
 def Homepage():

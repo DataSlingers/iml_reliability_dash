@@ -23,7 +23,6 @@ nav = Navbar()
 
 df = pd.read_csv("clustering.csv")
 cross = pd.read_csv('cross_clus.csv')
-cross_ave=cross.groupby(['method1','method2','criteria','noise','sigma'],as_index=False)['value'].mean()
 
 data_options = df['data'].unique().tolist()
 method_options = df['method'].unique().tolist()
@@ -353,9 +352,12 @@ def App2():
         
 
 
-def build_heat_summary_clus(method_sel,
+def build_heat_summary_clus(data_sel,method_sel,
                  criteria_sel,noise_sel,sigma_sel
                  ):
+
+        cross_ave = cross[cross.data.isin(data_sel)]
+        cross_ave=cross_ave.groupby(['method1','method2','criteria','noise','sigma'],as_index=False)['value'].mean()
         sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
         sub = sub[(sub['sigma']==sigma_sel)&(sub['criteria']==criteria_sel)&(sub['noise']==noise_sel)]
         sub = sub.pivot("method1", "method2", "value")
@@ -627,6 +629,26 @@ def build_cor_clus(data_sel, method_sel,
     return fig                     
                      
 
+def build_acc_bar_clus(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel):
+    this_palette = palette.copy()
+    dff=df[(df.data.isin(data_sel))
+            &(df.method.isin(method_sel))
+            &(df.noise ==noise_sel)
+            &(df.sigma ==float(sigma_sel))
+            &(df.criteria==criteria_sel)] 
+
+    dff = dff.groupby(['method']).mean().reset_index()
+    fig = px.bar(dff, x='method', y='Accuracy',
+                 range_y = [0,1],
+                 color='method',text_auto='.3',
+                 color_discrete_map=this_palette,
+                 labels={'method':'Method', 'Accuracy':'Predictive Accuracy'},
+                 title="Predictive Accuracy"
+                )
+    fig.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
+    fig.update_layout(height=300,showlegend=False)
+
+    return fig
 
 def build_line_raw_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None):

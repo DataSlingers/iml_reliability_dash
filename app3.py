@@ -24,7 +24,6 @@ nav = Navbar()
 
 df = pd.read_csv("dr_clustering.csv")
 cross = pd.read_csv('cross_dr.csv')
-cross_ave=cross.groupby(['method1','method2','criteria','noise','sigma','rank'],as_index=False)['value'].mean()
 
 
 
@@ -415,8 +414,10 @@ def build_bump_dr(data_sel, method_sel,
 
 
 
-def build_heat_summary_dr(method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel
+def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel
                  ):
+        cross_ave = cross[cross.data.isin(data_sel)]
+        cross_ave=cross.groupby(['method1','method2','criteria','noise','sigma','rank'],as_index=False)['value'].mean()
         sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
         sub = sub[(sub['sigma']==sigma_sel)&(sub['criteria']==criteria_sel)&(sub['noise']==noise_sel)&(sub['rank']==rank_sel)]
         sub = sub.pivot("method1", "method2", "value")
@@ -428,6 +429,29 @@ def build_heat_summary_dr(method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel
                         aspect="auto",color_continuous_scale='Purp',
                         labels=dict(x="Method", y="Method", color="Consistency"))        
         return fig
+
+def build_acc_bar_dr(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel
+                 ):
+    this_palette = palette.copy()
+    dff=df[(df.data.isin(data_sel))
+            &(df.method.isin(method_sel))
+            &(df.noise ==noise_sel)
+            &(df.sigma ==float(sigma_sel))
+            &(df['rank'] ==rank_sel)
+            &(df.criteria==criteria_sel)] 
+
+    dff = dff.groupby(['method']).mean().reset_index()
+    fig = px.bar(dff, x='method', y='Accuracy',
+                 range_y = [0,1],
+                 color='method',text_auto='.3',
+                 color_discrete_map=this_palette,
+                 labels={'method':'Method', 'Accuracy':'Predictive Accuracy'},
+                 title="Predictive Accuracy"
+                )
+    fig.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
+    fig.update_layout(height=300,showlegend=False)
+
+    return fig
 
 def build_line_dr(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None
