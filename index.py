@@ -417,7 +417,7 @@ def update_bar_acc(pathname,data_sel,method_sel,
                  k_sel)
         return fig
     if pathname == '/feature_importance_regression':
-        fig=build_acc_bar(data_sel,method_sel,
+        fig=build_acc_bar_reg(data_sel,method_sel,
                  k_sel)
         return fig    
     
