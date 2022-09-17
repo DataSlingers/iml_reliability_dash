@@ -13,13 +13,11 @@ from dash.dependencies import Output, Input
 from nav import Navbar
 import numpy as np
 import plotly.express as px
- 
+from plotly.subplots import make_subplots
+
 
 
 nav = Navbar()
-# header = html.H3(
-#     'Reliability of Feature Importance'
-# )
 
 df = pd.read_csv("dr_auc.csv")
 
@@ -31,6 +29,14 @@ criteria_options = df['criteria'].unique().tolist()
 rank_options = df['rank'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
 sigma_options =df['sigma'].unique().tolist()
+plot_summary_options = {'heatmap':'Consistency heatmap across methods',
+                        'line':'Consistency across data sets',
+                        'bump':'Bump plot of the most consistent methods across data sets',
+                        'fit':'Consistency vs. predictive accuracy',
+                        'cor': 'Correlation between onsistency and predictive accuracy'}
+plot_raw_options_knn = {
+                   'line_raw':'Consistency vs. predictive accuracy for all data sets',
+'k_raw':'Consistency vs. number of local neighbors for all data sets',}
 
 
 
@@ -114,9 +120,6 @@ def description_card():
             ),
         ],
     )
-plot_summary_options = ['line','bump']
-plot_raw_options_knn = ['line_raw','k_raw']
-
 
 
 def generate_control_card():
@@ -128,36 +131,7 @@ def generate_control_card():
         children=[
             
             
-            
-            #################################
-            ########### select figures 
-            #################################
 
-            html.Hr(),
-            html.P("Select Summary Graphs you want to show"),
-            dcc.Checklist(id="all_summary",
-                          options=[{"label": 'All', "value":'All_summary' }],value= []),
-            dcc.Checklist(id="select_summary",
-                options=[{"label": i, "value": i} for i in plot_summary_options],
-                value=[],
-            ),        
-            
-            html.Hr(),
-            html.P("Select Raw Graphs you want to show"),
-            dcc.Checklist(id="all_raw",
-                          options=[{"label": 'All', "value":'All_raw' }],value= []),
-            dcc.Checklist(id="select_raw",
-                options=[{"label": i, "value": i} for i in plot_raw_options_knn],
-                value=[],
-            ),                    
-
-            
-
-            html.Hr(),
-           
-            dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
-            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
-            html.Hr(),
             #############################
             ####### upload new data
             ############################
@@ -188,28 +162,6 @@ def generate_control_card():
                       
             ###############################
             ###############################
-            
-            html.Hr(),
-            html.P("Select Data"),
-            dcc.Dropdown(
-                id="data-select_knn",
-                options=[{"label": i, "value": i} for i in data_options],
-                value=data_options[:],
-                multi=True,
-            ),
-            html.Br(),
-            html.Br(),
-            html.Hr(),
-
-            html.P("Select Method"),
-            dcc.Dropdown(
-                id="method-select_knn",
-                options=[{"label": i, "value": i} for i in meths],
-                value=meths[0:8],
-                multi=True,
-            ),
-            html.Br(),
- 
             html.Hr(),
             html.P("Select Rank"),
             dcc.Dropdown(
@@ -221,19 +173,6 @@ def generate_control_card():
                 
             html.Br(),
             html.Hr(),
-
-            html.P("Select Noise Level (sigma)"),
-            dcc.Dropdown(
-                id="sigma-select_knn",
-                options=[{"label": i, "value": i} for i in sigma_options],
-                value=1,
-            
-            ),
-            html.Br(),
-            
-            
-            html.Br(),
-            html.Hr(),
             
             html.P("Select Noise Type"),
             dcc.RadioItems(
@@ -242,18 +181,72 @@ def generate_control_card():
                 value=noise_options[1],
             ),
                 
-            html.Br(),
             html.Hr(),
+            html.P("Select Noise Level (sigma)"),
+            dcc.Dropdown(
+                id="sigma-select_knn",
+                options=[{"label": i, "value": i} for i in sigma_options],
+                value=1,
+            
+            ),            
+            
+            html.Hr(),
+
             html.P("Select Critetia"),
             dcc.RadioItems(
                 id="criteria-select_knn",
                 options=[{"label": i, "value": i} for i in criteria_options],
                 value=criteria_options[0],
             ),            
+
+            html.Hr(),
+
+            html.P("Select Method"),
+            dcc.Dropdown(
+                id="method-select_knn",
+                options=[{"label": i, "value": i} for i in meths],
+                value=meths[0:8],
+                multi=True,
+            ),
             html.Br(),
+ 
+
+            
+            html.Hr(),
+            html.P("Select Data"),
+            dcc.Dropdown(
+                id="data-select_knn",
+                options=[{"label": i, "value": i} for i in data_options],
+                value=data_options[:],
+                multi=True,
+            ),
             html.Br(),
-     
-        ],
+            #################################
+            ########### select figures 
+            #################################
+            html.P("Select Summary Graphs you want to show"),
+            dcc.Checklist(id="all_summary",
+                          options=[{"label": 'All', "value":'All_summary' }],value= ['All_summary']),
+            dcc.Checklist(id="select_summary",
+                options=[{"label": plot_summary_options[i], "value": i} for i in plot_summary_options],
+                value=list(plot_summary_options.keys()),
+            ),        
+            
+            html.Hr(),
+            html.P("Select Raw Graphs you want to show"),
+            dcc.Checklist(id="all_raw",
+                          options=[{"label": 'All', "value":'All_raw' }],value= ['All_raw']),
+            dcc.Checklist(id="select_raw",
+                options=[{"label": plot_raw_options_knn[i], "value": i} for i in plot_raw_options_knn],
+                value=list(plot_raw_options_knn.keys()),
+            ),                    
+
+
+            html.Hr(),
+           
+            dbc.Button('Submit', id='submit-button',n_clicks=100, color="primary",className="me-1"),
+            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+            html.Hr(),        ],
     )            
 
 
@@ -279,6 +272,7 @@ def App3_2():
 
             html.Div(id='output-datatable'),
             html.Div(id='title_summary_knn'),
+            html.Div(id='subtitle_summary_knn'),
             ###### summary plots
             html.Div(id='show_line_knn'),
             html.Div(id='show_bump_knn'),

@@ -13,6 +13,7 @@ from dash.dependencies import Output, Input
 from nav import Navbar
 import numpy as np
 import plotly.express as px
+from plotly.subplots import make_subplots
  
 
 
@@ -117,8 +118,14 @@ def description_card():
         ],
     )
 
-plot_summary_options = ['heatmap','line','bump','fit','cor']
-plot_raw_options = ['scatter_raw','line_raw']
+plot_summary_options = {'heatmap':'Consistency heatmap across methods',
+                        'line':'Consistency across data sets',
+                        'bump':'Bump plot of the most consistent methods across data sets',
+                        'fit':'Consistency vs. predictive accuracy',
+                        'cor': 'Correlation between onsistency and predictive accuracy'}
+plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all data sets',
+                   'line_raw':'Consistency vs. predictive accuracy for all data sets',
+                    'heatmap_raw':'Consistency heatmap across methods for all data sets'}
 
 
 
@@ -131,36 +138,7 @@ def generate_control_card():
         id="control-card",
         children=[
             
-            #################################
-            ########### select figures 
-            #################################
 
-            html.Hr(),
-            html.P("Select Summary Graphs you want to show"),
-            dcc.Checklist(id="all_summary",
-                          options=[{"label": 'All', "value":'All_summary' }],value= []),
-            dcc.Checklist(id="select_summary",
-                options=[{"label": i, "value": i} for i in plot_summary_options],
-                value=[],
-            ),        
-            
-            html.Hr(),
-            html.P("Select Raw Graphs you want to show"),
-            dcc.Checklist(id="all_raw",
-                          options=[{"label": 'All', "value":'All_raw' }],value= []),
-            dcc.Checklist(id="select_raw",
-                options=[{"label": i, "value": i} for i in plot_raw_options],
-                value=[],
-            ),                    
-
-            
-
-            html.Hr(),
-           
-            dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
-            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
-            html.Hr(),
-   
             #############################
             ####### upload new data
             ############################
@@ -189,12 +167,45 @@ def generate_control_card():
             ),
             
             html.Div(id='new_options'),
-                    
+            html.Hr(),
             ###############################
             ###############################
             
+            html.P("Select Noise Type"),
+            dcc.RadioItems(
+                id="noise-select_clus",
+                options=[{"label": i, "value": i} for i in noise_options],
+                value=noise_options[1],
+            ),
+                
+            html.Hr(),            
+            html.P("Select Noise Level (sigma)"),
+            dcc.Dropdown(
+                id="sigma-select_clus",
+                options=[{"label": i, "value": i} for i in sigma_options],
+                value=1,
             
+            ),            
             
+            html.Hr(),
+
+            html.P("Select Critetia"),
+            dcc.RadioItems(
+                id="criteria-select_clus",
+                options=[{"label": i, "value": i} for i in criteria_options],
+                value=criteria_options[0],
+            ),        
+                
+            html.Hr(),
+
+            html.P("Select Method"),
+            dcc.Dropdown(
+                id="method-select_clus",
+                options=[{"label": i, "value": i} for i in meths],
+                value=meths[0:10],
+                multi=True,
+            ),
+            html.Br(),
             
             
             
@@ -208,53 +219,41 @@ def generate_control_card():
                 multi=True,
             ),
             html.Br(),
-            html.Br(),
-            html.Hr(),
-
-            html.P("Select Method"),
-            dcc.Dropdown(
-                id="method-select_clus",
-                options=[{"label": i, "value": i} for i in meths],
-                value=meths[0:10],
-                multi=True,
-            ),
-            html.Br(),
             html.Hr(),
 
    
     
-            html.P("Select Noise Level (sigma)"),
-            dcc.Dropdown(
-                id="sigma-select_clus",
-                options=[{"label": i, "value": i} for i in sigma_options],
-                value=1,
-            
-            ),
-            html.Br(),
-            
-            
-            html.Br(),
+
+            #################################
+            ########### select figures 
+            #################################
+
             html.Hr(),
-            
-            html.P("Select Noise Type"),
-            dcc.RadioItems(
-                id="noise-select_clus",
-                options=[{"label": i, "value": i} for i in noise_options],
-                value=noise_options[1],
-            ),
-                
-            html.Br(),
-            html.Hr(),
-            html.P("Select Critetia"),
-            dcc.RadioItems(
-                id="criteria-select_clus",
-                options=[{"label": i, "value": i} for i in criteria_options],
-                value=criteria_options[0],
+            html.P("Select Summary Graphs you want to show"),
+            dcc.Checklist(id="all_summary",
+                          options=[{"label": 'All', "value":'All_summary' }],value= ['All_summary']),
+            dcc.Checklist(id="select_summary",
+                options=[{"label": plot_summary_options[i], "value": i} for i in plot_summary_options],
+                value=list(plot_summary_options.keys()),
             ),        
-                
-            html.Br(),
-            html.Br(),
+            
+            html.Hr(),
+            html.P("Select Raw Graphs you want to show"),
+            dcc.Checklist(id="all_raw",
+                          options=[{"label": 'All', "value":'All_raw' }],value= ['All_raw']),
+            dcc.Checklist(id="select_raw",
+                options=[{"label": plot_raw_options[i], "value": i} for i in plot_raw_options],
+                value=list(plot_raw_options.keys()),
+            ),                    
+
+            
+
+            html.Hr(),
            
+            dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
+            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+            html.Hr(),
+   
         ],
     )     
 
@@ -284,6 +283,7 @@ def App2():
             html.Div(id='output-datatable'),
             ###### summary plots
             html.Div(id='title_summary'),
+            html.Div(id='subtitle_summary'),
             html.Div(id='show_heatmap'),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
@@ -293,7 +293,8 @@ def App2():
             html.Div(id='title_summary_raw'),
             html.Div(id='show_line_raw'),
             html.Div(id='show_scatter_raw'),
-            
+            html.Div(id='show_heatmap_raw'),
+
            
         ], 
           width={"size": 7, "offset": 1},
@@ -572,10 +573,18 @@ def build_fit_clus(data_sel, method_sel,
                 color_discrete_map=(this_palette),
                 symbol='method', symbol_map= this_markers_choice,
                  category_orders={"method":list(this_palette.keys())},
-               labels=dict(Consistency=criteria_sel, method="Method")
+               labels=dict(Consistency=criteria_sel, method="Method"),
+                                     
 
+                custom_data=['data','method'],
                 )
-   
+    fig.update_traces(
+        hovertemplate="<br>".join([
+        "Data: %{customdata[0]}",
+        "Method: %{customdata[1]}",
+        "Accuracy: %{x}",
+        "Consistency: %{y}",
+            ]))
     fig.update_traces(line=dict(width=3))
     if new_data is not None:
         fig.add_trace(
@@ -762,4 +771,59 @@ def build_scatter_raw_clus(data_sel, method_sel,
     
     return fig
            
+def build_heat_raw_clus(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,new_data=None
+                 ):
+    
+    
+    
+    cross_ave = cross[(cross.data.isin(data_sel))
+                &(cross['method1'].isin(method_sel))
+                &(cross['method2'].isin(method_sel))
+                &(cross.noise==noise_sel)
+                &(cross.sigma==sigma_sel)
+                &(cross.criteria==criteria_sel)]
+    cross_ave=cross_ave.groupby(['data','method1','method2'],as_index=False)['value'].mean()
+#     sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
+#     sub = sub[(sub['K']==k_sel)&(sub['criteria']==criteria_sel)]
 
+    dff=df[(df.data.isin(data_sel))
+                &(df.method.isin(method_sel))
+                &(df.noise==noise_sel)
+                &(df.sigma==sigma_sel)
+                &(df.criteria==criteria_sel)]
+    
+    dff = dff.groupby(['method','data']).mean().reset_index()
+    subss = {}
+    for i,dd in enumerate(data_sel):
+        subss[dd]=cross_ave[cross_ave.data==dd].pivot("method1", "method2", "value")
+
+    tt =[[i]  for i in data_sel for _ in range(2)]
+    tt = [item for sublist in tt for item in sublist]
+    this_palette=palette.copy()
+
+    fig = make_subplots(rows=9, cols=2, horizontal_spacing=0.05,
+                    vertical_spacing=0.05,                     
+                                     subplot_titles=(tt)                                                                  )
+
+    for i,dd in enumerate(data_sel):
+        bar1 = px.imshow(subss[dd],text_auto='.2f')
+        bar2 = px.bar(dff[dff.data ==dd], x='method', y='Accuracy',range_y = [0,1],
+                        color_discrete_map =palette,color='method',
+                     text_auto='.3' )
+
+        for trace in bar1.data:
+            fig.add_trace(trace, i+1, 1)
+        for trace in bar2.data:
+            trace["width"] = 1
+            trace["showlegend"] = False
+
+            fig.add_trace(trace, i+1, 2)
+
+        fig.update_traces(coloraxis='coloraxis1',selector=dict(xaxis='x'))
+        fig.update_layout(
+                      yaxis_autorange="reversed",
+                      coloraxis=dict(colorscale='Purp', 
+                                     showscale = False),)
+    fig['layout'].update(height=4000, width=800)
+    return fig

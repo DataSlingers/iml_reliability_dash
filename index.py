@@ -5,23 +5,45 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 from util import display_figure,sync_checklists,parse_contents
 from app_ins import App_ins
-from app1 import App1,build_scatter,build_bump,build_heat_summary,build_line,build_fit,build_cor,build_line_raw,build_scatter_raw,build_acc_bar
-from app1_2 import App1_2,build_scatter_reg,build_bump_reg,build_heat_summary_reg,build_line_reg,build_fit_reg,build_cor_reg,build_scatter_raw_reg,build_line_raw_reg,build_acc_bar_reg
-from app2 import App2,build_scatter_clus,build_bump_clus,build_heat_summary_clus,build_line_clus,build_cor_clus,build_fit_clus,build_line_raw_clus,build_scatter_raw_clus,build_acc_bar_clus
-from app3 import App3,build_scatter_dr,build_bump_dr,build_heat_summary_dr,build_line_dr,build_cor_dr,build_fit_dr,build_line_raw_dr,build_scatter_raw_dr,build_acc_bar_dr
+from app1 import App1,build_scatter,build_bump,build_heat_summary,build_line,build_fit,build_cor,build_line_raw,build_scatter_raw,build_acc_bar,build_heat_raw
+from app1_2 import App1_2,build_scatter_reg,build_bump_reg,build_heat_summary_reg,build_line_reg,build_fit_reg,build_cor_reg,build_scatter_raw_reg,build_line_raw_reg,build_acc_bar_reg,build_heat_raw_reg
+from app2 import App2,build_scatter_clus,build_bump_clus,build_heat_summary_clus,build_line_clus,build_cor_clus,build_fit_clus,build_line_raw_clus,build_scatter_raw_clus,build_acc_bar_clus,build_heat_raw_clus
+from app3 import App3,build_scatter_dr,build_bump_dr,build_heat_summary_dr,build_line_dr,build_cor_dr,build_fit_dr,build_line_raw_dr,build_scatter_raw_dr,build_acc_bar_dr,build_heat_raw_dr
 from app3_2 import App3_2,build_line_knn,build_bump_knn,build_line_raw_knn,build_k_raw_knn
 from home import Homepage
 import plotly.express as px
 from dash.dependencies import Input, Output, State, ClientsideFunction
 from dash.exceptions import PreventUpdate
-
+meths  = ['LogisticRidge','LogisticLASSO', 'SVM','Tree','RF',
+        'XGB', 'deepLIFT (MLP)', 'Integrated Gradients (MLP)',  'Epsilon-LRP (MLP)',
+        'Guided Backpropagation (MLP)',           
+        'Saliency Maps (MLP)','Occlusion (MLP)',
+        'permutation (LogisticRidge)',
+        'permutation (RF)',  
+        'permutation (MLP)',       
+        'Shapley Value (MLP)',
+        'Shapley Value (LogisticRidge)' ,
+        'Shapley Value (RF)'     ]
 plot_summary_options = ['heatmap','line','bump','fit','cor']
 plot_summary_new_options = ['line_new','bump_new','fit_new','cor_new']
-plot_raw_options = ['scatter_raw','line_raw','k_raw']
+plot_raw_options = ['scatter_raw','line_raw','k_raw','heatmap_raw']
 # plot_raw_options_knn = ['line_raw','k_raw']
 
-#app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
+# dbc.themes.LUX
+# dbc.themes.COSMO
+# dbc.themes.FLATLY
+# dbc.themes.JOURNAL
+# dbc.themes.LUMEN
+# dbc.themes.MINTY
+# dbc.themes.SANDSTONE
+
+# dbc.themes.SOLAR
+# dbc.themes.UNITED
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+#app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
+#app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CERULEAN])
+#app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.config.suppress_callback_exceptions = True
 app.layout = html.Div([
     dcc.Location(id = 'url', refresh = False),
@@ -48,7 +70,25 @@ def display_page(pathname):
     else:
         return Homepage()
     
+@app.callback(
+        [
+         Output('method-select', 'value')],
+        Input('method-select_c', 'value'))
 
+
+def dropdown_options(radio_value):
+
+    if radio_value == 'All':
+#         options = [{'label': x, 'value': x} for x in method_options]
+        value = meths,
+    elif radio_value == 'Model Specific':
+#         options = [{'label': x, 'value': x} for x in method_options]
+        value =  meths[:12],
+    else:
+#         options = [{'label': x, 'value': x} for x in method_options]
+        value =  meths[12:],
+
+    return  value
 ###### select figure 
 @app.callback(
     Output("select_summary", "value"),
@@ -67,9 +107,9 @@ def display_page(pathname):
 
 def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,reset):
     if reset>0:
-        return [],[],[],[],0,1
+        return plot_summary_options,['All_summary' ],plot_raw_options,['All_raw' ],0,1
     else:
-        new = list(sync_checklists(select_summary, all_summary,plot_summary_options,kind='summary')+sync_checklists(select_raw, all_raw,plot_raw_options,kind='raw'))+[0,0]
+        new = list(sync_checklists(select_summary, all_summary,plot_summary_options,kind='summary')+sync_checklists(select_raw, all_raw,plot_raw_options,kind='raw'))+[0,1]
 #         new.append(0)
         return new
 
@@ -79,6 +119,7 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
 ######## make figures 
 @app.callback(    
     Output("title_summary", "children"),
+    Output("subtitle_summary", "children"),
     Output("show_heatmap", "children"),
     Output("show_line", "children"),
     Output("show_bump", "children"),
@@ -87,27 +128,21 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
 
     [Input('url', 'pathname'),
     State("select_summary", "value"),
-     Input('submit-button','n_clicks'),        
+    Input('submit-button','n_clicks'),        
     ],
-    prevent_initial_call=True
+    prevent_initial_call=False
 
 )
 
 def show(pathname,plot_selected,click):
-
     if click and click>0 and pathname!='/knn':
         options = ['heatmap','line','bump','fit','cor']
-
-#         options = ['heatmap','line','bump','fit','cor']
         title = []
+        subtitle = []
         if len(plot_selected)>0:
-            title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center'})
-        
-#         if 'heatmap' in plot_selected:
-#             hm = display_figure_heatmap('heatmap',plot_selected,click,pathname)
-#             return list([title]+[hm]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
-#         else:
-        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+            title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center','font-weight': 'bold'})
+            subtitle=html.H5("Aggregated over all data sets", style={"color": "mediumslateblue",'text-align':'center'})
+        return list([title]+[subtitle]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
     raise PreventUpdate
     
     
@@ -116,7 +151,7 @@ def show(pathname,plot_selected,click):
     Output("title_summary_raw", "children"),
     Output("show_line_raw", "children"),
     Output("show_scatter_raw", "children"),
-
+    Output("show_heatmap_raw", "children"),
     [Input('url', 'pathname'),
     State("select_raw", "value"),
      Input('submit-button','n_clicks'),        
@@ -128,7 +163,7 @@ def show(pathname,plot_selected,click):
 def show_raw(pathname,plot_selected,click):
 
     if click and click>0 and pathname!='/knn':
-        options = ['scatter_raw','line_raw']
+        options = ['scatter_raw','line_raw','heatmap_raw']
         title = []
         if len(plot_selected)>0:
             title=html.H4("Raw Figures", style={"color": "slateblue",'text-align':'center'})
@@ -140,7 +175,6 @@ def show_raw(pathname,plot_selected,click):
     Output("title_summary_knn", "children"),
     Output("show_line_knn", "children"),
     Output("show_bump_knn", "children"),
-
     [State('url', 'pathname'),
      State("select_summary", "value"),
      Input('submit-button','n_clicks'),        
@@ -162,7 +196,6 @@ def show_knn(pathname,plot_selected,click):
     Output("title_raw_knn", "children"),
     Output("show_line_raw_knn", "children"),
     Output("show_k_raw_knn", "children"),
-
     [State('url', 'pathname'),
      State("select_raw", "value"),
      Input('submit-button','n_clicks'),        
@@ -175,10 +208,10 @@ def show_raw_knn(pathname,plot_selected,click):
         options = ['line_raw','k_raw']  
         title = []
         if len(plot_selected)>0:
-            title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center'})
+            title=html.H4("Raw Figures", style={"color": "slateblue",'text-align':'center'})
 
         return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
-    raise PreventUpdate    
+    raise PreventUpdate     
 ########################################
 ######## make figures for new data 
 ########################################
@@ -398,30 +431,34 @@ def update_heatmap(pathname,data_sel,method_sel,
                  k_sel, criteria_sel)
         return fig
     
+    
 @app.callback(
-    Output("acc", "figure"),
+    Output("heatmap_raw", "figure"),
     [Input('url', 'pathname'),
         Input("data-select", "value"),
         Input("method-select", "value"),
         Input("k-select", "value"),
+        Input("criteria-select", "value"),
     ],
 )
 
-def update_bar_acc(pathname,data_sel,method_sel,
-                 k_sel
+def update_heatmap_raw(pathname,data_sel,method_sel,
+                 k_sel, criteria_sel
                 #,noise_sel,sigma_sel
                  ):
     
     if pathname == '/feature_importance_classification':
-        fig=build_acc_bar(data_sel,method_sel,
-                 k_sel)
+        fig=build_heat_raw(data_sel, method_sel,
+                 k_sel, criteria_sel)
         return fig
     if pathname == '/feature_importance_regression':
-        fig=build_acc_bar_reg(data_sel,method_sel,
-                 k_sel)
-        return fig    
+        fig=build_heat_raw_reg(data_sel,method_sel,
+                 k_sel, criteria_sel)
+        return fig
     
-   
+    
+    
+  
     
 @app.callback(
     Output("line", "figure"),
@@ -924,7 +961,27 @@ def update_line_raw_clus(data_sel, method_sel,
     fig=build_line_raw_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel)
     return fig
-            
+    
+    
+    
+@app.callback(
+    Output("heatmap_raw_clus", "figure"),
+    [Input("data-select_clus", "value"),
+        Input("method-select_clus", "value"),
+        Input("criteria-select_clus", "value"),
+        Input("noise-select_clus", "value"),
+        Input("sigma-select_clus", "value"),
+    ],
+)
+
+def update_heat_raw_clus(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel
+                 ):
+    
+    
+    fig=build_heat_raw_clus(data_sel,method_sel,
+                criteria_sel, noise_sel,sigma_sel)
+    return fig             
 ###############################
         
 ###### DR page 
@@ -1273,6 +1330,25 @@ def update_line_raw_dr(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,rank_sel)
     return fig
 
+    
+@app.callback(
+    Output("heatmap_raw_dr", "figure"),
+[
+     Input("data-select_dr", "value"),
+        Input("method-select_dr", "value"),
+        Input("criteria-select_dr", "value"),
+        Input("noise-select_dr", "value"),
+        Input("sigma-select_dr", "value"),
+        Input("rank-select_dr", "value"),
+    ],
+)
+
+def update_heat_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel):
+    
+    fig=build_heat_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel)
+    return fig
 
 
 ##########################
@@ -1425,6 +1501,18 @@ def update_bump_knn2(data_sel_knn,
 
 
 
+# @app.callback(Output('output','children'),
+#              [Input('submit_button','n_clicks'),
+#                  Input('reset_button','n_clicks')])
+# def update(input_clicks,submit):
+# #     if input_clicks>0:«
+#     return f'there are {input_clicks} input clicks. {submit} submits '
+
+# @app.callback(Output('submit_button','n_clicks'),
+#              [Input('reset_button','n_clicks')])
+#     return 0
+
+    
 
 
 if __name__ == '__main__':

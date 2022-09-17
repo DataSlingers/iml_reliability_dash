@@ -85,7 +85,8 @@ body = dcc.Markdown(
 
 
 ''',
-    mathjax=True, style={'marginLeft': '5%', 'width': '90%'})
+    mathjax=True, style={'marginLeft': '5%', 'width': '80%'},
+)
 
 
 
