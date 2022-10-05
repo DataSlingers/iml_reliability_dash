@@ -35,7 +35,16 @@ method_options = df['method'].unique().tolist()
 criteria_options = df['criteria'].unique().tolist()
 k_options =df['K'].unique().tolist()
 method_category_options = ['All','Model Specific','Model Agnostic']
+plot_summary_options = {'heatmap':'Consistency heatmap across methods',
+                        'line':'Consistency across data sets',
+                        'bump':'Bump plot of the most consistent methods across data sets',
+                        'dot':'Consistency/predictive accuracy vs. methods',
 
+#                         'fit':'Consistency vs. predictive accuracy',
+                        'cor': 'Correlation between onsistency and predictive accuracy'}
+plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all data sets',
+                   'line_raw':'Consistency vs. predictive accuracy for all data sets',
+                    'heatmap_raw':'Consistency heatmap across methods for all data sets'}
 markers_choice = {'LASSO':'0',
                     'SVM':'0',
                     'Ridge':'0',
@@ -146,8 +155,8 @@ def description_card():
         ],
     )
 
-plot_summary_options = ['heatmap','line','bump','fit','cor']
-plot_raw_options = ['scatter_raw','line_raw','heatmap_raw']
+# plot_summary_options = ['heatmap','line','bump','dot','cor']
+# plot_raw_options = ['scatter_raw','line_raw','heatmap_raw']
 
 
 def generate_control_card():
@@ -243,13 +252,12 @@ def generate_control_card():
             ########### select figures 
             #################################
 
-            html.Hr(),
             html.P("Select Summary Graphs you want to show"),
             dcc.Checklist(id="all_summary",
                           options=[{"label": 'All', "value":'All_summary' }],value= ['All_summary']),
             dcc.Checklist(id="select_summary",
-                options=[{"label": i, "value": i} for i in plot_summary_options],
-                value=plot_summary_options[:],
+                options=[{"label": plot_summary_options[i], "value": i} for i in plot_summary_options],
+                value=list(plot_summary_options.keys()),
             ),        
             
             html.Hr(),
@@ -257,9 +265,10 @@ def generate_control_card():
             dcc.Checklist(id="all_raw",
                           options=[{"label": 'All', "value":'All_raw' }],value= ['All_raw']),
             dcc.Checklist(id="select_raw",
-                options=[{"label": i, "value": i} for i in plot_raw_options],
-                value=plot_raw_options[:],
-            ),                    
+                options=[{"label": plot_raw_options[i], "value": i} for i in plot_raw_options],
+                value=list(plot_raw_options.keys()),
+            ),         
+           
 
             
 
@@ -316,7 +325,8 @@ def App1_2():
             html.Div(id='show_heatmap'),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
-            html.Div(id='show_fit'),
+#             html.Div(id='show_fit'),
+            html.Div(id='show_dot'),
             html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
@@ -794,3 +804,76 @@ def build_heat_raw_reg(data_sel, method_sel,
                                      showscale = False),)
     fig['layout'].update(height=4000, width=800)
     return fig
+
+def build_dot_reg(data_sel, method_sel,
+                 k_sel, criteria_sel,new_data=None):
+
+ 
+    dff=df[(df.data.isin(data_sel))
+            &(df.method.isin(method_sel))
+            &(df.K ==k_sel)
+            &(df.criteria==criteria_sel)]
+
+    dff['size']=(dff['Accuracy']**2)
+    
+    ###### input new data
+    if new_data is not None:
+        new_data = pd.DataFrame(new_data)
+        neww = new_data[(new_data.K ==k_sel)
+                &(new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww]) 
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_markers_choice[mm]='star'
+            
+    this_palette_data = palette_data.copy()
+
+    fig1 = px.scatter(dff, x="method", y="Consistency", color='data', 
+                        size='size',
+                    color_discrete_map=this_palette_data,
+                    #symbol='method', symbol_map= this_markers_choice,
+                     category_orders={"method":list(this_palette_data.keys())},
+                   labels=dict( method="Method"),
+
+
+               #  facet_col="acc_group",facet_col_wrap=3,
+                    custom_data=['Accuracy','data'],
+                    )
+    fig1.update_traces(
+            hovertemplate="<br>".join([
+            "Data: %{customdata[1]}",
+            "Method: %{x}",
+            "Accuracy: %{customdata[0]}",
+            "Consistency: %{y}",
+                ]))   
+    fig1.update_traces(line=dict(width=3))
+    fig1.update_xaxes(matches=None)            
+    
+
+    fig2 = px.scatter(dff, x="method", y="Accuracy", color='data', 
+                        size='size',
+                    color_discrete_map=this_palette_data,
+                    #symbol='method', symbol_map= this_markers_choice,
+                     category_orders={"method":list(this_palette_data.keys())},
+                   labels=dict(Consistency=criteria_sel, method="Method"),
+
+
+               #  facet_col="acc_group",facet_col_wrap=3,
+                    custom_data=['Consistency','data'],
+                    )
+    
+    fig2.update_traces(
+            hovertemplate="<br>".join([
+            "Data: %{customdata[1]}",
+            "Method: %{x}",
+            "Accuracy: %{y}",
+            "Consistency: %{customdata[0]}",
+                ]))   
+    fig2.update_traces(line=dict(width=3))
+    fig2.update_xaxes(matches=None)
+    return fig1,fig2
+
+
+
+
+

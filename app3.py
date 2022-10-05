@@ -38,7 +38,8 @@ sigma_options =df['sigma'].unique().tolist()
 plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
-                        'fit':'Consistency vs. predictive accuracy',
+                        'dot':'Consistency/predictive accuracy vs. methods',
+#                         'fit':'Consistency vs. predictive accuracy',
                         'cor': 'Correlation between onsistency and predictive accuracy'}
 plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all data sets',
                    'line_raw':'Consistency vs. predictive accuracy for all data sets',
@@ -283,7 +284,8 @@ def App3():
             html.Div(id='show_heatmap'),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
-            html.Div(id='show_fit'),
+#             html.Div(id='show_fit'),
+            html.Div(id='show_dot'),
             html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
@@ -779,6 +781,83 @@ def build_heat_raw_dr(data_sel, method_sel,
 
                      
                      
+
+def build_dot_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel, new_data=None
+                 ):
+
+    dff=df[(df.data.isin(data_sel))
+             &(df['rank'] ==rank_sel)
+           &(df.method.isin(method_sel))
+            &(df.noise ==noise_sel)
+            &(df.sigma ==float(sigma_sel))
+            &(df.criteria==criteria_sel)] 
+    dff['size']=(dff['Accuracy']**2)
+    
+    ###### input new data
+    if new_data is not None:
+        new_data = pd.DataFrame(new_data)
+        neww = new_data[
+            (new_data.noise ==noise_sel)
+            &(new_data['rank'] ==rank_sel)
+            &(new_data.sigma ==float(sigma_sel))
+            &(new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww]) 
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_markers_choice[mm]='star'
+            
+    this_palette_data = palette_data.copy()
+
+    fig1 = px.scatter(dff, x="method", y="Consistency", color='data', 
+                        size='size',
+                    color_discrete_map=this_palette_data,
+                    #symbol='method', symbol_map= this_markers_choice,
+                     category_orders={"method":list(this_palette_data.keys())},
+                   labels=dict( method="Method"),
+
+
+               #  facet_col="acc_group",facet_col_wrap=3,
+                    custom_data=['Accuracy','data'],
+                    )
+    fig1.update_traces(
+            hovertemplate="<br>".join([
+            "Data: %{customdata[1]}",
+            "Method: %{x}",
+            "Accuracy: %{customdata[0]}",
+            "Consistency: %{y}",
+                ]))   
+    fig1.update_traces(line=dict(width=3))
+    fig1.update_xaxes(matches=None)            
+    
+
+    fig2 = px.scatter(dff, x="method", y="Accuracy", color='data', 
+                        size='size',
+                    color_discrete_map=this_palette_data,
+                    #symbol='method', symbol_map= this_markers_choice,
+                     category_orders={"method":list(this_palette_data.keys())},
+                   labels=dict(Consistency=criteria_sel, method="Method"),
+
+
+               #  facet_col="acc_group",facet_col_wrap=3,
+                    custom_data=['Consistency','data'],
+                    )
+    
+    fig2.update_traces(
+            hovertemplate="<br>".join([
+            "Data: %{customdata[1]}",
+            "Method: %{x}",
+            "Accuracy: %{y}",
+            "Consistency: %{customdata[0]}",
+                ]))   
+    fig2.update_traces(line=dict(width=3))
+    fig2.update_xaxes(matches=None)
+    return fig1,fig2
+
+
+
+
+
 
 
 

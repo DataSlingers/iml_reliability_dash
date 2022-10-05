@@ -52,6 +52,7 @@ def display_figure(pp,plot_selected, click,pathname):
                  'line':'Summary Figure: Consistency across data sets',
                  'bump':'Summary Figure: Bump plot of the most consistent methods across data sets',
                  'fit':'Summary Figure: Consistency vs. predictive accuracy',
+                 'dot':'Summary Figure: Consistency/predictive accuracy vs. methods',
                  'cor':'Summary Figure: Correlation between onsistency and predictive accuracy',
                  'line_new':'Line with new data',
                  'bump_new':'Bump with new data',
@@ -69,6 +70,8 @@ def display_figure(pp,plot_selected, click,pathname):
                  'line':['Within each method, we aim to measure whether interpretations are consistent among repeats. The line plot shows the data sets versus the average pairwise consistency of 100 repeats of an IML method, with colors representing different methods. The x-axis is the data sets we used, ordered by # feature/# observation ratio, and the y-axis is the consistency score of this task, ranging in [0,1]. '],
                  'bump':['The bump plot ranks IML methods by their consistency score for each data, averaged over 100 repeats.'],
                      'fit':['The scatterplot shows the consistency score vs. predictive accuracy, with colors representing different IML methods. The points with the same color represent data sets, averaged over 100 repeats. The fitted regression lines between consistency score and predictive accuracy does not necessarily have positive coefficients.'],
+                   'dot':['The scatterplot of consistency/accuracy vs. methods, colored by data and sized by accuracy/consistency.'],
+
                  'cor':['The histogram plots the correlation between consistency score and predictive accuracy for each method, average over different data sets and 100 repeats. '],
                  'line_new':['Line with new data'],
                  'bump_new':['Bump with new data'],
@@ -83,68 +86,113 @@ def display_figure(pp,plot_selected, click,pathname):
                     }
 
 
-
+        
         if pp in plot_selected:
-            fig_id = pp+'_'+paths[pathname] if pathname in paths else pp
-            if pp!='heatmap_raw':
+            if pp=='dot':
+                fig_id1 = 'dot1_'+paths[pathname] if pathname in paths else 'dot1'
+                fig_id2 = 'dot2_'+paths[pathname] if pathname in paths else 'dot2'
                 return html.Div([
-                            html.Details([
-                            html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
-                            html.Div([
-                                   html.Details([
-                                    html.Summary('Description'),
-                                    html.Div(children=describ[pp], className='desc',
-                                             id='my-description')
-                                ],
-                                    id="desc-dropdown",
-                                    open=False
-                                 ),
-
-
-                            dls.Hash(                        
-                            dcc.Graph(id=fig_id,
-                                  style={'width': '80vh', 'height': '50vh'}
+                                html.Details([
+                                html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
+                                html.Div([
+                                       html.Details([
+                                        html.Summary('Description'),
+                                        html.Div(children=describ[pp], className='desc',
+                                                 id='my-description')
+                                    ],
+                                        id="desc-dropdown",
+                                        open=False
                                      ),
-                            color="#435278",
-                            speed_multiplier=2,
-                            size=100,
-                                ),
-                            ])
-                        ],
-                            id="desc-dropdown",
-                            open=True
-                        ), 
-                ])
 
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id1,
+                                      style={'width': '80vh', 'height': '50vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id2,
+                                      style={'width': '80vh', 'height': '50vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),
+                                ])
+                            ],
+                                id="desc-dropdown",
+                                open=True
+                            ), 
+                    ])
+
+                
+                
+                
             else:
-                return html.Div([
-                            html.Details([
-                            html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
-                            html.Div([
-                                   html.Details([
-                                    html.Summary('Description'),
-                                    html.Div(children=describ[pp], className='desc',
-                                             id='my-description')
-                                ],
-                                    id="desc-dropdown",
-                                    open=False
-                                 ),
+                fig_id = pp+'_'+paths[pathname] if pathname in paths else pp
+    #             if pp=='dot':
 
-
-                            dls.Hash(                        
-                            dcc.Graph(id=fig_id,
-                                  style={'width': '80vh', 'height': '400vh'}
+                if pp!='heatmap_raw':
+                    return html.Div([
+                                html.Details([
+                                html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
+                                html.Div([
+                                       html.Details([
+                                        html.Summary('Description'),
+                                        html.Div(children=describ[pp], className='desc',
+                                                 id='my-description')
+                                    ],
+                                        id="desc-dropdown",
+                                        open=False
                                      ),
-                            color="#435278",
-                            speed_multiplier=2,
-                            size=100,
-                                ),
-                            ])
-                        ],
-                            id="desc-dropdown",
-                            open=True
-                        ), 
-                ])
+
+
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id,
+                                      style={'width': '80vh', 'height': '50vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),
+                                ])
+                            ],
+                                id="desc-dropdown",
+                                open=True
+                            ), 
+                    ])
+
+                else:
+                    return html.Div([
+                                html.Details([
+                                html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
+                                html.Div([
+                                       html.Details([
+                                        html.Summary('Description'),
+                                        html.Div(children=describ[pp], className='desc',
+                                                 id='my-description')
+                                    ],
+                                        id="desc-dropdown",
+                                        open=False
+                                     ),
+
+
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id,
+                                      style={'width': '80vh', 'height': '400vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),
+                                ])
+                            ],
+                                id="desc-dropdown",
+                                open=True
+                            ), 
+                    ])
 
 
 
