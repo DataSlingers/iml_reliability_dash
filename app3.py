@@ -166,7 +166,7 @@ def generate_control_card():
             html.Div(id='new_options'),
  
             html.Hr(),
-            html.P("Select Rank"),
+            html.P("Select: Dimension Rank"),
             dcc.Dropdown(
                 id="rank-select_dr",
                 options=[{"label": i, "value": i} for i in rank_options],
@@ -176,7 +176,7 @@ def generate_control_card():
                 
             html.Br(),
             html.Hr(),
-            html.P("Select Noise Type"),
+            html.P("Select: Noise Type"),
             dcc.RadioItems(
                 id="noise-select_dr",
                 options=[{"label": i, "value": i} for i in noise_options],
@@ -184,7 +184,7 @@ def generate_control_card():
             ),
                 
             html.Hr(),
-            html.P("Select Noise Level (sigma)"),
+            html.P("Select: Noise Level (sigma)"),
             dcc.Dropdown(
                 id="sigma-select_dr",
                 options=[{"label": i, "value": i} for i in sigma_options],
@@ -194,7 +194,7 @@ def generate_control_card():
             html.Hr(),
             
 
-            html.P("Select Critetia"),
+            html.P("Select: Consistency Metric"),
             dcc.RadioItems(
                 id="criteria-select_dr",
                 options=[{"label": i, "value": i} for i in criteria_options],
@@ -206,7 +206,7 @@ def generate_control_card():
             html.Hr(),
 
 
-            html.P("Select Method"),
+            html.P("Select: Interpretability Method"),
             dcc.Dropdown(
                 id="method-select_dr",
                 options=[{"label": i, "value": i} for i in meths],
@@ -214,7 +214,7 @@ def generate_control_card():
                 multi=True,
             ),
             html.Br(),
-            html.P("Select Data"),
+            html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_dr",
                 options=[{"label": i, "value": i} for i in data_options],
@@ -424,9 +424,10 @@ def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,r
         np.fill_diagonal(sub.values, 1)
         sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
                
-        fig = px.imshow(sub, text_auto=True,
+        fig = px.imshow(sub, text_auto=True, origin='lower',
                         aspect="auto",color_continuous_scale='Purp',
                         labels=dict(x="Method", y="Method", color="Consistency"))        
+        fig.layout.coloraxis.showscale = False
         return fig
 
 def build_acc_bar_dr(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel
@@ -724,7 +725,7 @@ def build_heat_raw_dr(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None
                  ):
     
-    
+
     
     cross_ave = cross[(cross.data.isin(data_sel))
                 &(cross['method1'].isin(method_sel))
@@ -747,7 +748,12 @@ def build_heat_raw_dr(data_sel, method_sel,
     dff = dff.groupby(['method','data']).mean().reset_index()
     subss = {}
     for i,dd in enumerate(data_sel):
-        subss[dd]=cross_ave[cross_ave.data==dd].pivot("method1", "method2", "value")
+        hh = cross_ave[cross_ave.data==dd].pivot("method1", "method2", "value")
+        hh = hh.fillna(0)+hh.fillna(0).T
+        np.fill_diagonal(hh.values, 1)
+        hh=round(hh.reindex(columns=method_sel).reindex(method_sel),3)
+        
+        subss[dd]=hh
 
     tt =[[i]  for i in data_sel for _ in range(2)]
     tt = [item for sublist in tt for item in sublist]
@@ -758,7 +764,7 @@ def build_heat_raw_dr(data_sel, method_sel,
                                      subplot_titles=(tt)                                                                  )
 
     for i,dd in enumerate(data_sel):
-        bar1 = px.imshow(subss[dd],text_auto='.2f')
+        bar1 = px.imshow(subss[dd],text_auto='.2f', origin='lower')
         bar2 = px.bar(dff[dff.data ==dd], x='method', y='Accuracy',range_y = [0,1],
                         color_discrete_map =palette,color='method',
                      text_auto='.3' )
@@ -773,7 +779,7 @@ def build_heat_raw_dr(data_sel, method_sel,
 
         fig.update_traces(coloraxis='coloraxis1',selector=dict(xaxis='x'))
         fig.update_layout(
-                      yaxis_autorange="reversed",
+                   #   yaxis_autorange="reversed",
                       coloraxis=dict(colorscale='Purp', 
                                      showscale = False),)
     fig['layout'].update(height=4000, width=800)
@@ -792,8 +798,10 @@ def build_dot_dr(data_sel, method_sel,
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df.criteria==criteria_sel)] 
-    dff['size']=(dff['Accuracy']**2)
-    
+    dff['size1']=(dff['Accuracy']**2)
+    dff['size1']=[max(i,0.1) for i in dff['size1']]
+    dff['size2']=(dff['Consistency']**2)
+    dff['size2']=[max(i,0.1) for i in dff['size2']]    
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -810,7 +818,7 @@ def build_dot_dr(data_sel, method_sel,
     this_palette_data = palette_data.copy()
 
     fig1 = px.scatter(dff, x="method", y="Consistency", color='data', 
-                        size='size',
+                        size='size1',
                     color_discrete_map=this_palette_data,
                     #symbol='method', symbol_map= this_markers_choice,
                      category_orders={"method":list(this_palette_data.keys())},
@@ -832,7 +840,7 @@ def build_dot_dr(data_sel, method_sel,
     
 
     fig2 = px.scatter(dff, x="method", y="Accuracy", color='data', 
-                        size='size',
+                        size='size2',
                     color_discrete_map=this_palette_data,
                     #symbol='method', symbol_map= this_markers_choice,
                      category_orders={"method":list(this_palette_data.keys())},
@@ -852,7 +860,7 @@ def build_dot_dr(data_sel, method_sel,
                 ]))   
     fig2.update_traces(line=dict(width=3))
     fig2.update_xaxes(matches=None)
-    return fig1,fig2
+    return fig2,fig1
 
 
 

@@ -59,8 +59,9 @@ def display_figure(pp,plot_selected, click,pathname):
                  'fit_new':'Fit with new data',
                  'cor_new':'Cor with new data',
 
-                 'line_raw':'Raw Results: Consistency vs. predictive accuracy for all data sets',
-                 'scatter_raw':'Raw Results: Consistency vs. number of features for all data sets',
+                 'line_raw':'Raw Results: Consistency vs. number of features for all data sets',
+                 'line_raw2':'Raw Results: Consistency vs. noise level for all data sets',
+                 'scatter_raw':'Raw Results: Consistency vs. predictive accuracy for all data sets',
                  'k_raw': 'Raw Results: Consistency vs. number of local neighbors for all data sets',
                  'heatmap_raw': 'Raw Results: Consistency heatmap across methods for all data sets',
                 }
@@ -78,6 +79,7 @@ def display_figure(pp,plot_selected, click,pathname):
                  'fit_new':['Fit with new data'],
                  'cor_new':['Cor with new data'],
                  'line_raw':['Line plot of interpretation consistency scores of each data, colored by IML methods. '],
+                 'line_raw2':['Line plot of interpretation consistency scores of each data, colored by IML methods. '],
                  'scatter_raw':['Scatter plots of interpretation consistency scores vs. predictive accuracy for each data set, colored by IML methods. '],
                    'k_raw':['Line plots of interpretation consistency scores vs. number of local neighbors K for each data set, colored by IML methods. '],
                  'heatmap_raw':['Consistency heatmap cross methods for each data. ']
@@ -132,9 +134,59 @@ def display_figure(pp,plot_selected, click,pathname):
                 
             else:
                 fig_id = pp+'_'+paths[pathname] if pathname in paths else pp
+        
     #             if pp=='dot':
+                if pathname not in paths: ## feature importance heatmap needs more space
+                    if pp=='heatmap':
+                        return html.Div([
+                                html.Details([
+                                html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
+                                html.Div([
+                                       html.Details([
+                                        html.Summary('Description'),
+                                        html.Div(children=describ[pp], className='desc',
+                                                 id='my-description')
+                                    ],
+                                        id="desc-dropdown",
+                                        open=False
+                                     ),
 
-                if pp!='heatmap_raw':
+
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id,
+                                      style={'width': '80vh', 'height': '80vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),
+                                ])
+                            ],
+                                id="desc-dropdown",
+                                open=True
+                            ), 
+                    ])
+                    
+                    
+#                     if pp=='heatmap_raw':
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                if pp!='heatmap_raw': ## all other figures
+                    if pp=='line_raw' and pathname in paths:
+                        pp='line_raw2'
                     return html.Div([
                                 html.Details([
                                 html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
@@ -164,7 +216,8 @@ def display_figure(pp,plot_selected, click,pathname):
                             ), 
                     ])
 
-                else:
+                else: ## raw heatmaps 
+                    
                     return html.Div([
                                 html.Details([
                                 html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),

@@ -163,7 +163,7 @@ def generate_control_card():
             ###############################
             ###############################
             html.Hr(),
-            html.P("Select Rank"),
+            html.P("Select: Dimension Rank"),
             dcc.Dropdown(
                 id="rank-select_knn",
                 options=[{"label": i, "value": i} for i in rank_options],
@@ -174,7 +174,7 @@ def generate_control_card():
             html.Br(),
             html.Hr(),
             
-            html.P("Select Noise Type"),
+            html.P("Select: Noise Type"),
             dcc.RadioItems(
                 id="noise-select_knn",
                 options=[{"label": i, "value": i} for i in noise_options],
@@ -182,7 +182,7 @@ def generate_control_card():
             ),
                 
             html.Hr(),
-            html.P("Select Noise Level (sigma)"),
+            html.P("Select: Noise Level (sigma)"),
             dcc.Dropdown(
                 id="sigma-select_knn",
                 options=[{"label": i, "value": i} for i in sigma_options],
@@ -192,7 +192,7 @@ def generate_control_card():
             
             html.Hr(),
 
-            html.P("Select Critetia"),
+            html.P("Select: Consistency Metric"),
             dcc.RadioItems(
                 id="criteria-select_knn",
                 options=[{"label": i, "value": i} for i in criteria_options],
@@ -201,7 +201,7 @@ def generate_control_card():
 
             html.Hr(),
 
-            html.P("Select Method"),
+            html.P("Select: Interpretability Method"),
             dcc.Dropdown(
                 id="method-select_knn",
                 options=[{"label": i, "value": i} for i in meths],
@@ -213,7 +213,7 @@ def generate_control_card():
 
             
             html.Hr(),
-            html.P("Select Data"),
+            html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_knn",
                 options=[{"label": i, "value": i} for i in data_options],
