@@ -33,7 +33,8 @@ plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
                         'fit':'Consistency vs. predictive accuracy',
-                        'cor': 'Correlation between onsistency and predictive accuracy'}
+                       # 'cor': 'Correlation between onsistency and predictive accuracy'
+                       }
 plot_raw_options_knn = {
                    'line_raw':'Consistency vs. predictive accuracy for all data sets',
 'k_raw':'Consistency vs. number of local neighbors for all data sets',}
