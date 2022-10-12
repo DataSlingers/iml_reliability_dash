@@ -8,7 +8,7 @@ from nav import *
 #from ipynb.fs.full.navbar import Navbar
 nav = Navbar()
 body = dbc.Container([
-       html.H1('Interpretable Machine Learning'),
+       html.H1('Can We Trust Machine Learning Interpretations? A Reliability Study'),
        html.H3("Welcome to the Interpretable Machine Learning Dashboard"),
 
        dbc.Row(
