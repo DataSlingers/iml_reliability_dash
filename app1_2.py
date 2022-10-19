@@ -39,9 +39,9 @@ plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
                         'dot':'Consistency/predictive accuracy vs. methods',
-                       }
+
 #                         'fit':'Consistency vs. predictive accuracy',
-                    #    'cor': 'Correlation between onsistency and predictive accuracy'}
+                        'cor': 'Correlation between onsistency and predictive accuracy'}
 plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all data sets',
                    'line_raw':'Consistency vs. predictive accuracy for all data sets',
                     'heatmap_raw':'Consistency heatmap across methods for all data sets'}
@@ -490,6 +490,7 @@ def build_heat_summary_reg(data_sel,method_sel,
                         origin='lower',
                labels=dict(x="Method", y="Method", color="Consistency"))
         fig.layout.coloraxis.showscale = False
+        fig.update_xaxes(tickangle=45)
 
         return fig
         
@@ -672,7 +673,7 @@ def build_line_raw_reg(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.1,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
                   #width=1000, height=800,
             category_orders={'data':list(palette_data.keys())})
     fig.update_xaxes(matches=None,showticklabels=True)
@@ -810,6 +811,7 @@ def build_heat_raw_reg(data_sel, method_sel,
         fig.update_layout(
                       coloraxis=dict(colorscale='Purp', 
                                      showscale = False),)
+        fig.update_xaxes(tickangle=45)
     fig['layout'].update(height=4000, width=800)
     return fig
 
@@ -837,12 +839,14 @@ def build_dot_reg(data_sel, method_sel,
             this_markers_choice[mm]='star'
             
     this_palette_data = palette_data.copy()
+    this_palette = palette.copy()
+    this_palette=[i for i in palette.keys() if i in method_sel]
 
     fig1 = px.scatter(dff, x="method", y="Consistency", color='data', 
                         size='size1',
                     color_discrete_map=this_palette_data,
                     #symbol='method', symbol_map= this_markers_choice,
-                     category_orders={"method":list(this_palette_data.keys())},
+                     category_orders={"method":this_palette},
                    labels=dict( method="Method"),
 
 
@@ -864,7 +868,7 @@ def build_dot_reg(data_sel, method_sel,
                         size='size2',
                     color_discrete_map=this_palette_data,
                     #symbol='method', symbol_map= this_markers_choice,
-                     category_orders={"method":list(this_palette_data.keys())},
+              category_orders={"method":this_palette},
                    labels=dict(Consistency=criteria_sel, method="Method"),
 
 

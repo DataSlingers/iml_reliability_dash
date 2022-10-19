@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 def Navbar():
     navbar = dbc.NavbarSimple(
            children=[
-                dbc.NavItem(dbc.NavLink("How to use", href="/instruction")),
+                dbc.NavItem(dbc.NavLink("How to use", href="/instruction"),style={'text-align': 'center',"margin-left": "50px",'width': '200px'}),
 
 #                 dbc.DropdownMenu(
 #                  nav=True,
@@ -14,11 +14,11 @@ def Navbar():
 #                           ],
 #                       ),
                     
-              dbc.NavItem(dbc.NavLink("Feature Importance (Classification)", href="/feature_importance_classification")),
-              dbc.NavItem(dbc.NavLink("Feature Importance (Regression)", href="/feature_importance_regression")),
-              dbc.NavItem(dbc.NavLink("Clustering", href="/clustering")),
-              dbc.NavItem(dbc.NavLink("Dimension Reduction (Clustering)", href="/dimension_reduction_clustering")),
-              dbc.NavItem(dbc.NavLink("Dimension Reduction (Local Neighbors)", href="/knn")),
+              dbc.NavItem(dbc.NavLink("Feature Importance (Classification)", href="/feature_importance_classification"),style={'text-align': 'center',"margin-left": "50px",'width': '180px'}),
+              dbc.NavItem(dbc.NavLink("Feature Importance (Regression)", href="/feature_importance_regression"),style={'text-align': 'center','width': '180px'}),
+              dbc.NavItem(dbc.NavLink("Clustering", href="/clustering"),style={'text-align': 'center','width': '150px'}),
+              dbc.NavItem(dbc.NavLink("Dimension Reduction (Clustering)", href="/dimension_reduction_clustering"),style={'text-align': 'center','width': '180px'}),
+              dbc.NavItem(dbc.NavLink("Dimension Reduction (Local Neighbors)", href="/knn"),style={'text-align': 'center','width': '180px'}),
 #                 dbc.DropdownMenu(
 #                  nav=True,
 #                  in_navbar=True,

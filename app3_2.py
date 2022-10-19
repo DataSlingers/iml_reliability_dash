@@ -320,13 +320,12 @@ def build_line_raw_knn(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
                   #width=1000, height=800,
             category_orders={'data':list(palette_data.keys())})
     fig.update_xaxes(matches=None,showticklabels=True)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     fig.update_traces(line=dict(width=3))
-      
     if new_data is not None:
         fig.add_trace(
                 go.Scatter(
@@ -479,7 +478,7 @@ def build_k_raw_knn(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
                   #width=1000, height=800,
             category_orders={'data':list(palette_data.keys())})
     fig.update_xaxes(matches=None,showticklabels=True)
