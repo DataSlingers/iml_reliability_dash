@@ -48,22 +48,27 @@ def display_figure(pp,plot_selected, click,pathname):
     #              'k_raw': 'Consistency vs. number of local neighbors',
     #              'heatmap_raw': 'cross method consistency & accuracy'
     #             }
-        heads = {'heatmap':'Summary Figure: Consistency heatmap across methods',
-                 'line':'Summary Figure: Consistency across data sets',
-                 'bump':'Summary Figure: Bump plot of the most consistent methods across data sets',
-                 'fit':'Summary Figure: Consistency vs. predictive accuracy',
-                 'dot':'Summary Figure: Consistency/predictive accuracy vs. methods',
-                 'cor':'Summary Figure: Correlation between onsistency and predictive accuracy',
+        heads = {'heatmap':'Summary Figure: Consistency Heatmap (Between methods, aggregated over data sets)',
+                 'line':'Summary Figure: Consistency Lineplot (aggregated over data sets)',
+                 # (across data sets)',
+                 'bump':'Summary Figure: Consistency Bump Plot (aggregated over data sets)', 
+                 #of the most consistent methods across data sets',
+#                  'fit':'Summary Figure: Consistency & Accuracy Scatterplot (aggregated over data sets)', 
+                 #vs. predictive accuracy',
+                 'dot':'Summary Figure: Consistency & Accuracy Scatterplot (aggregated over data sets)', 
+#                  'cor':'Summary Figure: Correlation between onsistency and predictive accuracy',
                  'line_new':'Line with new data',
                  'bump_new':'Bump with new data',
                  'fit_new':'Fit with new data',
                  'cor_new':'Cor with new data',
 
-                 'line_raw':'Raw Results: Consistency vs. number of features for all data sets',
-                 'line_raw2':'Raw Results: Consistency vs. noise level for all data sets',
-                 'scatter_raw':'Raw Results: Consistency vs. predictive accuracy for all data sets',
-                 'k_raw': 'Raw Results: Consistency vs. number of local neighbors for all data sets',
-                 'heatmap_raw': 'Raw Results: Consistency heatmap across methods for all data sets',
+                 'line_raw':'Raw Results: Consistency Lineplot wrt. top K features (all data sets)',
+                 #vs number of features for all data sets',
+                 'line_raw2':'Raw Results: Consistency Lineplot wrt. noise level (all data sets)',
+                 # vs. noise level for all data sets',
+                 'scatter_raw':'Raw Results: Consistency Scatterplot wrt. predictive accuracy (all data sets)',
+                 'k_raw': 'Raw Results: Consistency Lineplot wrt. number of local neighbors (all data sets)',
+                 'heatmap_raw': 'Raw Results: Consistency Heatmap across methods (Between methods, all data sets)',
                 }
 
 

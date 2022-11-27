@@ -57,7 +57,7 @@ markers_choice = {'LASSO':'0',
                     'deepLIFT (MLP)':"square",
                     'Integrated Gradients (MLP)':"square",
                     'Epsilon-LRP (MLP)':"square",
-                    'Saliency maps (MLP)':"square",
+                    'Saliency Maps (MLP)':"square",
                     'Guided Backpropagation (MLP)':"square",
 
                     'Occlusion (MLP)' :"x",
@@ -347,6 +347,10 @@ def App1_2():
 def build_scatter_reg(data_sel, method_sel,
                  k_sel, criteria_sel
                  ):
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
+    
+    
     dff=df[(df.data.isin(data_sel))
                 &(df.method.isin(method_sel))
                 &(df.K ==k_sel)
@@ -355,9 +359,9 @@ def build_scatter_reg(data_sel, method_sel,
                  facet_col='data',
                  facet_col_wrap=3, 
                 color_discrete_map=(palette),
-                symbol='method', symbol_map= markers_choice,
+                symbol='method', symbol_map= this_markers_choice,
                  text = 'method',
-                 category_orders={"method":list(palette.keys())},
+                 category_orders={"method":list(this_palette.keys())},
                labels=dict(Consistency=criteria_sel, method="Method",
                           Accuracy='MSE')
 
@@ -384,7 +388,8 @@ def build_bump_reg(data_sel, method_sel,
                 &(df.method.isin(method_sel))
                 &(df.K ==k_sel)
                 &(df.criteria==criteria_sel)]
-    this_palette = palette.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.K ==k_sel)
@@ -453,7 +458,7 @@ def build_bump_reg(data_sel, method_sel,
         
 def build_acc_bar_reg(data_sel, method_sel,
                  k_sel, new_data=None):
-    this_palette = palette.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
     dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.K ==k_sel)]
@@ -506,8 +511,8 @@ def build_line_reg(data_sel, method_sel,
             &(df.K ==k_sel)
             &(df.criteria==criteria_sel)]
     
-    this_palette = palette.copy()
-    this_line_choice= line_choice.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_line_choice=dict((i,line_choice[i]) for i in method_sel)
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -555,8 +560,8 @@ def build_fit_reg(data_sel, method_sel,
             &(df.method.isin(method_sel))
             &(df.K ==k_sel)
             &(df.criteria==criteria_sel)]
-    this_palette = palette.copy()
-    this_markers_choice=markers_choice.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -619,7 +624,7 @@ def build_cor_reg(data_sel, method_sel,
             &(df.criteria==criteria_sel)]
     
     
-    this_palette = palette.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -651,8 +656,9 @@ def build_line_raw_reg(data_sel, method_sel,
                # &(df.K ==k_sel)
                 &(df.criteria==criteria_sel)]
 
-    this_palette = palette.copy()
-    this_line_choice= line_choice.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_line_choice=dict((i,line_choice[i]) for i in method_sel)
+    this_palette_data =  [i for i in palette_data.keys() if i in data_sel]   
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -675,7 +681,7 @@ def build_line_raw_reg(data_sel, method_sel,
                          },
                       facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
                   #width=1000, height=800,
-            category_orders={'data':list(palette_data.keys())})
+            category_orders={'data':this_palette_data})
     fig.update_xaxes(matches=None,showticklabels=True)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     fig.update_traces(line=dict(width=3))
@@ -708,8 +714,8 @@ def build_scatter_raw_reg(data_sel, method_sel,
             &(df.criteria==criteria_sel)]
     
     
-    this_palette = palette.copy()
-    this_markers_choice=markers_choice.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -787,7 +793,7 @@ def build_heat_raw_reg(data_sel, method_sel,
 
     tt =[[i]  for i in data_sel for _ in range(2)]
     tt = [item for sublist in tt for item in sublist]
-    this_palette=palette.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
 
     fig = make_subplots(rows=9, cols=2, horizontal_spacing=0.05,
                     vertical_spacing=0.05,                     
@@ -823,6 +829,9 @@ def build_dot_reg(data_sel, method_sel,
             &(df.method.isin(method_sel))
             &(df.K ==k_sel)
             &(df.criteria==criteria_sel)]
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
+    this_palette=[i for i in palette.keys() if i in method_sel]
+    this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
 
     dff['size1']=(dff['Accuracy']**2)
     dff['size1']=[max(i,0.1) for i in dff['size1']]
@@ -838,9 +847,6 @@ def build_dot_reg(data_sel, method_sel,
             this_palette[mm]='black'
             this_markers_choice[mm]='star'
             
-    this_palette_data = palette_data.copy()
-    this_palette = palette.copy()
-    this_palette=[i for i in palette.keys() if i in method_sel]
 
     fig1 = px.scatter(dff, x="method", y="Consistency", color='data', 
                         size='size1',

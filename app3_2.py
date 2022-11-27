@@ -310,8 +310,9 @@ def build_line_raw_knn(data_sel, method_sel,
 
                 )
              ]
-    this_palette = palette.copy()
-    this_line_choice= line_choice.copy()    
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_line_choice=dict((i,line_choice[i]) for i in method_sel)
+    this_palette_data =  [i for i in palette_data.keys() if i in data_sel]   
     fig = px.line(aauc,x="sigma", y='AUC',color = 'method',
 
                             color_discrete_map=this_palette,
@@ -322,7 +323,7 @@ def build_line_raw_knn(data_sel, method_sel,
                          },
                       facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
                   #width=1000, height=800,
-            category_orders={'data':list(palette_data.keys())})
+            category_orders={'data':this_palette_data})
     fig.update_xaxes(matches=None,showticklabels=True)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     fig.update_traces(line=dict(width=3))
@@ -380,8 +381,8 @@ def build_bump_knn(data_sel, method_sel,
                 &(df.sigma ==float(sigma_sel))
                &(df.criteria==criteria_sel)]
     
-    
-    this_palette = palette.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
+
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.noise ==noise_sel)
@@ -455,8 +456,10 @@ def build_k_raw_knn(data_sel, method_sel,
             &(dr_knn.noise ==noise_sel)
             &(dr_knn['rank'] ==rank_sel)
             &(dr_knn.sigma ==float(sigma_sel))]
-    this_palette = palette.copy()
-    this_line_choice= line_choice.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_line_choice=dict((i,line_choice[i]) for i in method_sel)
+#     this_line_choice= [i for i in line_choice.keys() if i in method_sel]
+    this_palette_data =  [i for i in palette_data.keys() if i in data_sel]
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -476,15 +479,18 @@ def build_k_raw_knn(data_sel, method_sel,
                                 line_dash = 'method',
                       line_dash_map = this_line_choice,
                       labels={
-                             "method": "Method"
+                        "Consistency": "Jaccard",
+                      "method": "Method"
                          },
                       facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
                   #width=1000, height=800,
-            category_orders={'data':list(palette_data.keys())})
+            category_orders={'data':this_palette_data}
+                 )
     fig.update_xaxes(matches=None,showticklabels=True)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     fig.update_traces(line=dict(width=3))
-      
+#           fig.update_xaxes(tickangle=45)
+    
     if new_data is not None:
         fig.add_trace(
                 go.Scatter(
