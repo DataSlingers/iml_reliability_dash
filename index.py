@@ -24,6 +24,18 @@ meths  = ['LogisticRidge','LogisticLASSO', 'SVM','Tree','RF',
         'Shapley Value (MLP)',
         'Shapley Value (LogisticRidge)' ,
         'Shapley Value (RF)'     ]
+
+meths2  = ['Ridge','LASSO','Tree','RF',
+        'XGB', 'deepLIFT (MLP)', 'Integrated Gradients (MLP)',  'Epsilon-LRP (MLP)',
+        'Guided Backpropagation (MLP)',           
+        'Saliency Maps (MLP)','Occlusion (MLP)',
+        'permutation (Ridge)',
+        'permutation (RF)',  
+        'permutation (MLP)',       
+        'Shapley Value (MLP)',
+        'Shapley Value (Ridge)' ,
+        'Shapley Value (RF)'     ]
+
 # plot_summary_options = ['heatmap','line','bump','fit','dot','cor']
 # plot_summary_new_options = ['line_new','bump_new','fit_new','dot_new','cor_new']
 plot_raw_options = ['scatter_raw','line_raw','k_raw','heatmap_raw']
@@ -42,10 +54,10 @@ plot_summary_new_options = ['line_new','bump_new','dot_new']
 # dbc.themes.SOLAR
 # dbc.themes.UNITED
 
-#app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 #app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 #app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CERULEAN])
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
+#app = dash.Dash(__name__, external_stylesheets=[dbc.themes.UNITED])
 app.config.suppress_callback_exceptions = True
 app.layout = html.Div([
     dcc.Location(id = 'url', refresh = False),
@@ -75,20 +87,35 @@ def display_page(pathname):
 @app.callback(
         [
          Output('method-select', 'value')],
-        Input('method-select_c', 'value'))
+        [Input('url', 'pathname'),
+            Input('method-select_c', 'value')     
+                ],)
 
 
-def dropdown_options(radio_value):
-
-    if radio_value == 'All':
+def dropdown_options(pathname,radio_value):
+    if pathname == '/feature_importance_classification':
+        
+        if radio_value == 'All':
 #         options = [{'label': x, 'value': x} for x in method_options]
-        value = meths,
-    elif radio_value == 'Model Specific':
+            value = meths,
+        elif radio_value == 'Model Specific':
 #         options = [{'label': x, 'value': x} for x in method_options]
-        value =  meths[:12],
+            value =  meths[:12],
+        else:
+#         options = [{'label': x, 'value': x} for x in method_options]
+            value =  meths[12:],
     else:
+                
+        if radio_value == 'All':
 #         options = [{'label': x, 'value': x} for x in method_options]
-        value =  meths[12:],
+            value = meths2,
+        elif radio_value == 'Model Specific':
+#         options = [{'label': x, 'value': x} for x in method_options]
+            value =  meths2[:11],
+        else:
+#         options = [{'label': x, 'value': x} for x in method_options]
+            value =  meths2[11:],
+    
 
     return  value
 ###### select figure 
@@ -1522,15 +1549,16 @@ def update_heat_raw_dr(data_sel, method_sel,
 [
      Input("data-select_knn", "value"),
         Input("method-select_knn", "value"),
-        Input("noise-select_knn", "value"),
+         Input("criteria-select_knn", "value"),
+       Input("noise-select_knn", "value"),
         Input("rank-select_knn", "value"),
     ],
 )
 
-def update_line_raw_knn(data_sel, method_sel,
+def update_line_raw_knn(data_sel, method_sel,criteria_sel,
                 noise_sel,rank_sel):
     
-    fig=build_line_raw_knn(data_sel, method_sel,
+    fig=build_line_raw_knn(data_sel, method_sel,criteria_sel,
                  noise_sel,rank_sel)
     return fig
 
@@ -1539,16 +1567,17 @@ def update_line_raw_knn(data_sel, method_sel,
 [
      Input("data-select_knn", "value"),
         Input("method-select_knn", "value"),
-        Input("noise-select_knn", "value"),
+         Input("criteria-select_knn", "value"),
+       Input("noise-select_knn", "value"),
         Input("sigma-select_knn", "value"),
         Input("rank-select_knn", "value"),
     ],
 )
 
-def update_k_raw_knn(data_sel, method_sel,
+def update_k_raw_knn(data_sel, method_sel,criteria_sel,
                 noise_sel,sigma_sel,rank_sel):
     
-    fig=build_k_raw_knn(data_sel, method_sel,
+    fig=build_k_raw_knn(data_sel, method_sel,criteria_sel,
                  noise_sel,sigma_sel,rank_sel)
     return fig
 
@@ -1561,6 +1590,7 @@ def update_k_raw_knn(data_sel, method_sel,
     [
         Input("data-select_knn", "value"),
         Input("method-select_knn", "value"),
+        Input("criteria-select_knn", "value"),
         Input("noise-select_knn", "value"),
         Input("sigma-select_knn", "value"),
         Input("rank-select_knn", "value"),
@@ -1569,13 +1599,15 @@ def update_k_raw_knn(data_sel, method_sel,
 
 def update_line_knn(data_sel_knn, 
                      method_sel_knn,
+                     criteria_sel_knn,
                     noise_sel_knn,
                      sigma_sel_knn,
                    rank_select_knn
                  ):
     fig=build_line_knn(data_sel_knn, 
                         method_sel_knn,
-                        noise_sel_knn,
+                            criteria_sel_knn,
+                 noise_sel_knn,
                         sigma_sel_knn,
                       rank_select_knn
                     )
@@ -1585,6 +1617,7 @@ def update_line_knn(data_sel_knn,
     [
         Input("data-select_knn", "value"),
         Input("method-select_knn", "value"),
+        Input("criteria-select_knn", "value"),
         Input("noise-select_knn", "value"),
         Input("sigma-select_knn", "value"),
         Input("rank-select_knn", "value"),
@@ -1594,13 +1627,15 @@ def update_line_knn(data_sel_knn,
 
 def update_line_knn2(data_sel_knn, 
                      method_sel_knn,
-                    noise_sel_knn,
+                     criteria_sel_knn,
+                       noise_sel_knn,
                      sigma_sel_knn,
                    rank_select_knn,data
                  ):
     fig=build_line_knn(data_sel_knn, 
                         method_sel_knn,
-                        noise_sel_knn,
+                        criteria_sel_knn,
+                    noise_sel_knn,
                         sigma_sel_knn,
                       rank_select_knn,data
                     )

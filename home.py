@@ -39,6 +39,7 @@ body = dbc.Container([
 className="mt-4",
 )
 content= dcc.Markdown(
+    
 '''
 ### Goal
    **We aim to design a clear large-scale empirical framework to evaluate the reliability of interpretabilities of popular interpretable machine learning(IML) models. **
@@ -77,12 +78,12 @@ We include three categories of interpretabilities: 1). feature importance/rankin
 #### Feature Importance Metrics
 As researcher are generally more interested in the most important features, we focus on top-K rank consistency in the case of feature importance. One of the metric is the Jaccard similarity \citep{real1996probabilistic} of top-K features. With ranks $A$ and $B$, the Jaccard similarity is given by 
 $$
-    J(A,B)@k = \frac{|A_k\cap B_k|}{|A_k\cup B_k|}. 
+    J(A,B)@k = \\frac{|A_k\cap B_k|}{|A_k\cup B_k|}. 
 $$
 
 where $A_k$ and $B_k$ contain only the top k features. However, the Jaccard similarity considers whether two sets contains the same elements rather than the consistency of ranking. Hence, we also propose another metric Rank biased overlap (RBO) \citet{webber2010similarity}, which is a weighted non-conjoint measure that focuses on the specific rankings of the elements. Specifically, RBO is calculated as the average agreement of $A$ and $B$ of each depth and is given by
 $$
-    RBO@k  = \frac{1}{k} \sum_d=1^k \frac{|A_d\cap B_d|}{d}
+    RBO@k  = \\frac{1}{k} \sum_{d=1}^k \\frac{|A_d\cap B_d|}{d}
 $$
 
 
@@ -107,35 +108,96 @@ On the other hand, we also measure the dimension reduction + clustering consiste
 #### Classification Data Sets
 |Data | # observations |   # features |  # classes | Type | Citation |
 |:--- |    :----:      |    :----:    |     :----: |:----:|---:      |
-|Asian Religions | 590 | 8266 | 8 |    | \cite{sah2019asian} |
-|PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq | \citet{weinstein2013cancer}|
-|DNase | 386 | 2000 | 6 | high dimensional DNase      | \citet{encode2012integrated} | 
-|madelon | 2000 | 500 | 2 | artificial dataset | \citet{guyon2004result}|
-|Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam | \citet{} |
-|Author | 841 | 69 | 4 | word counts from chapters written by four famous
-|Bean | 13611 | 16 | 7 | Images of 13,611 grains of 7 different registered dry beans 
+|Asian Religions | 590 | 8266 | 8 |    | [[1]](#1) |
+|PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq |[[2]](#2)|
+|DNase | 386 | 2000 | 6 | high dimensional DNase      |[[3]](#3) | 
+|madelon | 2000 | 500 | 2 | artificial dataset | [[4]](#4)|
+|Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam | [[5]](#5) |
+|Author | 841 | 69 | 4 | word counts from chapters written by four famous English-language authors| [[5]](#5) |
+|Bean | 13611 | 16 | 7 | Images of 13,611 grains of 7 different registered dry beans| [[5]](#5) |
 
 #### Regression Data Sets
 |Data |  # observations |  # features |  Type  | Citation |
 |:--- |    :----:      |    :----:    |     :----: |:----:| 
-|Riboflavin |71|4088 | genomics data set about riboflavin production rate|\cite{buhlmann2014high}|
-|RNA-seq | 475 | 48803 | high dimensional, from ROSMAP, biological data | \citet{} |
-|BlogFeedback |52397 |280 |to predict how many comments the post will receive | \citet{buza2014feedback} |
-|Online News Popularity | 39644 | 59 | predict \# of shares in social networks | \citet{fernandes2015proactive} |
-|STAR | 2161 | 39 | Tennessee Student Teacher Achievement Ratio (STAR) project | \citet{DVN/SIWH9F_2008}|
-|Word |523 | 526 | binary; A word occurrence data to predict the length of a newsgroup record | \citet{} |
-|Communities and crime| 1993 | 99 | predict \# of violent crimes | \citet{}|
+|Riboflavin |71|4088 | genomics data set about riboflavin production rate|[[6]](#6) |
+|RNA-seq | 475 | 48803 | high dimensional, from ROSMAP, biological data | [[7]](#7) |
+|BlogFeedback |52397 |280 |to predict how many comments the post will receive |[[8]](#8)|
+|Online News Popularity | 39644 | 59 | predict \# of shares in social networks | [[9]](#9)|
+|STAR | 2161 | 39 | Tennessee Student Teacher Achievement Ratio (STAR) project |[[10]](#10)|
+|Word |523 | 526 | binary; A word occurrence data to predict the length of a newsgroup record | |
+|Communities and crime| 1993 | 99 | predict \# of violent crimes |  [[5]](#5) |
 
 
 #### Clustering & Dimension Reduction Data Sets
 |Data | # observations |# features |# classes |Type |Citation|
 |:--- |    :----:      |    :----:  |    :----:    |     :----: |:----:| 
-|PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq | \citet{weinstein2013cancer} |
-|DNase | 386 | 2000 | 30 | high dimensional DNase | \citet{encode2012integrated}| 
-|Asian Religions | 590 | 8266 | 8 | | \cite{sah2019asian}|
-|Author | 841 | 69 | 4 | word counts from chapters written by four famous
-|Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam | \citet{} |
-|statlog | 2310 | 19 | 7 | image segmentation database | \citet{} |
+|PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq |[[2]](#2)|
+|DNase | 386 | 2000 | 30 | high dimensional DNase | [[3]](#3) | 
+|Asian Religions | 590 | 8266 | 8 | |[[11]](#11)|
+|Author | 841 | 69 | 4 | word counts from chapters written by four famous English-language authors| [[5]](#5) |
+|Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam | [[5]](#5) |
+|statlog | 2310 | 19 | 7 | image segmentation database |  [[5]](#5) |
+
+
+## References
+<a id="1">[1]</a> 
+Sah, Preeti, and Ernest Fokoué. 
+What do asian religions have in common? an unsupervised text analytics exploration.
+arXiv preprint arXiv:1912.10847 (2019).
+
+<a id="2">[2]</a> 
+Weinstein, John N., et al. 
+The cancer genome atlas pan-cancer analysis project.
+Nature genetics 45.10 (2013): 1113-1120.
+
+<a id="3">[3]</a> 
+ENCODE Project Consortium. 
+An integrated encyclopedia of DNA elements in the human genome.
+Nature 489.7414 (2012): 57.
+
+<a id="4">[4]</a> 
+Guyon, Isabelle, et al. 
+Result analysis of the nips 2003 feature selection challenge.
+Advances in neural information processing systems 17 (2004).
+
+<a id="5">[5]</a> 
+Blake, Catherine. 
+UCI repository of machine learning databases.
+http://www. ics. uci. edu/~ mlearn/MLRepository. html (1998).
+
+
+
+<a id="6">[6]</a> 
+Bühlmann, Peter, Markus Kalisch, and Lukas Meier. 
+High-dimensional statistics with a view toward applications in biology.
+Annual Review of Statistics and Its Application 1.1 (2014): 255-278.Result analysis of the nips 2003 feature selection challenge.
+
+
+<a id="7">[7]</a> 
+Bennett, David A., et al. 
+Religious orders study and rush memory and aging project. 
+Journal of Alzheimer's disease 64.s1 (2018): S161-S189.
+
+<a id="8">[8]</a> 
+Buza, Krisztian. 
+Feedback prediction for blogs.
+Data analysis, machine learning and knowledge discovery. Springer, Cham, 2014. 145-152.
+
+<a id="9">[9]</a> 
+Fernandes, Kelwin, Pedro Vinagre, and Paulo Cortez. 
+A proactive intelligent decision support system for predicting the popularity of online news.
+Portuguese conference on artificial intelligence. Springer, Cham, 2015.
+
+<a id="10">[10]</a> 
+Word, Elizabeth R. 
+The State of Tennessee's Student/Teacher Achievement Ratio (STAR) Project: Technical Report (1985-1990).(1990).
+
+
+<a id="11">[11]</a> 
+Sah, Preeti, and Ernest Fokoué.
+What do asian religions have in common? an unsupervised text analytics exploration. 
+arXiv preprint arXiv:1912.10847 (2019).
+
 ''',
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
 

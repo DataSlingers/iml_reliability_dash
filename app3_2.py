@@ -46,10 +46,10 @@ palette = {
             'Spectral (NN)': 'magenta',
             'Spectral (RBF)': 'violet',
             'MDS':'blue',
-            #  'NMDS':'cyan', 
+              'NMDS':'cyan', 
             'Isomap':'lime',
             't-SNE': 'green',
-            'UMAPP':'limegreen',
+            'UMAP':'limegreen',
             'DAE':'yellow',
             'Random Projection':'grey'
             }
@@ -59,10 +59,10 @@ line_choice = {
             'Spectral (NN)': 'solid',
             'Spectral (RBF)': 'solid',
             'MDS':'solid',
-            #  'NMDS':'cyan', 
+            'NMDS':'solid', 
             'Isomap':'dash',
             't-SNE': 'dash',
-            'UMAPP':'dash',
+            'UMAP':'dash',
             'DAE':'dot',
             'Random Projection':'solid'
             }
@@ -72,7 +72,8 @@ palette_data = {
                 'Religion': 'indigo',
                 'Author':'yellow',
                 'Spam base':"green",
-                'Statlog':"cyan"
+                'Statlog':"cyan",
+                'Madelon' :'greenyellow',
                 }
 
 markers_choice = {
@@ -83,7 +84,7 @@ markers_choice = {
                 'Spectral (NN)': "0",
                 'Spectral (RBF)': "0",
                 't-SNE': 'x',
-                'UMAPP':'x',
+                'UMAP':'x',
                 'Isomap':'x',
                 'DAE':'x',
 
@@ -206,7 +207,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="method-select_knn",
                 options=[{"label": i, "value": i} for i in meths],
-                value=meths[0:8],
+                value=method_options[:],
                 multi=True,
             ),
             html.Br(),
@@ -298,13 +299,14 @@ def App3_2():
     ])
     return layout
 
-def build_line_raw_knn(data_sel, method_sel,
+def build_line_raw_knn(data_sel, method_sel,criteria_sel,
                   noise_sel,rank_sel,new_data=None
                  ):
    
     aauc=df[
         (df.data.isin(data_sel))
                &(df.method.isin(method_sel))
+               &(df.criteria==criteria_sel)
                &(df.noise ==noise_sel)
                &(df['rank'] ==int(rank_sel)
 
@@ -343,7 +345,7 @@ def build_line_raw_knn(data_sel, method_sel,
             )
     return fig
 
-def build_line_knn(data_sel, method_sel,
+def build_line_knn(data_sel, method_sel,criteria_sel,
                   noise_sel,sigma_sel,rank_sel
                  ):
 
@@ -351,6 +353,7 @@ def build_line_knn(data_sel, method_sel,
     dff=df[
         (df.data.isin(data_sel))
                &(df.method.isin(method_sel))
+               &(df.criteria==criteria_sel)
                &(df.noise ==noise_sel)
                &(df.sigma ==float(sigma_sel))
                &(df['rank'] ==int(rank_sel))
@@ -447,13 +450,14 @@ def build_bump_knn(data_sel, method_sel,
     return fig  
               
                      
-def build_k_raw_knn(data_sel, method_sel,
+def build_k_raw_knn(data_sel, method_sel,criteria_sel,
                  noise_sel,sigma_sel,rank_sel,new_data=None):
 
 
     dff=dr_knn[(dr_knn.data.isin(data_sel))
             &(dr_knn.method.isin(method_sel))
-            &(dr_knn.noise ==noise_sel)
+                   &(dr_knn.criteria==criteria_sel)
+               &(dr_knn.noise ==noise_sel)
             &(dr_knn['rank'] ==rank_sel)
             &(dr_knn.sigma ==float(sigma_sel))]
     this_palette=dict((i,palette[i]) for i in method_sel)
