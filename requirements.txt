@@ -1,3 +1,4 @@
+python==3.9.10
 dash-loading-spinners==1.0.0
 dash-bootstrap-components==1.0.3
 Brotli==1.0.9
@@ -23,3 +24,4 @@ numpy==1.19.5
 plotly-express==0.4.1
 PIL == 8.2.0
 zipp==3.6.0
+
