@@ -105,18 +105,26 @@ On the other hand, we also measure the dimension reduction + clustering consiste
 
 
 ### Data
-#### Classification Data Sets
+#### 13 Classification Data Sets
 |Data | # observations |   # features |  # classes | Type | Citation |
 |:--- |    :----:      |    :----:    |     :----: |:----:|---:      |
 |Asian Religions | 590 | 8266 | 8 |    | [[1]](#1) |
 |PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq |[[2]](#2)|
 |DNase | 386 | 2000 | 6 | high dimensional DNase      |[[3]](#3) | 
-|madelon | 2000 | 500 | 2 | artificial dataset | [[4]](#4)|
+|TCGA Breast Cancer Data | 445 | 353 | 5 | | \citet{koboldt2012comprehensive}|
+|Madelon | 2000 | 500 | 2 | artificial dataset | [[4]](#4)|
 |Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam | [[5]](#5) |
 |Author | 841 | 69 | 4 | word counts from chapters written by four famous English-language authors| [[5]](#5) |
 |Bean | 13611 | 16 | 7 | Images of 13,611 grains of 7 different registered dry beans| [[5]](#5) |
+|Call | 7195 | 22 | 10 | Acoustic features extracted from syllables of anuran (frogs) call | |
+|Digit | 70,000 | 784 | 10 |image & \citet{deng2012mnist} |
 
-#### Regression Data Sets
+|Theorem|6118|51|6|predict which of five heuristics will give the fastest proof when used by a first-order prover | \citet{bridge2014machine}|
+|Statlog|2310 | 19 | 7 | image segmentation database | \citet{} |
+
+|Amphibians|189|21|2|predict the presence of amphibians species&\citet{habib2020presence}|
+
+#### 13 Regression Data Sets
 |Data |  # observations |  # features |  Type  | Citation |
 |:--- |    :----:      |    :----:    |     :----: |:----:| 
 |Riboflavin |71|4088 | genomics data set about riboflavin production rate|[[6]](#6) |
@@ -127,16 +135,34 @@ On the other hand, we also measure the dimension reduction + clustering consiste
 |Word |523 | 526 | binary; A word occurrence data to predict the length of a newsgroup record | |
 |Communities and crime| 1993 | 99 | predict \# of violent crimes |  [[5]](#5) |
 
+|residential|372 | 103 |predict house price | \citet{rafiei2016novel}|
+|bike|731|13|hourly and daily count of rental bikes| \citet{fanaee2014event}\\
 
+|wine|178|13|red wine quality|\citet{cortez2009modeling}|
+|music|1059|117|Geographical Original of Music |\citet{romano2021pmlb}|
+|tecator|240|124||\citet{romano2021pmlb}|
+|satellite image|6435|36||\citet{romano2021pmlb}|
+
+|cpu|209&7&&\citet{romano2021pmlb}\\
 #### Clustering & Dimension Reduction Data Sets
 |Data | # observations |# features |# classes |Type |Citation|
 |:--- |    :----:      |    :----:  |    :----:    |     :----: |:----:| 
+|Data | # observations |   # features |  # classes | Type | Citation |
+|:--- |    :----:      |    :----:    |     :----: |:----:|---:      |
+|Asian Religions | 590 | 8266 | 8 |    | [[1]](#1) |
 |PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq |[[2]](#2)|
-|DNase | 386 | 2000 | 30 | high dimensional DNase | [[3]](#3) | 
-|Asian Religions | 590 | 8266 | 8 | |[[11]](#11)|
-|Author | 841 | 69 | 4 | word counts from chapters written by four famous English-language authors| [[5]](#5) |
+|DNase | 386 | 2000 | 6 | high dimensional DNase      |[[3]](#3) | 
+|TCGA Breast Cancer Data | 445 | 353 | 5 | | \citet{koboldt2012comprehensive}|
+|Madelon | 2000 | 500 | 2 | artificial dataset | [[4]](#4)|
 |Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam | [[5]](#5) |
-|statlog | 2310 | 19 | 7 | image segmentation database |  [[5]](#5) |
+|Author | 841 | 69 | 4 | word counts from chapters written by four famous English-language authors| [[5]](#5) |
+|Bean | 13611 | 16 | 7 | Images of 13,611 grains of 7 different registered dry beans| [[5]](#5) |
+|Call | 7195 | 22 | 10 | Acoustic features extracted from syllables of anuran (frogs) call | |
+|Theorem|6118|51|6|predict which of five heuristics will give the fastest proof when used by a first-order prover | \citet{bridge2014machine}|
+|Statlog|2310 | 19 | 7 | image segmentation database | \citet{} |
+
+|Amphibians|189|21|2|predict the presence of amphibians species&\citet{habib2020presence}|
+
 
 
 ## References

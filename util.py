@@ -113,7 +113,7 @@ def display_figure(pp,plot_selected, click,pathname):
 
                                 dls.Hash(                        
                                 dcc.Graph(id=fig_id1,
-                                      style={'width': '80vh', 'height': '50vh'}
+                                      style={'width': '80vh', 'height': '70vh'}
                                          ),
                                 color="#435278",
                                 speed_multiplier=2,
@@ -121,7 +121,7 @@ def display_figure(pp,plot_selected, click,pathname):
                                     ),
                                 dls.Hash(                        
                                 dcc.Graph(id=fig_id2,
-                                      style={'width': '80vh', 'height': '50vh'}
+                                      style={'width': '80vh', 'height': '70vh'}
                                          ),
                                 color="#435278",
                                 speed_multiplier=2,
@@ -159,7 +159,7 @@ def display_figure(pp,plot_selected, click,pathname):
 
                                 dls.Hash(                        
                                 dcc.Graph(id=fig_id,
-                                      style={'width': '80vh', 'height': '80vh'}
+                                      style={'width': '90vh', 'height': '70vh'}
                                          ),
                                 color="#435278",
                                 speed_multiplier=2,
@@ -189,41 +189,23 @@ def display_figure(pp,plot_selected, click,pathname):
                         
                         
                         
-                if pp!='heatmap_raw': ## all other figures
+#                 if pp!='heatmap_raw': ## all other figures
+#                     if pp=='line_raw' and pathname in paths:
+#                         pp='line_raw2'
+                if pp == 'scatter_raw' or pp=='line_raw' or pp=='k_raw':
                     if pp=='line_raw' and pathname in paths:
                         pp='line_raw2'
-                    return html.Div([
-                                html.Details([
-                                html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
-                                html.Div([
-                                       html.Details([
-                                        html.Summary('Description'),
-                                        html.Div(children=describ[pp], className='desc',
-                                                 id='my-description')
-                                    ],
-                                        id="desc-dropdown",
-                                        open=False
-                                     ),
-
-
-                                dls.Hash(                        
-                                dcc.Graph(id=fig_id,
-                                      style={'width': '80vh', 'height': '50vh'}
-                                         ),
-                                color="#435278",
-                                speed_multiplier=2,
-                                size=100,
-                                    ),
-                                ])
-                            ],
-                                id="desc-dropdown",
-                                open=True
-                            ), 
-                    ])
-
-                else: ## raw heatmaps 
+                    this_height = '100vh'
+                    this_width = '100vh'
+                            
+                elif pp == 'heatmap_raw':
+                    this_height = '500vh'
+                    this_width = '80vh'                    
+                else:
+                    this_width = '100vh'
+                    this_height = '50vh'                   
                     
-                    return html.Div([
+                return html.Div([
                                 html.Details([
                                 html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
                                 html.Div([
@@ -239,7 +221,7 @@ def display_figure(pp,plot_selected, click,pathname):
 
                                 dls.Hash(                        
                                 dcc.Graph(id=fig_id,
-                                      style={'width': '80vh', 'height': '400vh'}
+                                      style={'width': '100vh', 'height': this_height}
                                          ),
                                 color="#435278",
                                 speed_multiplier=2,
@@ -250,7 +232,40 @@ def display_figure(pp,plot_selected, click,pathname):
                                 id="desc-dropdown",
                                 open=True
                             ), 
-                    ])
+                    ])                    
+                    
+           
+
+#                 else: ## raw heatmaps 
+                    
+#                     return html.Div([
+#                                 html.Details([
+#                                 html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
+#                                 html.Div([
+#                                        html.Details([
+#                                         html.Summary('Description'),
+#                                         html.Div(children=describ[pp], className='desc',
+#                                                  id='my-description')
+#                                     ],
+#                                         id="desc-dropdown",
+#                                         open=False
+#                                      ),
+
+
+#                                 dls.Hash(                        
+#                                 dcc.Graph(id=fig_id,
+#                                       style={'width': '80vh', 'height': '500vh'}
+#                                          ),
+#                                 color="#435278",
+#                                 speed_multiplier=2,
+#                                 size=100,
+#                                     ),
+#                                 ])
+#                             ],
+#                                 id="desc-dropdown",
+#                                 open=True
+#                             ), 
+#                     ])
 
 
 
