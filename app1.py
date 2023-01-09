@@ -24,6 +24,7 @@ nav = Navbar()
 # )
 
 df = pd.read_csv("feature_impo.csv")
+df=df.dropna()
 cross = pd.read_csv('cross_fi.csv')
 
 
@@ -67,11 +68,11 @@ markers_choice = {'LogisticLASSO':'0',
                     'Shapley Value (RF)':"x",
                     'Shapley Value (MLP)':"x"}
 palette  = {
-        'Tree':'deeppink',
         'LogisticRidge': 'indigo',
         'LogisticLASSO':"purple",
 
         'SVM':"firebrick",           
+        'Tree':'deeppink',
         'RF':"magenta",
         'XGB':"violet",
         'deepLIFT (MLP)':"powderblue",
@@ -91,11 +92,11 @@ palette  = {
         }
 
 line_choice = {'LogisticLASSO':'solid',
-                'SVM':'solid',
                'LogisticRidge':'solid',
-               'Tree':'dot',
-                    'XGB':'dot',
-                 'RF':'dot' ,
+               'SVM':'solid',
+                'Tree':'dot',
+                'RF':'dot' ,
+               'XGB':'dot',
                'deepLIFT (MLP)':'dash',
                'Integrated Gradients (MLP)':'dash',
                'Epsilon-LRP (MLP)':'dash',
@@ -115,15 +116,19 @@ line_choice = {'LogisticLASSO':'solid',
 palette_data = {'PANCAN':"purple",
                 'Religion': 'indigo',
                 'DNase':"firebrick",
+                'TCGA':'hotpink',
                 'Madelon' :'greenyellow',
-                'Author':'yellow',         
+                 'Amphibians':'lightseagreen',
+               'Author':'yellow',         
                 'Spam base':"green",
                 'MNIST Digit':"cyan",
+                'Theorem':'slateblue',
+                'Statlog':'deepskyblue',
                 'Call':'cornflowerblue',
-                'Bean':"powderblue"
+                'Bean':"powderblue",
+                
                 }
 
-meths = list(palette.keys())
 def sort(df,column1,sorter1,column2=None,sorter2=None):
     
     df[column1] = df[column1].astype("category")
@@ -139,7 +144,9 @@ def sort(df,column1,sorter1,column2=None,sorter2=None):
     df[column1]=df[column1].astype("str")
     return df
 df=sort(df,'data',list(palette_data.keys()),'method',list(palette.keys()))
-
+meths = list(palette.keys())
+datas = list(palette_data.keys())
+df.K=[int(i) for i in df.K] 
 def description_card():
     """
     :return: A Div containing dashboard title & descriptions.
@@ -200,7 +207,7 @@ def generate_control_card():
                 id="criteria-select",
                     
                 options=[{"label": i, "value": i} for i in criteria_options],
-                value=criteria_options[1],
+                value=criteria_options[2],
             ),            
             html.Hr(),
             html.P("Select: Top K Features"),
@@ -386,6 +393,8 @@ def build_scatter(data_sel, method_sel,
                   selector=dict(mode='markers'),
      
 )
+    fig.update_xaxes(categoryorder='array', categoryarray= datas)
+
     return fig
 # def show_data(new_data=None):
     
@@ -471,6 +480,7 @@ def build_bump(data_sel, method_sel,
                 hoverinfo='none',                                                                               )
                     )
 
+    fig.update_xaxes(categoryorder='array', categoryarray= datas)
 
     
     return fig  
@@ -567,7 +577,7 @@ def build_line(data_sel, method_sel,
                 )
             )
 
-        
+    fig.update_xaxes(categoryorder='array', categoryarray= datas)
     return fig
             
         
@@ -706,7 +716,7 @@ def build_line_raw(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.05,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
     fig.update_xaxes(matches=None,showticklabels=True)
@@ -758,7 +768,7 @@ def build_scatter_raw(data_sel, method_sel,
             this_markers_choice[mm]='star'        
     fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
 #                      trendline="ols",
-                     facet_col="data",facet_col_wrap=3,
+                    opacity=0.5,  facet_col="data",facet_col_wrap=3,
                      #width=1000, height=800,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
@@ -767,7 +777,8 @@ def build_scatter_raw(data_sel, method_sel,
 
                 )
    
-    fig.update_traces(line=dict(width=3))
+    fig.update_traces(marker_size=10)
+    fig.update_xaxes(matches=None,showticklabels=True)
     
     if new_data is not None:
         fig.add_trace(
@@ -820,7 +831,7 @@ def build_heat_raw(data_sel, method_sel,
     tt = [item for sublist in tt for item in sublist]
     this_palette=dict((i,palette[i]) for i in method_sel)
     
-    fig = make_subplots(rows=9, cols=2,  column_widths=[0.7, 0.3], horizontal_spacing=0.05,
+    fig = make_subplots(rows=len(data_sel), cols=2,  column_widths=[0.7, 0.3], horizontal_spacing=0.05,
                     vertical_spacing=0.05,                     
                                      subplot_titles=(tt)                                                                  )
 
@@ -843,7 +854,7 @@ def build_heat_raw(data_sel, method_sel,
                       coloraxis=dict(colorscale='Purp', 
                                      showscale = False),)
         fig.update_xaxes(tickangle=45)
-    fig['layout'].update(height=4000, width=800)
+    fig['layout'].update(height=6000, width=800)
     return fig
 
 def build_dot(data_sel, method_sel,

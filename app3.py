@@ -72,15 +72,30 @@ line_choice = {
             'DAE':'dot',
             'Random Projection':'solid'
             }
-palette_data = {
-                'PANCAN':"purple",
-                'DNase':"firebrick",
-                'Religion': 'indigo',
-                'Author':'yellow',
-                'Spam base':"green",
-                'Statlog':"cyan"
-                }
+# palette_data = {
+#                 'PANCAN':"purple",
+#                 'DNase':"firebrick",
+#                 'Religion': 'indigo',
+#                 'Author':'yellow',
+#                 'Spam base':"green",
+#                 'Statlog':"cyan"
+#                 }
 
+palette_data = {'PANCAN':"purple",
+                'Religion': 'indigo',
+                'DNase':"firebrick",
+                'TCGA':'hotpink',
+                'Madelon' :'greenyellow',
+                 'Amphibians':'lightseagreen',
+               'Author':'yellow',         
+                'Spam base':"green",
+                'Darmanis':"cyan",
+                'Theorem':'slateblue',
+                'Statlog':'deepskyblue',
+                'Call':'cornflowerblue',
+                'Bean':"powderblue",
+                
+                }
 markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
@@ -110,6 +125,8 @@ def sort(df,column1,sorter1,column2=None,sorter2=None):
     return df
 
 df=sort(df,'data',list(palette_data.keys()),'method',list(palette.keys()))
+meths = list(palette.keys())
+datas = list(palette_data.keys())
 
 
 
@@ -642,7 +659,7 @@ def build_line_raw_dr(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.05,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
     fig.update_xaxes(matches=None,showticklabels=True)
@@ -702,7 +719,7 @@ def build_scatter_raw_dr(data_sel, method_sel,
             
     fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
 #                      trendline="ols",
-                     facet_col="data",facet_col_wrap=3,
+               opacity=0.5,       facet_col="data",facet_col_wrap=3,
                      #width=1000, height=800,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
@@ -711,7 +728,9 @@ def build_scatter_raw_dr(data_sel, method_sel,
 
                 )
    
-    fig.update_traces(line=dict(width=3))
+   
+    fig.update_traces(marker_size=10)
+    fig.update_xaxes(matches=None,showticklabels=True)
     
     if new_data is not None:
         fig.add_trace(
@@ -769,7 +788,7 @@ def build_heat_raw_dr(data_sel, method_sel,
     tt = [item for sublist in tt for item in sublist]
     this_palette=dict((i,palette[i]) for i in method_sel)
 
-    fig = make_subplots(rows=9, cols=2, horizontal_spacing=0.05,
+    fig = make_subplots(rows=len(data_sel), cols=2, horizontal_spacing=0.05,
                     vertical_spacing=0.05,                     
                                      subplot_titles=(tt)                                                                  )
 

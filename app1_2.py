@@ -68,10 +68,10 @@ markers_choice = {'LASSO':'0',
                     'Shapley Value (RF)':"x",
                     'Shapley Value (MLP)':"x"}
 palette  = {
-            'Tree':'deeppink',
-            'Ridge': 'indigo',
             'LASSO':"purple",
-#             'SVM':"firebrick",           
+            'Ridge': 'indigo',
+            'SVM':"firebrick",           
+            'Tree':'deeppink',
             'RF':"magenta",
             'XGB':"violet",
             'deepLIFT (MLP)':"powderblue",
@@ -91,11 +91,11 @@ palette  = {
            }
 
 line_choice = {'LASSO':'solid',
-                'SVM':'solid',
                'Ridge':'solid',
-               'Tree':'dot',
-                    'XGB':'dot',
-                 'RF':'dot' ,
+                 'SVM':'solid',
+              'Tree':'dot',
+                  'RF':'dot' ,
+                   'XGB':'dot',
                'deepLIFT (MLP)':'dash',
                'Integrated Gradients (MLP)':'dash',
                'Epsilon-LRP (MLP)':'dash',
@@ -114,11 +114,20 @@ line_choice = {'LASSO':'solid',
               }    
 
 palette_data = {'Riboflavin':"purple",
-                'Word':"green",
-                'Communities' :'greenyellow',
-                'STAR':'cornflowerblue',
-                'Blog':"firebrick",
-                'News':"powderblue"}
+                'Word':"indigo",#0.9
+                'Tecator':'firebrick',#1.9
+                'Residential':'hotpink', #3.6
+                'Music':'greenyellow',
+                'Wine':'lightseagreen',
+                 'CPU':'yellow',
+                'Bike':"green",
+               'Communities' :"cyan",#20
+                'Star':'slateblue',#55
+                'Satellite':'deepskyblue',#178
+                'Blog':"cornflowerblue",
+                'News':"powderblue",
+               
+               }
 
 
 def sort(df,column1,sorter1,column2=None,sorter2=None):
@@ -137,7 +146,7 @@ def sort(df,column1,sorter1,column2=None,sorter2=None):
     return df
 df=sort(df,'data',list(palette_data.keys()),'method',list(palette.keys()))
 meths = list(palette.keys())
-
+datas = list(palette_data.keys())
 
 
 def description_card():
@@ -206,7 +215,7 @@ def generate_control_card():
             dcc.RadioItems(
                 id="criteria-select",
                 options=[{"label": i, "value": i} for i in criteria_options],
-                value=criteria_options[1],
+                value=criteria_options[2],
             ),            
             html.Hr(),
             html.P("Select: Top K Features"),
@@ -398,9 +407,9 @@ def build_bump_reg(data_sel, method_sel,
         for mm in set(neww['method']):
             this_palette[mm]='black'    
 ##### bump plot 
-    df_ave = dff.groupby(['type','method','K','criteria'],as_index=False).mean()
+    df_ave = dff.groupby(['method','K','criteria'],as_index=False).mean()
     df_ave['data']='Average'
-    df_ave=df_ave[['data','type','method','K','criteria','Consistency','Accuracy']]
+    df_ave=df_ave[['data','method','K','criteria','Consistency','Accuracy']]
     dff=pd.concat([dff,df_ave])
 
 ########################
@@ -549,6 +558,7 @@ def build_line_reg(data_sel, method_sel,
                     hoverinfo='none',                                                                              
                 )
             )
+    fig.update_xaxes(categoryorder='array', categoryarray= datas)
     return fig
 
 def build_fit_reg(data_sel, method_sel,
@@ -679,7 +689,7 @@ def build_line_raw_reg(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.05,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
     fig.update_xaxes(matches=None,showticklabels=True)
@@ -700,7 +710,6 @@ def build_line_raw_reg(data_sel, method_sel,
                     hoverinfo='none',                                                                              
                 )
             )
-
         
     return fig
                 
@@ -731,7 +740,7 @@ def build_scatter_raw_reg(data_sel, method_sel,
             
     fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
 #                      trendline="ols",
-                     facet_col="data",facet_col_wrap=3,
+                     opacity=0.5, facet_col="data",facet_col_wrap=3,
                      #width=1000, height=800,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
@@ -739,9 +748,6 @@ def build_scatter_raw_reg(data_sel, method_sel,
                labels=dict(Consistency=criteria_sel, method="Method"),
 
                 )
-   
-    fig.update_traces(line=dict(width=3))
-    
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
@@ -757,7 +763,9 @@ def build_scatter_raw_reg(data_sel, method_sel,
             hoverinfo='none'
         )
         )
-    
+    fig.update_traces(marker_size=10)
+    fig.update_xaxes(matches=None,showticklabels=True)
+
     return fig
              
 def build_heat_raw_reg(data_sel, method_sel,
@@ -795,7 +803,7 @@ def build_heat_raw_reg(data_sel, method_sel,
     tt = [item for sublist in tt for item in sublist]
     this_palette=dict((i,palette[i]) for i in method_sel)
 
-    fig = make_subplots(rows=9, cols=2, horizontal_spacing=0.05,
+    fig = make_subplots(rows=len(data_sel), cols=2, horizontal_spacing=0.05,
                     vertical_spacing=0.05,                     
                                      subplot_titles=(tt)                                                                  )
 
@@ -863,7 +871,7 @@ def build_dot_reg(data_sel, method_sel,
             hovertemplate="<br>".join([
             "Data: %{customdata[1]}",
             "Method: %{x}",
-            "Accuracy: %{customdata[0]}",
+            "1/MSE: %{customdata[0]}",
             "Consistency: %{y}",
                 ]))   
     fig1.update_traces(line=dict(width=3))
@@ -886,7 +894,7 @@ def build_dot_reg(data_sel, method_sel,
             hovertemplate="<br>".join([
             "Data: %{customdata[1]}",
             "Method: %{x}",
-            "Accuracy: %{y}",
+            "1/MSE: %{y}",
             "Consistency: %{customdata[0]}",
                 ]))   
     fig2.update_traces(line=dict(width=3))

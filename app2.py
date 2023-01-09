@@ -62,14 +62,29 @@ line_choice = {
 meths = list(palette.keys())
 
 
-palette_data = {'PANCAN':"purple",
-                'DNase':"firebrick",
-                'Religion': 'indigo',
-                'Author':'yellow',
-                'Spam base':"green",
-                'Statlog':"cyan"
-                }
+# palette_data = {'PANCAN':"purple",
+#                 'DNase':"firebrick",
+#                 'Religion': 'indigo',
+#                 'Author':'yellow',
+#                 'Spam base':"green",
+#                 'Statlog':"cyan"
+#                 }
 
+palette_data = {'PANCAN':"purple",
+                'Religion': 'indigo',
+                'DNase':"firebrick",
+                'TCGA':'hotpink',
+                'Madelon' :'greenyellow',
+                 'Amphibians':'lightseagreen',
+               'Author':'yellow',         
+                'Spam base':"green",
+                'MNIST Digit':"cyan",
+                'Theorem':'slateblue',
+                'Statlog':'deepskyblue',
+                'Call':'cornflowerblue',
+                'Bean':"powderblue",
+                
+                }
 markers_choice = {
                 'K-Means':"0",
                 'K-Means (minibatch)':"0",
@@ -101,6 +116,8 @@ def sort(df,column1,sorter1,column2=None,sorter2=None):
     return df
 
 df=sort(df,'data',list(palette_data.keys()),'method',list(palette.keys()))
+meths = list(palette.keys())
+datas = list(palette_data.keys())
 
 
 def description_card():
@@ -204,7 +221,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="method-select_clus",
                 options=[{"label": i, "value": i} for i in meths],
-                value=meths[0:10],
+                value=meths[:],
                 multi=True,
             ),
             html.Br(),
@@ -217,7 +234,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="data-select_clus",
                 options=[{"label": i, "value": i} for i in data_options],
-                value=data_options[:6],
+                value=data_options[:],
                 multi=True,
             ),
             html.Br(),
@@ -438,6 +455,7 @@ def build_line_clus(data_sel, method_sel,
                     hoverinfo='none',                                                                              
                 )
             )
+    fig.update_xaxes(categoryorder='array', categoryarray= datas)
     return fig
 
 ###################
@@ -704,7 +722,7 @@ def build_line_raw_clus(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.05,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
     fig.update_xaxes(matches=None,showticklabels=True)
@@ -725,7 +743,7 @@ def build_line_raw_clus(data_sel, method_sel,
                     hoverinfo='none',                                                                              
                 )
             )
-
+    fig.update_xaxes(matches=None)
         
     return fig
                 
@@ -760,7 +778,7 @@ def build_scatter_raw_clus(data_sel, method_sel,
             
     fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
 #                      trendline="ols",
-                     facet_col="data",facet_col_wrap=3,
+                 opacity=0.5,    facet_col="data",facet_col_wrap=3,
                      #width=1000, height=800,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
@@ -769,7 +787,8 @@ def build_scatter_raw_clus(data_sel, method_sel,
 
                 )
    
-    fig.update_traces(line=dict(width=3))
+    fig.update_traces(marker_size=10)
+    fig.update_xaxes(matches=None,showticklabels=True)
     
     if new_data is not None:
         fig.add_trace(
@@ -786,7 +805,6 @@ def build_scatter_raw_clus(data_sel, method_sel,
             hoverinfo='none'
         )
         )
-    
     return fig
            
 def build_heat_raw_clus(data_sel, method_sel,
@@ -825,7 +843,7 @@ def build_heat_raw_clus(data_sel, method_sel,
     tt = [item for sublist in tt for item in sublist]
     this_palette=dict((i,palette[i]) for i in method_sel)
 
-    fig = make_subplots(rows=9, cols=2, horizontal_spacing=0.05,
+    fig = make_subplots(rows=len(data_sel), cols=2, horizontal_spacing=0.05,
                     vertical_spacing=0.05,                     
                                      subplot_titles=(tt)                                                                  )
 

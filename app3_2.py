@@ -66,16 +66,30 @@ line_choice = {
             'DAE':'dot',
             'Random Projection':'solid'
             }
-palette_data = {
-                'PANCAN':"purple",
-                'DNase':"firebrick",
+# palette_data = {
+#                 'PANCAN':"purple",
+#                 'DNase':"firebrick",
+#                 'Religion': 'indigo',
+#                 'Author':'yellow',
+#                 'Spam base':"green",
+#                 'Statlog':"cyan",
+#                 'Madelon' :'greenyellow',
+#                 }
+palette_data = {'PANCAN':"purple",
                 'Religion': 'indigo',
-                'Author':'yellow',
-                'Spam base':"green",
-                'Statlog':"cyan",
+                'DNase':"firebrick",
+                'TCGA':'hotpink',
                 'Madelon' :'greenyellow',
+                 'Amphibians':'lightseagreen',
+               'Author':'yellow',         
+                'Spam base':"green",
+                'Darmanis':"cyan",
+                'Theorem':'slateblue',
+                'Statlog':'deepskyblue',
+                'Call':'cornflowerblue',
+                'Bean':"powderblue",
+                
                 }
-
 markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
@@ -106,6 +120,8 @@ def sort(df,column1,sorter1,column2=None,sorter2=None):
 
 df=sort(df,'data',list(palette_data.keys()),'method',list(palette.keys()))
 
+meths = list(palette.keys())
+datas = list(palette_data.keys())
 
 
 def description_card():
@@ -323,7 +339,7 @@ def build_line_raw_knn(data_sel, method_sel,criteria_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.15,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.05,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
     fig.update_xaxes(matches=None,showticklabels=True)
@@ -371,6 +387,7 @@ def build_line_knn(data_sel, method_sel,criteria_sel,
                  # title=
                  )
     fig.update_traces(line=dict(width=3))
+    fig.update_xaxes(categoryorder='array', categoryarray= datas)
     return fig
 
 def build_bump_knn(data_sel, method_sel,
