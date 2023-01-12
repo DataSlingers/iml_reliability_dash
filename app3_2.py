@@ -196,7 +196,7 @@ def generate_control_card():
             dcc.RadioItems(
                 id="noise-select_knn",
                 options=[{"label": i, "value": i} for i in noise_options],
-                value=noise_options[1],
+                value='Normal',
             ),
                 
             html.Hr(),
@@ -214,7 +214,7 @@ def generate_control_card():
             dcc.RadioItems(
                 id="criteria-select_knn",
                 options=[{"label": i, "value": i} for i in criteria_options],
-                value=criteria_options[0],
+                value='RBO',
             ),            
 
             html.Hr(),
