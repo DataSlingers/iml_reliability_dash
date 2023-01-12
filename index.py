@@ -722,6 +722,7 @@ def update_dot(pathname,data_sel,method_sel,
                     criteria_sel
                  )
     return fig1,fig2
+
 @app.callback(
     [Output("dot1_new", "figure"),
      Output("dot2_new", "figure"),
@@ -743,7 +744,7 @@ def update_dot2(pathname,data_sel,method_sel,
     
         fig1,fig2=build_dot(data_sel, method_sel,
                     k_sel,
-                    criteria_sel
+                    criteria_sel,data
                  )
     if pathname == '/feature_importance_regression':    
     
@@ -1133,21 +1134,24 @@ def update_heat_raw_clus(data_sel, method_sel,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-    ],
+          Input("clus-select_dr", "value"),
+  ],
 )
     
 def update_heatmap_dr(data_sel_dr,method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                      rank_select_dr
+                      rank_select_dr,
+                      clus_select_dr
                  ):
     
     fig=build_heat_summary_dr(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                      rank_select_dr)
+                      rank_select_dr,
+                      clus_select_dr)
     return fig    
 @app.callback(
     Output("acc_dr", "figure"),
@@ -1158,48 +1162,54 @@ def update_heatmap_dr(data_sel_dr,method_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-    ],
+          Input("clus-select_dr", "value"),
+  ],
 )
     
 def update_acc_bar_dr(data_sel_dr,method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                      rank_select_dr
+                      rank_select_dr,
+                      clus_select_dr
                  ):
     
     fig=build_acc_bar_dr(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                      rank_select_dr)
+                      rank_select_dr,
+                      clus_select_dr)
     return fig      
-@app.callback(
-    Output("acc_vs_consis_scatter_dr", "figure"),
-    [
-        Input("data-select_dr", "value"),
-        Input("method-select_dr", "value"),
-        Input("criteria-select_dr", "value"),
-        Input("noise-select_dr", "value"),
-        Input("sigma-select_dr", "value"),
-        Input("rank-select_dr", "value"),
-    ],
-)
-def update_scatter_dr(data_sel_dr, 
-                     method_sel_dr,
-                    criteria_sel_dr,
-                    noise_sel_dr,
-                     sigma_sel_dr,
-                      rank_select_dr
-                 ):
-    fig=build_scatter_dr(data_sel_dr, 
-                        method_sel_dr,
-                        criteria_sel_dr,
-                        noise_sel_dr,
-                        sigma_sel_dr,
-                         rank_select_dr
-                    )
-    return fig
+# @app.callback(
+#     Output("acc_vs_consis_scatter_dr", "figure"),
+#     [
+#         Input("data-select_dr", "value"),
+#         Input("method-select_dr", "value"),
+#         Input("criteria-select_dr", "value"),
+#         Input("noise-select_dr", "value"),
+#         Input("sigma-select_dr", "value"),
+#         Input("rank-select_dr", "value"),
+#             Input("clus-select_dr", "value"),
+# ],
+# )
+# def update_scatter_dr(data_sel_dr, 
+#                      method_sel_dr,
+#                     criteria_sel_dr,
+#                     noise_sel_dr,
+#                      sigma_sel_dr,
+#                       rank_select_dr,
+#                       clus_select_dr
+#                  ):
+#     fig=build_scatter_dr(data_sel_dr, 
+#                         method_sel_dr,
+#                         criteria_sel_dr,
+#                         noise_sel_dr,
+#                         sigma_sel_dr,
+#                          rank_select_dr,
+#                       clus_select_dr
+#                     )
+#     return fig
     
         
 @app.callback(
@@ -1211,21 +1221,24 @@ def update_scatter_dr(data_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-    ],
+            Input("clus-select_dr", "value"),
+],
 )
 def update_bump_dr(data_sel_dr, 
                      method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                   rank_select_dr
+                   rank_select_dr,
+                      clus_select_dr
                  ):
     fig=build_bump_dr(data_sel_dr, 
                         method_sel_dr,
                         criteria_sel_dr,
                         noise_sel_dr,
                         sigma_sel_dr,
-                      rank_select_dr
+                      rank_select_dr,
+                      clus_select_dr
                     )
     return fig
 @app.callback(
@@ -1237,7 +1250,8 @@ def update_bump_dr(data_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-         Input('stored-data', 'data')
+           Input("clus-select_dr", "value"),
+      Input('stored-data', 'data')
     ],
 )
 
@@ -1246,14 +1260,16 @@ def update_bump_dr2(data_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                   rank_select_dr,data
+                   rank_select_dr,
+                      clus_select_dr,data
                  ):
     fig=build_bump_dr(data_sel_dr, 
                      method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                   rank_select_dr,data)
+                   rank_select_dr,
+                      clus_select_dr,data)
     return fig
 
 
@@ -1266,21 +1282,24 @@ def update_bump_dr2(data_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-    ],
+           Input("clus-select_dr", "value"),
+ ],
 )
 def update_line_dr(data_sel_dr, 
                      method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                   rank_select_dr
+                   rank_select_dr,
+                      clus_select_dr
                  ):
     fig=build_line_dr(data_sel_dr, 
                         method_sel_dr,
                         criteria_sel_dr,
                         noise_sel_dr,
                         sigma_sel_dr,
-                      rank_select_dr
+                      rank_select_dr,
+                      clus_select_dr
                     )
     return fig
 @app.callback(
@@ -1292,7 +1311,8 @@ def update_line_dr(data_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-         Input('stored-data', 'data')
+            Input("clus-select_dr", "value"),
+     Input('stored-data', 'data')
     ],
 )
 
@@ -1301,14 +1321,16 @@ def update_line_dr2(data_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                   rank_select_dr,data
+                   rank_select_dr,
+                      clus_select_dr,data
                  ):
     fig=build_line_dr(data_sel_dr, 
                      method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                   rank_select_dr,data)
+                   rank_select_dr,
+                      clus_select_dr,data)
     return fig
 @app.callback(
     Output("fit_dr", "figure"),
@@ -1319,7 +1341,8 @@ def update_line_dr2(data_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-    ],
+           Input("clus-select_dr", "value"),
+ ],
 )
 
 def update_fit_dr(data_sel_dr, 
@@ -1327,7 +1350,8 @@ def update_fit_dr(data_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                      rank_select_dr
+                      rank_select_dr,
+                      clus_select_dr
                  ):
     
 
@@ -1336,7 +1360,8 @@ def update_fit_dr(data_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                      rank_select_dr)
+                      rank_select_dr,
+                      clus_select_dr)
     return fig        
 @app.callback(
     Output("fit_new_dr", "figure"),
@@ -1347,7 +1372,8 @@ def update_fit_dr(data_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-         Input('stored-data', 'data')
+            Input("clus-select_dr", "value"),
+     Input('stored-data', 'data')
     ],
 )
 
@@ -1356,14 +1382,16 @@ def update_fit_dr2(data_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                   rank_select_dr,data
+                   rank_select_dr,
+                      clus_select_dr,data
                  ):
     fig=build_fit_dr(data_sel_dr, 
                      method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                   rank_select_dr,data)
+                   rank_select_dr,
+                      clus_select_dr,data)
     return fig
 # @app.callback(
 #     Output("cor_dr", "figure"),
@@ -1432,21 +1460,24 @@ def update_fit_dr2(data_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-    ],
+           Input("clus-select_dr", "value"),
+ ],
 )
         
 
 def update_dot_dr(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
-                     sigma_sel_dr,rank_select_dr
+                     sigma_sel_dr,rank_select_dr,
+                      clus_select_dr
                  ):
     
         fig1,fig2=build_dot_dr(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
-                               rank_select_dr
+                               rank_select_dr,
+                      clus_select_dr
                  )
         return fig1,fig2
 @app.callback(
@@ -1459,7 +1490,8 @@ def update_dot_dr(data_sel_dr, method_sel_dr,
         Input("criteria-select_dr", "value"),
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
-        Input('stored-data', 'data')
+          Input("clus-select_dr", "value"),
+      Input('stored-data', 'data')
     ],
 )
         
@@ -1467,13 +1499,15 @@ def update_dot_dr(data_sel_dr, method_sel_dr,
 def update_dot_dr2(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
-                     sigma_sel_dr,rank_select_dr,data
+                     sigma_sel_dr,rank_select_dr,
+                      clus_select_dr,data
                  ):
     
         fig1,fig2=build_dot_dr(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
-                     sigma_sel_dr,rank_select_dr,data
+                     sigma_sel_dr,rank_select_dr,
+                      clus_select_dr,data
                  )
         return fig1,fig2
 
@@ -1487,16 +1521,18 @@ def update_dot_dr2(data_sel_dr, method_sel_dr,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-    ],
+         Input("clus-select_dr", "value"),
+   ],
 )
 
-def update_scatter_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel
-                 ):
+def update_scatter_raw_dr(data_sel_dr, method_sel_dr,
+                 criteria_sel_dr, noise_sel_dr,sigma_sel_dr,rank_sel_dr,
+                      clus_select_dr):
     
     
-    fig=build_scatter_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel)
+    fig=build_scatter_raw_dr(data_sel_dr, method_sel_dr,
+                 criteria_sel_dr, noise_sel_dr,sigma_sel_dr,rank_sel_dr,
+                      clus_select_dr)
     return fig 
     raise PreventUpdate    
     
@@ -1509,14 +1545,15 @@ def update_scatter_raw_dr(data_sel, method_sel,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
-    ],
+          Input("clus-select_dr", "value"),
+  ],
 )
 
 def update_line_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel):
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_select_dr):
     
     fig=build_line_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel)
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_select_dr)
     return fig
 
     
@@ -1529,14 +1566,15 @@ def update_line_raw_dr(data_sel, method_sel,
         Input("noise-select_dr", "value"),
         Input("sigma-select_dr", "value"),
         Input("rank-select_dr", "value"),
+        Input("clus-select_dr", "value"),
     ],
 )
 
 def update_heat_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel):
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_select_dr):
     
     fig=build_heat_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel)
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_select_dr)
     return fig
 
 

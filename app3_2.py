@@ -86,8 +86,8 @@ palette_data = {'PANCAN':"purple",
                 'Darmanis':"cyan",
                 'Theorem':'slateblue',
                 'Statlog':'deepskyblue',
-                'Call':'cornflowerblue',
-                'Bean':"powderblue",
+#                 'Call':'cornflowerblue',
+#                 'Bean':"powderblue",
                 
                 }
 markers_choice = {

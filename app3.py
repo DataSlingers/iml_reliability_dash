@@ -34,7 +34,7 @@ criteria_options = df['criteria'].unique().tolist()
 rank_options = df['rank'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
 sigma_options =df['sigma'].unique().tolist()
-
+clus_options = df['clustering'].unique().tolist()
 plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
@@ -92,8 +92,8 @@ palette_data = {'PANCAN':"purple",
                 'Darmanis':"cyan",
                 'Theorem':'slateblue',
                 'Statlog':'deepskyblue',
-                'Call':'cornflowerblue',
-                'Bean':"powderblue",
+#                 'Call':'cornflowerblue',
+#                 'Bean':"powderblue",
                 
                 }
 markers_choice = {
@@ -211,6 +211,15 @@ def generate_control_card():
             ),
             html.Hr(),
             
+            html.Hr(),
+            html.P("Select: Clustering Method"),
+            dcc.RadioItems(
+                id="clus-select_dr",
+                options=[{"label": i, "value": i} for i in clus_options],
+                value=clus_options[0],
+            
+            ),
+            html.Hr(),          
 
             html.P("Select: Consistency Metric"),
             dcc.RadioItems(
@@ -320,10 +329,10 @@ def App3():
     ])
     return layout
 
-def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel):
+def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel):
 
     this_palette=dict((i,palette[i]) for i in method_sel)
-    this_markers_choice2=dict((i,markers_choice2[i]) for i in method_sel)
+    this_markers_choice =dict((i,markers_choice[i]) for i in method_sel)
     
     
     dff2=df[(df.data.isin(data_sel))
@@ -332,12 +341,14 @@ def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_s
                 &(df.sigma ==float(sigma_sel))
                 &(df['rank'] ==int(rank_sel))
                &(df['criteria']==criteria_sel)
+            &(df.clustering == clus_sel)
           ]
+    dff2=dff2.dropna()
     fig = px.scatter(dff2, x="Accuracy", y="Consistency", color='method', 
                  facet_col='data',
                  facet_col_wrap=3, 
                 color_discrete_map=(this_palette),
-                symbol='method', symbol_map= this_markers_choice2,
+                symbol='method', symbol_map= this_markers_choice,
                  text = 'method',
                  category_orders={"method":list(this_palette.keys())},
                labels=dict(Consistency=criteria_sel, method="Method")
@@ -356,7 +367,7 @@ def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_s
     return fig
 
 def build_bump_dr(data_sel, method_sel,
-                 criteria_sel,noise_sel,sigma_sel,rank_sel,new_data=None):
+                 criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None):
 ####### filter data
     
     dff=df[(df.data.isin(data_sel))
@@ -364,7 +375,9 @@ def build_bump_dr(data_sel, method_sel,
                 &(df.noise ==noise_sel)
                 &(df['rank'] ==int(rank_sel))
                 &(df.sigma ==float(sigma_sel))
-               &(df.criteria==criteria_sel)]
+               &(df.criteria==criteria_sel)
+                      &(df.clustering == clus_sel)
+                ]
     
     
     this_palette=dict((i,palette[i]) for i in method_sel)
@@ -435,10 +448,11 @@ def build_bump_dr(data_sel, method_sel,
 
 
 
-def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel
+def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel
                  ):
-        cross_ave = cross[cross.data.isin(data_sel)]
-        cross_ave=cross.groupby(['method1','method2','criteria','noise','sigma','rank'],as_index=False)['value'].mean()
+        cross_ave = cross[cross.data.isin(data_sel)&(cross.clustering == clus_sel)]
+        
+        cross_ave=cross_ave.groupby(['method1','method2','criteria','noise','sigma','rank'],as_index=False)['value'].mean()
         sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
         sub = sub[(sub['sigma']==sigma_sel)&(sub['criteria']==criteria_sel)&(sub['noise']==noise_sel)&(sub['rank']==rank_sel)]
         sub = sub.pivot("method1", "method2", "value")
@@ -452,7 +466,7 @@ def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,r
         fig.layout.coloraxis.showscale = False
         return fig
 
-def build_acc_bar_dr(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel
+def build_acc_bar_dr(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel
                  ):
     this_palette=dict((i,palette[i]) for i in method_sel)
     dff=df[(df.data.isin(data_sel))
@@ -460,7 +474,9 @@ def build_acc_bar_dr(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,rank_
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df['rank'] ==rank_sel)
-            &(df.criteria==criteria_sel)] 
+            &(df.criteria==criteria_sel)
+                      &(df.clustering == clus_sel)
+                ] 
 
     dff = dff.groupby(['method']).mean().reset_index()
     fig = px.bar(dff, x='method', y='Accuracy',
@@ -476,7 +492,7 @@ def build_acc_bar_dr(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,rank_
     return fig
 
 def build_line_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
                  ):
 
 ####### filter data
@@ -485,7 +501,8 @@ def build_line_dr(data_sel, method_sel,
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df['rank'] ==rank_sel)
-            &(df.criteria==criteria_sel)] 
+            &(df.criteria==criteria_sel) 
+            &(df.clustering == clus_sel)]
 
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_line_choice=dict((i,line_choice[i]) for i in method_sel)
@@ -531,14 +548,16 @@ def build_line_dr(data_sel, method_sel,
     return fig
 
 def build_fit_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
                  ):
     dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df['rank'] ==rank_sel)
-            &(df.criteria==criteria_sel)] 
+            &(df.criteria==criteria_sel)
+               &(df.clustering == clus_sel)
+            ] 
     this_palette = palette.copy()
     this_markers_choice=markers_choice.copy()
 
@@ -548,7 +567,8 @@ def build_fit_dr(data_sel, method_sel,
                 &(new_data['rank'] ==int(rank_sel))
                 &(new_data.sigma ==float(sigma_sel))
                &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
+        dff = pd.concat([dff, neww
+                        ]) 
         for mm in set(new_data['method']):
             this_palette[mm]='black'
             this_markers_choice[mm]='star'
@@ -591,7 +611,7 @@ def build_fit_dr(data_sel, method_sel,
     return fig
 
 def build_cor_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
                  ):
 
  
@@ -600,7 +620,9 @@ def build_cor_dr(data_sel, method_sel,
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df['rank'] ==rank_sel)
-            &(df.criteria==criteria_sel)] 
+            &(df.criteria==criteria_sel)
+           &(df.clustering == clus_sel)
+              ] 
     this_palette = palette.copy()
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -627,14 +649,15 @@ def build_cor_dr(data_sel, method_sel,
 
 
 def build_line_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None):
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None):
 
 
     dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df['rank'] ==rank_sel)
-            &(df.criteria==criteria_sel)]  
+            &(df.criteria==criteria_sel)  
+            &(df.clustering == clus_sel)]
 
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_line_choice=dict((i,line_choice[i]) for i in method_sel)
@@ -685,7 +708,7 @@ def build_line_raw_dr(data_sel, method_sel,
     return fig
                 
 def build_scatter_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None):
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None):
 
  
 #     dff=df[(df.data.isin(data_sel))
@@ -697,7 +720,10 @@ def build_scatter_raw_dr(data_sel, method_sel,
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df['rank'] ==rank_sel)
-            &(df.criteria==criteria_sel)]     
+            &(df.criteria==criteria_sel)
+                       &(df.clustering == clus_sel)]
+
+    dff=dff.dropna()
     
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
@@ -751,7 +777,7 @@ def build_scatter_raw_dr(data_sel, method_sel,
     return fig
            
 def build_heat_raw_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel,new_data=None
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
                  ):
     
 
@@ -762,7 +788,8 @@ def build_heat_raw_dr(data_sel, method_sel,
                &(cross['rank'] ==rank_sel)
                 &(cross.noise==noise_sel)
                 &(cross.sigma==sigma_sel)
-                &(cross.criteria==criteria_sel)]
+                &(cross.criteria==criteria_sel)      
+                      &(cross.clustering == clus_sel)]
     cross_ave=cross_ave.groupby(['data','method1','method2'],as_index=False)['value'].mean()
 #     sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
 #     sub = sub[(sub['K']==k_sel)&(sub['criteria']==criteria_sel)]
@@ -818,7 +845,7 @@ def build_heat_raw_dr(data_sel, method_sel,
                      
 
 def build_dot_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel, new_data=None
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel, new_data=None
                  ):
 
     dff=df[(df.data.isin(data_sel))
@@ -826,11 +853,14 @@ def build_dot_dr(data_sel, method_sel,
            &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
-            &(df.criteria==criteria_sel)] 
+            &(df.criteria==criteria_sel)
+           &(df.clustering == clus_sel)]
+
     dff['size1']=(dff['Accuracy']**2)
     dff['size1']=[max(i,0.1) for i in dff['size1']]
     dff['size2']=(dff['Consistency']**2)
     dff['size2']=[max(i,0.1) for i in dff['size2']]    
+    dff=dff.dropna()
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
