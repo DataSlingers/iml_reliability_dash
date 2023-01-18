@@ -48,10 +48,10 @@ def display_figure(pp,plot_selected, click,pathname):
     #              'k_raw': 'Consistency vs. number of local neighbors',
     #              'heatmap_raw': 'cross method consistency & accuracy'
     #             }
-        heads = {'heatmap':'Summary Figure: Consistency Heatmap (Between methods, aggregated over data sets)',
-                 'line':'Summary Figure: Consistency Lineplot (aggregated over data sets)',
+        heads = {'heatmap':'Summary Figure: Consistency Heatmap (Between Methods, aggregated over data sets)',
+                 'line':'Summary Figure: Consistency Lineplot (Within Methods)', 
                  # (across data sets)',
-                 'bump':'Summary Figure: Consistency Bump Plot (aggregated over data sets)', 
+                 'bump':'Summary Figure: Consistency Bump Plot (Within Methods)', 
                  #of the most consistent methods across data sets',
 #                  'fit':'Summary Figure: Consistency & Accuracy Scatterplot (aggregated over data sets)', 
                  #vs. predictive accuracy',

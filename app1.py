@@ -24,7 +24,7 @@ nav = Navbar()
 # )
 
 df = pd.read_csv("feature_impo.csv")
-df=df.dropna()
+# df=df.dropna()
 cross = pd.read_csv('cross_fi.csv')
 
 
@@ -64,7 +64,9 @@ markers_choice = {'LogisticLASSO':'0',
                     'permutation (LogisticRidge)':"x",
                     'permutation (RF)':"x" ,
                     'permutation (MLP)':"x",
-                    'Shapley Value (LogisticRidge)':"x" ,
+                      'Shapley Value (XGB)': "x",       
+                    'permutation (XGB)':"x",
+                  'Shapley Value (LogisticRidge)':"x" ,
                     'Shapley Value (RF)':"x",
                     'Shapley Value (MLP)':"x"}
 palette  = {
@@ -89,7 +91,8 @@ palette  = {
         'permutation (RF)':"gold",
         'Shapley Value (LogisticRidge)':'chocolate',
         'Shapley Value (RF)': "yellow",           
-        }
+     'Shapley Value (XGB)': "darkkhaki",       
+               'permutation (XGB)':"olive",      }
 
 line_choice = {'LogisticLASSO':'solid',
                'LogisticRidge':'solid',
@@ -111,7 +114,8 @@ line_choice = {'LogisticLASSO':'solid',
             'Shapley Value (LogisticRidge)':'dashdot',
             'Shapley Value (RF)': "dashdot",       
               
-              }    
+                     'Shapley Value (XGB)': "dashdot",       
+            'permutation (XGB)':"dashdot",     }    
 
 palette_data = {'PANCAN':"purple",
                 'Religion': 'indigo',
@@ -311,11 +315,11 @@ def App1():
             ###### summary plots
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
-            html.Div(id='show_heatmap'),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
+            html.Div(id='show_heatmap'),
 #             html.Div(id='show_fit'),
-            html.Div(id='show_dot'),
+#             html.Div(id='show_dot'),
             html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
@@ -556,7 +560,7 @@ def build_line(data_sel, method_sel,
                                 line_dash = 'method',
                       line_dash_map = this_line_choice,
                       labels={
-                             "method": "Method"
+                             "method": "Method",'data':'Data'
                          },
                      # title=
                      )
@@ -656,7 +660,7 @@ def build_cor(data_sel, method_sel,
 
     
     this_palette=dict((i,palette[i]) for i in method_sel)
-   
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -668,20 +672,38 @@ def build_cor(data_sel, method_sel,
             
                 
     
-    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
-    corr.columns = [' '.join(col).strip() for col in corr.columns.values]
-    corr=corr[['method','Consistency Accuracy']]
-    corr = sort(corr,'method',list(this_palette.keys()))
+    corr1 = dff.groupby(['method'])[['Consistency','Accuracy']].corr(method = 'spearman').unstack().reset_index()    
+#    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
+    corr1.columns = [' '.join(col).strip() for col in corr1.columns.values]
+    corr1=corr1[['method','Consistency Accuracy']]
+    corr1 = sort(corr1,'method',list(this_palette.keys()))
 
 
 
-    fig = px.bar(corr, x='method', y='Consistency Accuracy',
+    fig1 = px.bar(corr1, x='method', y='Consistency Accuracy',
              range_y = [-1,1],
              color='method',color_discrete_map=this_palette,
              labels={'method':'Method', 'Consistency Accuracy':'Correlation'},
              title="Correlation between Accuracy and Consistency"
             )
-    return fig
+    
+    corr2 = dff.groupby(['data'])[['Consistency','Accuracy']].corr(method = 'spearman').unstack().reset_index()    
+#    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
+    corr2.columns = [' '.join(col).strip() for col in corr2.columns.values]
+    corr2=corr2[['data','Consistency Accuracy']]
+    corr2 = sort(corr2,'data',list(this_palette_data.keys()))
+    
+    fig2 = px.bar(corr2, x='data', y='Consistency Accuracy',
+             range_y = [-1,1],
+             color='data',color_discrete_map=this_palette_data,
+             labels={'data':'Data', 'Consistency Accuracy':'Correlation'},
+             title="Correlation between Accuracy and Consistency"
+            )
+    
+    
+    
+    
+    return fig2,fig1
           
         
     

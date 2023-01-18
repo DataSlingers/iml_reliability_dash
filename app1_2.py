@@ -23,10 +23,9 @@ nav = Navbar()
 # )
 
 df = pd.read_csv("feature_impo_reg.csv")
-msee =[1/float(i) for i in df['Accuracy']]
-msee =np.array([1/float(i) for i in df['Accuracy']])
-df['Accuracy']=msee/max(msee)
-
+#msee =[1/float(i) for i in df['Accuracy']]
+msee =np.array([float(i) for i in df['Accuracy']])
+df['MSE']=(msee-min(msee))/(max(msee)-min(msee))
 cross = pd.read_csv('cross_reg.csv')
 
 
@@ -41,7 +40,7 @@ plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'dot':'Consistency/predictive accuracy vs. methods',
 
 #                         'fit':'Consistency vs. predictive accuracy',
-                        'cor': 'Correlation between onsistency and predictive accuracy'}
+                        'cor': 'Correlation between consistency and predictive error (MSE)'}
 plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all data sets',
                    'line_raw':'Consistency vs. predictive accuracy for all data sets',
                     'heatmap_raw':'Consistency heatmap across methods for all data sets'}
@@ -66,7 +65,10 @@ markers_choice = {'LASSO':'0',
                     'permutation (MLP)':"x",
                     'Shapley Value (Ridge)':"x" ,
                     'Shapley Value (RF)':"x",
-                    'Shapley Value (MLP)':"x"}
+                    'Shapley Value (MLP)':"x",
+                  'Shapley Value (XGB)': "x",       
+               'permutation (XGB)':"x",
+                 }
 palette  = {
             'LASSO':"purple",
             'Ridge': 'indigo',
@@ -85,9 +87,11 @@ palette  = {
             'Occlusion (MLP)' :'greenyellow'  ,
             'permutation (Ridge)':'tomato',
             'permutation (RF)':"gold",
-            'Shapley Value (Ridge)':'chocolate',
+         'Shapley Value (Ridge)':'chocolate',
             'Shapley Value (RF)': "yellow",           
-    
+            'Shapley Value (XGB)': "darkkhaki",       
+               'permutation (XGB)':"olive",
+
            }
 
 line_choice = {'LASSO':'solid',
@@ -110,7 +114,9 @@ line_choice = {'LASSO':'solid',
             'permutation (RF)':"dashdot",
             'Shapley Value (Ridge)':'dashdot',
             'Shapley Value (RF)': "dashdot",       
-              
+            'Shapley Value (XGB)': "dashdot",       
+            'permutation (XGB)':"dashdot",
+
               }    
 
 palette_data = {'Riboflavin':"purple",
@@ -331,11 +337,11 @@ def App1_2():
             ###### summary plots
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
-            html.Div(id='show_heatmap'),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
+            html.Div(id='show_heatmap'),
 #             html.Div(id='show_fit'),
-            html.Div(id='show_dot'),
+#             html.Div(id='show_dot'),
             html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
@@ -364,7 +370,7 @@ def build_scatter_reg(data_sel, method_sel,
                 &(df.method.isin(method_sel))
                 &(df.K ==k_sel)
                 &(df.criteria==criteria_sel)]
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="MSE", y="Consistency", color='method', 
                  facet_col='data',
                  facet_col_wrap=3, 
                 color_discrete_map=(palette),
@@ -372,7 +378,7 @@ def build_scatter_reg(data_sel, method_sel,
                  text = 'method',
                  category_orders={"method":list(this_palette.keys())},
                labels=dict(Consistency=criteria_sel, method="Method",
-                          Accuracy='MSE')
+                          MSE='MSE')
 
                 )
 
@@ -409,7 +415,7 @@ def build_bump_reg(data_sel, method_sel,
 ##### bump plot 
     df_ave = dff.groupby(['method','K','criteria'],as_index=False).mean()
     df_ave['data']='Average'
-    df_ave=df_ave[['data','method','K','criteria','Consistency','Accuracy']]
+    df_ave=df_ave[['data','method','K','criteria','Consistency','MSE']]
     dff=pd.concat([dff,df_ave])
 
 ########################
@@ -429,7 +435,7 @@ def build_bump_reg(data_sel, method_sel,
                               'ranking':[str(i) for i in range(1,len(set(rankk['ranking']))+1)]
                               },
                   labels=dict(data="Data",ranking='Rank',
-                          Accuracy='Normalized 1/MSE')
+                          MSE='MSE')
              )
     fig.update_layout(showlegend=False)
     y_annotation = list(top['method'])[::-1]
@@ -478,8 +484,8 @@ def build_acc_bar_reg(data_sel, method_sel,
                  color='method',text_auto='.3',
                  color_discrete_map=this_palette,
                  labels=dict(method="Method",
-                          Accuracy='Normalized 1/MSE'),
-                 title="Predictive Accuracy"
+                          MSE='MSE'),
+                 title="Predictive error (MSE)"
                 )
     fig.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
     fig.update_layout(height=300,showlegend=False)
@@ -539,7 +545,7 @@ def build_line_reg(data_sel, method_sel,
                         color_discrete_map=this_palette,
                             line_dash = 'method',
                   line_dash_map = this_line_choice,
-                  labels=dict(Consistency=criteria_sel, 
+                  labels=dict(Consistency=criteria_sel, data=  "Data",
                                       method="Method"),
                  # title=
                  )
@@ -585,13 +591,13 @@ def build_fit_reg(data_sel, method_sel,
             
             
             
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="MSE", y="Consistency", color='method', 
                      trendline="ols",
                 color_discrete_map=(this_palette),
                 symbol='method', symbol_map= this_markers_choice,
                  category_orders={"method":list(this_palette.keys())},
                labels=dict(Consistency=criteria_sel, method="Method",
-                          Accuracy='Normalized 1/MSE'),
+                          MSE='MSE'),
 
                 custom_data=['data','method'],
                 )
@@ -599,7 +605,7 @@ def build_fit_reg(data_sel, method_sel,
         hovertemplate="<br>".join([
         "Data: %{customdata[0]}",
         "Method: %{customdata[1]}",
-        "Accuracy: %{x}",
+        "MSE: %{x}",
         "Consistency: %{y}",
             ]))   
     fig.update_traces(line=dict(width=3))
@@ -608,7 +614,7 @@ def build_fit_reg(data_sel, method_sel,
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
+            x=neww['MSE'],
             y=neww['Consistency'],
             mode='markers',
             marker=dict(
@@ -634,6 +640,7 @@ def build_cor_reg(data_sel, method_sel,
             &(df.criteria==criteria_sel)]
     
     
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
     this_palette=dict((i,palette[i]) for i in method_sel)
     ###### input new data
     if new_data is not None:
@@ -644,19 +651,30 @@ def build_cor_reg(data_sel, method_sel,
         for mm in set(new_data['method']):
             this_palette[mm]='black'
             
-            
-    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
-    corr.columns = [' '.join(col).strip() for col in corr.columns.values]
-    corr=corr[['method','Consistency Accuracy']]
-    corr = sort(corr,'method',list(this_palette.keys()))
+    corr1 = dff.groupby(['method'])[['Consistency','MSE']].corr(method = 'spearman').unstack().reset_index()    
+#    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
+    corr1.columns = [' '.join(col).strip() for col in corr1.columns.values]
+    corr1=corr1[['method','Consistency MSE']]
+    corr1 = sort(corr1,'method',list(this_palette.keys()))
+    corr2 = dff.groupby(['data'])[['Consistency','MSE']].corr(method = 'spearman').unstack().reset_index()    
+#    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
+    corr2.columns = [' '.join(col).strip() for col in corr2.columns.values]
+    corr2=corr2[['data','Consistency MSE']]
+    corr2 = sort(corr2,'data',list(this_palette_data.keys()))
 
-    fig = px.bar(corr, x='method', y='Consistency Accuracy',
+    fig2 = px.bar(corr2, x='data', y='Consistency MSE',
              range_y = [-1,1],
-             color='method',color_discrete_map=(this_palette),
-             labels={'method':'Method', 'Consistency Accuracy':'Correlation'},
-             title="Correlation between Normalized 1/MSE and Consistency"
+             color='data',color_discrete_map=this_palette_data,
+             labels={'data':'Data', 'Consistency MSE':'Correlation'},
+             title="Correlation between MSE and Consistency"
             )
-    return fig
+    fig1 = px.bar(corr1, x='method', y='Consistency MSE',
+             range_y = [-1,1],
+             color='method',color_discrete_map=this_palette,
+             labels={'method':'Method', 'Consistency MSE':'Correlation'},
+             title="Correlation between MSE and Consistency"
+            )
+    return fig2,fig1
                
 def build_line_raw_reg(data_sel, method_sel,
                  k_sel, criteria_sel,new_data=None):
@@ -738,7 +756,7 @@ def build_scatter_raw_reg(data_sel, method_sel,
             
             
             
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="MSE", y="Consistency", color='method', 
 #                      trendline="ols",
                      opacity=0.5, facet_col="data",facet_col_wrap=3,
                      #width=1000, height=800,
@@ -751,7 +769,7 @@ def build_scatter_raw_reg(data_sel, method_sel,
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
+            x=neww['MSE'],
             y=neww['Consistency'],
             mode='markers',
             marker=dict(
@@ -809,7 +827,7 @@ def build_heat_raw_reg(data_sel, method_sel,
 
     for i,dd in enumerate(data_sel):
         bar1 = px.imshow(subss[dd],text_auto='.2f', origin='lower',)
-        bar2 = px.bar(dff[dff.data ==dd], x='method', y='Accuracy',range_y = [0,1],
+        bar2 = px.bar(dff[dff.data ==dd], x='method', y='MSE',range_y = [0,1],
                         color_discrete_map =palette,color='method',
                      text_auto='.3' )
 
@@ -841,7 +859,7 @@ def build_dot_reg(data_sel, method_sel,
     this_palette=[i for i in palette.keys() if i in method_sel]
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
 
-    dff['size1']=(dff['Accuracy']**2)
+    dff['size1']=(dff['MSE']**2)
     dff['size1']=[max(i,0.1) for i in dff['size1']]
     dff['size2']=(dff['Consistency']**2)
     dff['size2']=[max(i,0.1) for i in dff['size2']]    
@@ -865,7 +883,7 @@ def build_dot_reg(data_sel, method_sel,
 
 
                #  facet_col="acc_group",facet_col_wrap=3,
-                    custom_data=['Accuracy','data'],
+                    custom_data=['MSE','data'],
                     )
     fig1.update_traces(
             hovertemplate="<br>".join([
@@ -878,7 +896,7 @@ def build_dot_reg(data_sel, method_sel,
     fig1.update_xaxes(matches=None)            
     
 
-    fig2 = px.scatter(dff, x="method", y="Accuracy", color='data', 
+    fig2 = px.scatter(dff, x="method", y="MSE", color='data', 
                         size='size2',
                     color_discrete_map=this_palette_data,
                     #symbol='method', symbol_map= this_markers_choice,

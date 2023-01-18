@@ -308,11 +308,11 @@ def App3():
             ###### summary plots
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
-            html.Div(id='show_heatmap'),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
+            html.Div(id='show_heatmap'),
 #             html.Div(id='show_fit'),
-            html.Div(id='show_dot'),
+#             html.Div(id='show_dot'),
             html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
@@ -335,7 +335,7 @@ def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_s
     this_markers_choice =dict((i,markers_choice[i]) for i in method_sel)
     
     
-    dff2=df[(df.data.isin(data_sel))
+    dff=df[(df.data.isin(data_sel))
                 &(df.method.isin(method_sel))
                 &(df.noise ==noise_sel)
                 &(df.sigma ==float(sigma_sel))
@@ -343,8 +343,7 @@ def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_s
                &(df['criteria']==criteria_sel)
             &(df.clustering == clus_sel)
           ]
-    dff2=dff2.dropna()
-    fig = px.scatter(dff2, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
                  facet_col='data',
                  facet_col_wrap=3, 
                 color_discrete_map=(this_palette),
@@ -412,6 +411,8 @@ def build_bump_dr(data_sel, method_sel,
               category_orders={"data":list(dff.data.unique()),
                               'ranking':[str(i) for i in range(1,len(set(rankk['ranking']))+1)]
                               },
+                                    labels=dict(data="Data",ranking='Rank'),
+
              )
     fig.update_layout(showlegend=False)
     y_annotation = list(top['method'])[::-1]
@@ -524,7 +525,7 @@ def build_line_dr(data_sel, method_sel,
                             line_dash = 'method',
                   line_dash_map = this_line_choice,
                   labels={
-                         "method": "Method"
+                             "method": "Method",'data':'Data'
                      },
                  # title=
                  )
@@ -558,8 +559,8 @@ def build_fit_dr(data_sel, method_sel,
             &(df.criteria==criteria_sel)
                &(df.clustering == clus_sel)
             ] 
-    this_palette = palette.copy()
-    this_markers_choice=markers_choice.copy()
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
 
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -623,7 +624,8 @@ def build_cor_dr(data_sel, method_sel,
             &(df.criteria==criteria_sel)
            &(df.clustering == clus_sel)
               ] 
-    this_palette = palette.copy()
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
+    this_palette=dict((i,palette[i]) for i in method_sel)
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.noise ==noise_sel)
@@ -632,19 +634,34 @@ def build_cor_dr(data_sel, method_sel,
                &(new_data.criteria==criteria_sel)]
         dff = pd.concat([dff, neww]) 
         
-        
-    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
-    corr.columns = [' '.join(col).strip() for col in corr.columns.values]
-    corr=corr[['method','Consistency Accuracy']]
-    corr = sort(corr,'method',list(this_palette.keys()))
-    
-    fig = px.bar(corr, x='method', y='Consistency Accuracy',
+    corr1 = dff.groupby(['method'])[['Consistency','Accuracy']].corr(method = 'spearman').unstack().reset_index()    
+#    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
+    corr1.columns = [' '.join(col).strip() for col in corr1.columns.values]
+    corr1=corr1[['method','Consistency Accuracy']]
+    corr1 = sort(corr1,'method',list(this_palette.keys()))
+
+
+
+    fig1 = px.bar(corr1, x='method', y='Consistency Accuracy',
              range_y = [-1,1],
-             color='method',color_discrete_map=(this_palette),
+             color='method',color_discrete_map=this_palette,
              labels={'method':'Method', 'Consistency Accuracy':'Correlation'},
              title="Correlation between Accuracy and Consistency"
             )
-    return fig                     
+    
+    corr2 = dff.groupby(['data'])[['Consistency','Accuracy']].corr(method = 'spearman').unstack().reset_index()    
+#    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
+    corr2.columns = [' '.join(col).strip() for col in corr2.columns.values]
+    corr2=corr2[['data','Consistency Accuracy']]
+    corr2 = sort(corr2,'data',list(this_palette_data.keys()))
+    
+    fig2 = px.bar(corr2, x='data', y='Consistency Accuracy',
+             range_y = [-1,1],
+             color='data',color_discrete_map=this_palette_data,
+             labels={'data':'Data', 'Consistency Accuracy':'Correlation'},
+             title="Correlation between Accuracy and Consistency"
+            )
+    return fig2,fig1
                      
 
 
@@ -750,7 +767,7 @@ def build_scatter_raw_dr(data_sel, method_sel,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
                  category_orders={"method":list(this_palette.keys())},
-               labels=dict(Consistency=criteria_sel, method="Method"),
+               labels=dict(Consistency='Consistency', method="Method"),
 
                 )
    
@@ -793,7 +810,7 @@ def build_heat_raw_dr(data_sel, method_sel,
     cross_ave=cross_ave.groupby(['data','method1','method2'],as_index=False)['value'].mean()
 #     sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
 #     sub = sub[(sub['K']==k_sel)&(sub['criteria']==criteria_sel)]
-
+    
     dff=df[(df.data.isin(data_sel))
                 &(df.method.isin(method_sel))
                &(df['rank'] ==rank_sel)

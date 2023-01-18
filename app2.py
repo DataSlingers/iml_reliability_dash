@@ -303,11 +303,11 @@ def App2():
             ###### summary plots
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
-            html.Div(id='show_heatmap'),
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
+            html.Div(id='show_heatmap'),
 #             html.Div(id='show_fit'),
-            html.Div(id='show_dot'),
+#             html.Div(id='show_dot'),
             html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
@@ -436,7 +436,7 @@ def build_line_clus(data_sel, method_sel,
                             line_dash = 'method',
                   line_dash_map = this_line_choice,
                   labels={
-                         "method": "Method"
+                             "method": "Method",'data':'Data'
                      },
                  # title=
                  )
@@ -536,7 +536,8 @@ def build_bump_clus(data_sel, method_sel,
               category_orders={"data":list(dff.data.unique()),
                               'ranking':[str(i) for i in range(1,len(set(rankk['ranking']))+1)]
                               },
-             )
+                                          labels=dict(data="Data",ranking='Rank'),
+       )
     fig.update_layout(showlegend=False)
     y_annotation = list(top['method'])[::-1]
     intervals = list(top['ranking'])
@@ -643,6 +644,7 @@ def build_cor_clus(data_sel, method_sel,
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df.criteria==criteria_sel)] 
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
     this_palette = palette.copy()
     ###### input new data
     if new_data is not None:
@@ -653,19 +655,37 @@ def build_cor_clus(data_sel, method_sel,
         dff = pd.concat([dff, neww]) 
         for mm in set(new_data['method']):
             this_palette[mm]='black'
-            
-    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
-    corr.columns = [' '.join(col).strip() for col in corr.columns.values]
-    corr=corr[['method','Consistency Accuracy']]
-    corr = sort(corr,'method',list(this_palette.keys()))
-    
-    fig = px.bar(corr, x='method', y='Consistency Accuracy',
+    corr1 = dff.groupby(['method'])[['Consistency','Accuracy']].corr(method = 'spearman').unstack().reset_index()    
+#    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
+    corr1.columns = [' '.join(col).strip() for col in corr1.columns.values]
+    corr1=corr1[['method','Consistency Accuracy']]
+    corr1 = sort(corr1,'method',list(this_palette.keys()))
+
+
+
+    fig1 = px.bar(corr1, x='method', y='Consistency Accuracy',
              range_y = [-1,1],
-             color='method',color_discrete_map=(this_palette),
+             color='method',color_discrete_map=this_palette,
              labels={'method':'Method', 'Consistency Accuracy':'Correlation'},
              title="Correlation between Accuracy and Consistency"
             )
-    return fig                     
+    
+    corr2 = dff.groupby(['data'])[['Consistency','Accuracy']].corr(method = 'spearman').unstack().reset_index()    
+#    corr = dff.groupby(['method'])[['Consistency','Accuracy']].corr().unstack().reset_index()    
+    corr2.columns = [' '.join(col).strip() for col in corr2.columns.values]
+    corr2=corr2[['data','Consistency Accuracy']]
+    corr2 = sort(corr2,'data',list(this_palette_data.keys()))
+    
+    fig2 = px.bar(corr2, x='data', y='Consistency Accuracy',
+             range_y = [-1,1],
+             color='data',color_discrete_map=this_palette_data,
+             labels={'data':'Data', 'Consistency Accuracy':'Correlation'},
+             title="Correlation between Accuracy and Consistency"
+            )
+    return fig2,fig1
+
+
+
                      
 
 def build_acc_bar_clus(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel):
@@ -783,7 +803,7 @@ def build_scatter_raw_clus(data_sel, method_sel,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
                  category_orders={"method":list(this_palette.keys())},
-               labels=dict(Consistency=criteria_sel, method="Method"),
+               labels=dict(Consistency='Consistency', method="Method"),
 
                 )
    
