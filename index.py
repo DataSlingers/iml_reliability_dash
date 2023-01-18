@@ -23,7 +23,9 @@ meths  = ['LogisticRidge','LogisticLASSO', 'SVM','Tree','RF',
         'permutation (MLP)',       
         'Shapley Value (MLP)',
         'Shapley Value (LogisticRidge)' ,
-        'Shapley Value (RF)'     ]
+        'Shapley Value (RF)' ,
+           'Shapley Value (XGB)' ,
+        'permutation (XGB)' ]
 
 meths2  = ['Ridge','LASSO','Tree','RF',
         'XGB', 'deepLIFT (MLP)', 'Integrated Gradients (MLP)',  'Epsilon-LRP (MLP)',
@@ -34,14 +36,16 @@ meths2  = ['Ridge','LASSO','Tree','RF',
         'permutation (MLP)',       
         'Shapley Value (MLP)',
         'Shapley Value (Ridge)' ,
-        'Shapley Value (RF)'     ]
+        'Shapley Value (RF)'   ,
+        'Shapley Value (XGB)' ,
+        'permutation (XGB)'   ]
 
 # plot_summary_options = ['heatmap','line','bump','fit','dot','cor']
 # plot_summary_new_options = ['line_new','bump_new','fit_new','dot_new','cor_new']
 plot_raw_options = ['scatter_raw','line_raw','k_raw','heatmap_raw']
 # plot_raw_options_knn = ['line_raw','k_raw']
-plot_summary_options = ['heatmap','line','bump','dot']
-plot_summary_new_options = ['line_new','bump_new','dot_new']
+plot_summary_options = ['heatmap','line','bump','cor']
+plot_summary_new_options = ['line_new','bump_new','cor_new']
 
 # dbc.themes.LUX
 # dbc.themes.COSMO
@@ -153,8 +157,8 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
     Output("show_line", "children"),
     Output("show_bump", "children"),
 #     Output("show_fit", "children"),
-    Output("show_dot", "children"),
-#     Output("show_cor", "children"),
+#     Output("show_dot", "children"),
+    Output("show_cor", "children"),
 
     [Input('url', 'pathname'),
     State("select_summary", "value"),
@@ -166,7 +170,7 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
 
 def show(pathname,plot_selected,click):
     if click and click>0 and pathname!='/knn':
-        options = ['heatmap','line','bump','dot']
+        options = ['heatmap','line','bump','cor']
 #        options = ['heatmap','line','bump','fit','dot','cor']
         title = []
         subtitle = []
@@ -337,8 +341,8 @@ def update_summary_checklists(select_summary, all_summary,reset):
     Output("title_summary_new", "children"),
     Output("show_line_new", "children"),
     Output("show_bump_new", "children"),
-    Output("show_dot_new", "children"),
-#     Output("show_cor_new", "children"),
+#     Output("show_dot_new", "children"),
+    Output("show_cor_new", "children"),
 
     [ Input('url', 'pathname'),
         Input("select_summary_new", "value"),
@@ -648,54 +652,60 @@ def update_scatter_raw(pathname,data_sel,method_sel,
     
 #####################################
     
-# @app.callback(
+@app.callback(
+    [Output("cor1", "figure"),
+     Output("cor2", "figure"),
+    ],    
 #     Output("cor", "figure"),
-#     [Input('url', 'pathname'),
-#         Input("data-select", "value"),
-#         Input("method-select", "value"),
-#         Input("k-select", "value"),
-#         Input("criteria-select", "value"),
-#     ],
-# )
+    [Input('url', 'pathname'),
+        Input("data-select", "value"),
+        Input("method-select", "value"),
+        Input("k-select", "value"),
+        Input("criteria-select", "value"),
+    ],
+)
 
-# def update_cor(pathname,data_sel,method_sel,
-#                  k_sel, criteria_sel
-#                  ):
+def update_cor(pathname,data_sel,method_sel,
+                 k_sel, criteria_sel
+                 ):
     
-#     if pathname == '/feature_importance_classification':
-#         fig=build_cor(data_sel, method_sel,
-#                  k_sel, criteria_sel)
-#         return fig
-#     if pathname == '/feature_importance_regression':
-#         fig=build_cor_reg(data_sel,method_sel,
-#                  k_sel, criteria_sel)
-#         return fig        
-#     raise PreventUpdate    
+    if pathname == '/feature_importance_classification':
+        fig1,fig2 =build_cor(data_sel, method_sel,
+                 k_sel, criteria_sel)
+        return fig1,fig2        
+    if pathname == '/feature_importance_regression':
+        fig1,fig2 =build_cor_reg(data_sel,method_sel,
+                 k_sel, criteria_sel)
+        return fig1,fig2        
+    raise PreventUpdate    
     
-# @app.callback(
+@app.callback(
+    [Output("cor1_new", "figure"),
+     Output("cor2_new", "figure"),
+    ],    
 #     Output("cor_new", "figure"),
-#         [Input('url', 'pathname'),
-#         Input("data-select", "value"),
-#         Input("method-select", "value"),
-#         Input("k-select", "value"),
-#         Input("criteria-select", "value"),
-#          Input('stored-data', 'data')
-#     ],
-# )
+        [Input('url', 'pathname'),
+        Input("data-select", "value"),
+        Input("method-select", "value"),
+        Input("k-select", "value"),
+        Input("criteria-select", "value"),
+         Input('stored-data', 'data')
+    ],
+)
 
-# def update_cor2(pathname,data_sel, method_sel,
-#                  k_sel, criteria_sel,data
-#                  ):
+def update_cor2(pathname,data_sel, method_sel,
+                 k_sel, criteria_sel,data
+                 ):
 
-#     if pathname == '/feature_importance_classification':
-#         fig=build_cor(data_sel, method_sel,
-#                  k_sel, criteria_sel,data)
-#         return fig
-#     if pathname == '/feature_importance_regression':
-#         fig=build_cor_reg(data_sel, method_sel,
-#                  k_sel, criteria_sel,data)
-#         return fig        
-#     raise PreventUpdate    
+    if pathname == '/feature_importance_classification':
+        fig1,fig2 =build_cor(data_sel, method_sel,
+                 k_sel, criteria_sel,data)
+        return fig
+    if pathname == '/feature_importance_regression':
+        fig1,fig2 =build_cor_reg(data_sel, method_sel,
+                 k_sel, criteria_sel,data)
+        return fig1,fig2  
+    raise PreventUpdate    
             
     
 @app.callback(
@@ -752,7 +762,7 @@ def update_dot2(pathname,data_sel,method_sel,
                     k_sel,
                     criteria_sel,data
                  )
-        return fig1,fig2    
+    return fig1,fig2    
     
     
 ######################################
@@ -948,12 +958,12 @@ def update_dot_clus(data_sel_clus, method_sel_clus,
                      sigma_sel_clus
                  ):
     
-        fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+    fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
                      sigma_sel_clus
                  )
-        return fig1,fig2
+    return fig1,fig2
 @app.callback(
     [Output("dot1_new_clus", "figure"),
      Output("dot2_new_clus", "figure"),
@@ -974,12 +984,12 @@ def update_dot_clus2(data_sel_clus, method_sel_clus,
                      sigma_sel_clus
                  ):
     
-        fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+    fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
                      sigma_sel_clus
                  )
-        return fig1,fig2
+    return fig1,fig2
 @app.callback(
     Output("fit_new_clus", "figure"),
         [
@@ -1008,53 +1018,59 @@ def update_fit_clus2(data_sel_clus,
 
     
     
-# @app.callback(
-#     Output("cor_clus", "figure"),
-#     [
-#         Input("data-select_clus", "value"),
-#         Input("method-select_clus", "value"),
-#         Input("criteria-select_clus", "value"),
-#         Input("noise-select_clus", "value"),
-#         Input("sigma-select_clus", "value"),
-#     ],
-# )
+@app.callback(
+     [Output("cor1_clus", "figure"),
+     Output("cor2_clus", "figure"),
+    ],
+    #Output("cor_clus", "figure"),
+    [
+        Input("data-select_clus", "value"),
+        Input("method-select_clus", "value"),
+        Input("criteria-select_clus", "value"),
+        Input("noise-select_clus", "value"),
+        Input("sigma-select_clus", "value"),
+    ],
+)
 
-# def update_cor_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     noise_sel_clus,
-#                      sigma_sel_clus
-#                  ):
+def update_cor_clus(data_sel_clus, method_sel_clus,
+                    criteria_sel_clus,
+                    noise_sel_clus,
+                     sigma_sel_clus
+                 ):
     
 
-#     fig=build_cor_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     noise_sel_clus,
-#                      sigma_sel_clus)
-#     return fig        
-# @app.callback(
-#     Output("cor_new_clus", "figure"),
-#         [
-#       Input("data-select_clus", "value"),
-#         Input("method-select_clus", "value"),
-#         Input("criteria-select_clus", "value"),
-#         Input("noise-select_clus", "value"),
-#         Input("sigma-select_clus", "value"),
-#          Input('stored-data', 'data')
-#     ],
-# )
+    fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
+                    criteria_sel_clus,
+                    noise_sel_clus,
+                     sigma_sel_clus)
+    return fig1,fig2 
+@app.callback(
+     [Output("cor1_new_clus", "figure"),
+     Output("cor2_new_clus", "figure"),
+    ],
+    #Output("cor_new_clus", "figure"),
+        [
+      Input("data-select_clus", "value"),
+        Input("method-select_clus", "value"),
+        Input("criteria-select_clus", "value"),
+        Input("noise-select_clus", "value"),
+        Input("sigma-select_clus", "value"),
+         Input('stored-data', 'data')
+    ],
+)
 
-# def update_cor_clus2(data_sel_clus, 
-#                         method_sel_clus,
-#                         criteria_sel_clus,
-#                         noise_sel_clus,
-#                         sigma_sel_clus,data
-#                  ):
-#     fig=build_cor_clus(data_sel_clus, 
-#                         method_sel_clus,
-#                         criteria_sel_clus,
-#                         noise_sel_clus,
-#                         sigma_sel_clus,data)
-#     return fig
+def update_cor_clus2(data_sel_clus, 
+                        method_sel_clus,
+                        criteria_sel_clus,
+                        noise_sel_clus,
+                        sigma_sel_clus,data
+                 ):
+    fig1,fig2 =build_cor_clus(data_sel_clus, 
+                        method_sel_clus,
+                        criteria_sel_clus,
+                        noise_sel_clus,
+                        sigma_sel_clus,data)
+    return fig1,fig2 
             
     
     
@@ -1393,61 +1409,69 @@ def update_fit_dr2(data_sel_dr,
                    rank_select_dr,
                       clus_select_dr,data)
     return fig
-# @app.callback(
-#     Output("cor_dr", "figure"),
-#     [
-#         Input("data-select_dr", "value"),
-#         Input("method-select_dr", "value"),
-#         Input("criteria-select_dr", "value"),
-#         Input("noise-select_dr", "value"),
-#         Input("sigma-select_dr", "value"),
-#         Input("rank-select_dr", "value"),
-#     ],
-# )
+@app.callback(
+    [Output("cor1_dr", "figure"),
+     Output("cor2_dr", "figure"),
+    ],
+    #Output("cor_dr", "figure"),
+    [
+        Input("data-select_dr", "value"),
+        Input("method-select_dr", "value"),
+        Input("criteria-select_dr", "value"),
+        Input("noise-select_dr", "value"),
+        Input("sigma-select_dr", "value"),
+        Input("rank-select_dr", "value"),
+         Input("clus-select_dr", "value"),
+ ],
+)
 
-# def update_cor_dr(data_sel_dr, 
-#                      method_sel_dr,
-#                     criteria_sel_dr,
-#                     noise_sel_dr,
-#                      sigma_sel_dr,
-#                       rank_select_dr
-#                  ):
+def update_cor_dr(data_sel_dr, 
+                     method_sel_dr,
+                    criteria_sel_dr,
+                    noise_sel_dr,
+                     sigma_sel_dr,
+                      rank_select_dr,clus_sel
+                 ):
     
 
-#     fig=build_cor_dr(data_sel_dr, 
-#                  method_sel_dr,
-#                 criteria_sel_dr,
-#                 noise_sel_dr,
-#                  sigma_sel_dr,
-#                   rank_select_dr)
-#     return fig        
-# @app.callback(
-#     Output("cor_new_dr", "figure"),
-#         [
-#      Input("data-select_dr", "value"),
-#         Input("method-select_dr", "value"),
-#         Input("criteria-select_dr", "value"),
-#         Input("noise-select_dr", "value"),
-#         Input("sigma-select_dr", "value"),
-#         Input("rank-select_dr", "value"),
-#         Input('stored-data', 'data')
-#     ],
-# )
+    fig1,fig2 =build_cor_dr(data_sel_dr, 
+                 method_sel_dr,
+                criteria_sel_dr,
+                noise_sel_dr,
+                 sigma_sel_dr,
+                  rank_select_dr,clus_sel)
+    return fig1,fig2         
+@app.callback(
+   [Output("cor1_new_dr", "figure"),
+     Output("cor2_new_dr", "figure"),
+    ],
+    #Output("cor_new_dr", "figure"),
+        [
+     Input("data-select_dr", "value"),
+        Input("method-select_dr", "value"),
+        Input("criteria-select_dr", "value"),
+        Input("noise-select_dr", "value"),
+        Input("sigma-select_dr", "value"),
+        Input("rank-select_dr", "value"),
+            Input("clus-select_dr", "value"),
+        Input('stored-data', 'data')
+    ],
+)
 
-# def update_cor_dr2(data_sel_dr, 
-#                      method_sel_dr,
-#                     criteria_sel_dr,
-#                     noise_sel_dr,
-#                      sigma_sel_dr,
-#                    rank_select_dr,data
-#                  ):
-#     fig=build_cor_dr(data_sel_dr, 
-#                      method_sel_dr,
-#                     criteria_sel_dr,
-#                     noise_sel_dr,
-#                      sigma_sel_dr,
-#                    rank_select_dr,data)
-#     return fig            
+def update_cor_dr2(data_sel_dr, 
+                     method_sel_dr,
+                    criteria_sel_dr,
+                    noise_sel_dr,
+                     sigma_sel_dr,
+                   rank_select_dr,clus_sel,data
+                 ):
+    fig1,fig2 =build_cor_dr(data_sel_dr, 
+                     method_sel_dr,
+                    criteria_sel_dr,
+                    noise_sel_dr,
+                     sigma_sel_dr,
+                   rank_select_dr,clus_sel,data)
+    return fig1,fig2             
 
 @app.callback(
     [Output("dot1_dr", "figure"),
@@ -1472,14 +1496,14 @@ def update_dot_dr(data_sel_dr, method_sel_dr,
                       clus_select_dr
                  ):
     
-        fig1,fig2=build_dot_dr(data_sel_dr, method_sel_dr,
+    fig1,fig2=build_dot_dr(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,
                                rank_select_dr,
                       clus_select_dr
                  )
-        return fig1,fig2
+    return fig1,fig2
 @app.callback(
     [Output("dot1_new_dr", "figure"),
      Output("dot2_new_dr", "figure"),
@@ -1503,13 +1527,13 @@ def update_dot_dr2(data_sel_dr, method_sel_dr,
                       clus_select_dr,data
                  ):
     
-        fig1,fig2=build_dot_dr(data_sel_dr, method_sel_dr,
+    fig1,fig2=build_dot_dr(data_sel_dr, method_sel_dr,
                     criteria_sel_dr,
                     noise_sel_dr,
                      sigma_sel_dr,rank_select_dr,
                       clus_select_dr,data
                  )
-        return fig1,fig2
+    return fig1,fig2
 
 
 @app.callback(

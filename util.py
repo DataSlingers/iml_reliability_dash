@@ -48,15 +48,15 @@ def display_figure(pp,plot_selected, click,pathname):
     #              'k_raw': 'Consistency vs. number of local neighbors',
     #              'heatmap_raw': 'cross method consistency & accuracy'
     #             }
-        heads = {'heatmap':'Summary Figure: Consistency Heatmap (Between Methods, aggregated over data sets)',
-                 'line':'Summary Figure: Consistency Lineplot (Within Methods)', 
+        heads = {'heatmap':'Summary Figure: Consistency Heatmap (Between methods, aggregated over data sets)',
+                 'line':'Summary Figure: Consistency Lineplot (Within methods)',
                  # (across data sets)',
-                 'bump':'Summary Figure: Consistency Bump Plot (Within Methods)', 
+                 'bump':'Summary Figure: Consistency Bump Plot (Within methods)',
                  #of the most consistent methods across data sets',
 #                  'fit':'Summary Figure: Consistency & Accuracy Scatterplot (aggregated over data sets)', 
                  #vs. predictive accuracy',
-                 'dot':'Summary Figure: Consistency & Accuracy Scatterplot (aggregated over data sets)', 
-#                  'cor':'Summary Figure: Correlation between onsistency and predictive accuracy',
+#                  'dot':'Summary Figure: Consistency & Accuracy Scatterplot (aggregated over data sets)', 
+                 'cor':'Summary Figure: Correlation between onsistency and predictive accuracy',
                  'line_new':'Line with new data',
                  'bump_new':'Bump with new data',
                  'fit_new':'Fit with new data',
@@ -95,9 +95,12 @@ def display_figure(pp,plot_selected, click,pathname):
 
         
         if pp in plot_selected:
-            if pp=='dot':
-                fig_id1 = 'dot1_'+paths[pathname] if pathname in paths else 'dot1'
-                fig_id2 = 'dot2_'+paths[pathname] if pathname in paths else 'dot2'
+            if pp=='cor':
+                fig_id1 = 'cor1_'+paths[pathname] if pathname in paths else 'cor1'
+                fig_id2 = 'cor2_'+paths[pathname] if pathname in paths else 'cor2'
+#             if pp=='dot':
+#                 fig_id1 = 'dot1_'+paths[pathname] if pathname in paths else 'dot1'
+#                 fig_id2 = 'dot2_'+paths[pathname] if pathname in paths else 'dot2'
                 return html.Div([
                                 html.Details([
                                 html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),

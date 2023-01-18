@@ -662,18 +662,35 @@ def build_cor_reg(data_sel, method_sel,
     corr2=corr2[['data','Consistency MSE']]
     corr2 = sort(corr2,'data',list(this_palette_data.keys()))
 
-    fig2 = px.bar(corr2, x='data', y='Consistency MSE',
-             range_y = [-1,1],
-             color='data',color_discrete_map=this_palette_data,
-             labels={'data':'Data', 'Consistency MSE':'Correlation'},
-             title="Correlation between MSE and Consistency"
-            )
+#     fig2 = px.bar(corr2, x='data', y='Consistency MSE',
+#              range_y = [-1,1],
+#              color='data',color_discrete_map=this_palette_data,
+#              labels={'data':'Data', 'Consistency MSE':'Correlation'},
+#              title="Correlation between MSE and Consistency"
+#             )
+#     fig1 = px.bar(corr1, x='method', y='Consistency MSE',
+#              range_y = [-1,1],
+#              color='method',color_discrete_map=this_palette,
+#              labels={'method':'Method', 'Consistency MSE':'Correlation'},
+#              title="Correlation between MSE and Consistency"
+#             )
     fig1 = px.bar(corr1, x='method', y='Consistency MSE',
              range_y = [-1,1],
              color='method',color_discrete_map=this_palette,
              labels={'method':'Method', 'Consistency MSE':'Correlation'},
-             title="Correlation between MSE and Consistency"
+             title=" Rank Correlation between MSE and Consistency (aggregated over data)"
+            )    
+    fig2 = px.bar(corr2, x='data', y='Consistency MSE',
+             range_y = [-1,1],
+             color='data',color_discrete_map=this_palette_data,
+             labels={'data':'Data', 'Consistency MSE':'Correlation'},
+             title="Rank Correlation between MSE and Consistency (aggregated over methods)"
             )
+    
+    
+    fig1.update_xaxes(tickangle=45)
+    fig2.update_xaxes(tickangle=45)
+    
     return fig2,fig1
                
 def build_line_raw_reg(data_sel, method_sel,
