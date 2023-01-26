@@ -24,6 +24,8 @@ nav = Navbar()
 
 df = pd.read_csv("clustering.csv")
 cross = pd.read_csv('cross_clus.csv')
+df_split = pd.read_csv("clustering_split.csv")
+cross_split = pd.read_csv('cross_clus_split.csv')
 
 data_options = df['data'].unique().tolist()
 method_options = df['method'].unique().tolist()
@@ -69,22 +71,21 @@ meths = list(palette.keys())
 #                 'Spam base':"green",
 #                 'Statlog':"cyan"
 #                 }
-
-palette_data = {'PANCAN':"purple",
-                'Religion': 'indigo',
-                'DNase':"firebrick",
-                'TCGA':'hotpink',
-                'Madelon' :'greenyellow',
-                 'Amphibians':'lightseagreen',
-               'Author':'yellow',         
-                'Spam base':"green",
-                'MNIST Digit':"cyan",
-                'Theorem':'slateblue',
-                'Statlog':'deepskyblue',
-                'Call':'cornflowerblue',
-                'Bean':"powderblue",
-                
+palette_data = {'Bean':"powderblue",
+    'Call':'cornflowerblue',  
+    'Statlog':'deepskyblue',      
+    'Theorem':'slateblue',   
+    'MNIST Digit':"cyan",   
+    'Spam base':"green", 
+    'Author':'yellow',           
+    'Amphibians':'lightseagreen',  
+    'Madelon' :'greenyellow', 
+    'TCGA':'hotpink',
+    'DNase':"firebrick",                   
+    'Religion': 'indigo',
+    'PANCAN':"purple",
                 }
+
 markers_choice = {
                 'K-Means':"0",
                 'K-Means (minibatch)':"0",
@@ -116,6 +117,7 @@ def sort(df,column1,sorter1,column2=None,sorter2=None):
     return df
 
 df=sort(df,'data',list(palette_data.keys()),'method',list(palette.keys()))
+df_split=sort(df_split,'data',list(palette_data.keys()),'method',list(palette.keys()))
 meths = list(palette.keys())
 datas = list(palette_data.keys())
 
@@ -138,7 +140,7 @@ def description_card():
 plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
-#                         'fit':'Consistency vs. predictive accuracy',
+                       'fit':'Consistency vs. predictive accuracy',
                         'dot':'Consistency/predictive accuracy vs. methods',
                        # 'cor': 'Correlation between onsistency and predictive accuracy'
                        }
@@ -190,23 +192,38 @@ def generate_control_card():
             ###############################
             ###############################
             
-            html.P("Select: Noise Type"),
+            ## select data split or noise addition 
+            html.P("Select: Pertubation Method"),
             dcc.RadioItems(
-                id="noise-select_clus",
-                options=[{"label": i, "value": i} for i in noise_options],
-                value=noise_options[1],
+                id="pert-select_clus",
+                options=[{"label": i, "value": i} for i in ['Data Split','Noise Addition']],
+                value='Data Split',
             ),
-                
+            
             html.Hr(),            
-            html.P("Select: Noise Level (sigma)"),
-            dcc.Dropdown(
-                id="sigma-select_clus",
-                options=[{"label": i, "value": i} for i in sigma_options],
-                value=1,
             
-            ),            
+            html.Div(id='controls-container', children=[
             
-            html.Hr(),
+                html.P("Select: Noise Type"),
+                dcc.RadioItems(
+                    id="noise-select_clus",
+                    options=[{"label": i, "value": i} for i in noise_options],
+                    value=noise_options[1],
+                ),
+
+                html.Hr(),            
+                html.P("Select: Noise Level (sigma)"),
+                dcc.Dropdown(
+                    id="sigma-select_clus",
+                    options=[{"label": i, "value": i} for i in sigma_options],
+                    value=1,
+
+                ), 
+                html.Hr(),
+
+            ]),
+                     
+                     
 
             html.P("Select: Consistency Metric"),
             dcc.RadioItems(
@@ -306,9 +323,9 @@ def App2():
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
             html.Div(id='show_heatmap'),
-#             html.Div(id='show_fit'),
+            html.Div(id='show_fit'),
 #             html.Div(id='show_dot'),
-            html.Div(id='show_cor'),
+   #         html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
             html.Div(id='show_line_raw'),
@@ -376,11 +393,20 @@ def App2():
 def build_heat_summary_clus(data_sel,method_sel,
                  criteria_sel,noise_sel,sigma_sel
                  ):
+        
+        
+        if noise_sel!=None:
 
-        cross_ave = cross[cross.data.isin(data_sel)]
-        cross_ave=cross_ave.groupby(['method1','method2','criteria','noise','sigma'],as_index=False)['value'].mean()
-        sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
-        sub = sub[(sub['sigma']==sigma_sel)&(sub['criteria']==criteria_sel)&(sub['noise']==noise_sel)]
+            cross_ave = cross[cross.data.isin(data_sel)]
+            cross_ave=cross_ave.groupby(['method1','method2','criteria','noise','sigma'],as_index=False)['value'].mean()
+            sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
+            sub = sub[(sub['sigma']==sigma_sel)&(sub['criteria']==criteria_sel)&(sub['noise']==noise_sel)]
+        else:
+            cross_ave = cross_split[cross_split.data.isin(data_sel)]
+            cross_ave=cross_ave.groupby(['method1','method2','criteria'],as_index=False)['value'].mean()
+            sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
+            sub = sub[(sub['criteria']==criteria_sel)]
+            
         sub = sub.pivot("method1", "method2", "value")
         sub = sub.fillna(0)+sub.fillna(0).T
         np.fill_diagonal(sub.values, 1)
@@ -413,7 +439,13 @@ def build_line_clus(data_sel, method_sel,
                  ):
 
 ####### filter data
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+            &(df_split.criteria==criteria_sel)] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
@@ -466,7 +498,13 @@ def build_scatter_clus(data_sel, method_sel,
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
 
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+            &(df_split.criteria==criteria_sel)] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
                 &(df.method.isin(method_sel))
                 &(df.noise ==noise_sel)
                 &(df.sigma ==float(sigma_sel))
@@ -498,11 +536,26 @@ def build_bump_clus(data_sel, method_sel,
                  criteria_sel,noise_sel,sigma_sel,new_data=None
                  ):
 ####### filter data
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+            &(df_split.criteria==criteria_sel)] 
+        df_ave = dff.groupby(['method','criteria'],as_index=False).mean()
+        df_ave['data']='Average'
+        df_ave=df_ave[['data','method','criteria','Consistency','Accuracy']]
+        dff=pd.concat([dff,df_ave])
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
                 &(df.method.isin(method_sel))
                 &(df.noise ==noise_sel)
                 &(df.sigma ==float(sigma_sel))
                 &(df.criteria==criteria_sel)]
+        df_ave = dff.groupby(['method','noise','sigma','criteria'],as_index=False).mean()
+        df_ave['data']='Average'
+        df_ave=df_ave[['data','method','noise','sigma','criteria','Consistency','Accuracy']]
+        dff=pd.concat([dff,df_ave])
+    
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
 
@@ -515,10 +568,7 @@ def build_bump_clus(data_sel, method_sel,
         for mm in set(neww['method']):
             this_palette[mm]='black'        
 ##### bump plot 
-    df_ave = dff.groupby(['method','noise','sigma','criteria'],as_index=False).mean()
-    df_ave['data']='Average'
-    df_ave=df_ave[['data','method','noise','sigma','criteria','Consistency','Accuracy']]
-    dff=pd.concat([dff,df_ave])
+    
 
 ########################
                        
@@ -581,13 +631,20 @@ def build_fit_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None
                  ):
 
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+            &(df_split.criteria==criteria_sel)] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df.criteria==criteria_sel)] 
     this_palette = palette.copy()
     this_markers_choice=markers_choice.copy()
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.noise ==noise_sel)
@@ -599,24 +656,32 @@ def build_fit_clus(data_sel, method_sel,
             this_markers_choice[mm]='star'
             
             
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="Consistency", y="Accuracy", color='method', 
                      trendline="ols",
-                color_discrete_map=(this_palette),
-                symbol='method', symbol_map= this_markers_choice,
-                 category_orders={"method":list(this_palette.keys())},
-               labels=dict(Consistency=criteria_sel, method="Method"),
-                                     
-
+                color_discrete_map=(this_palette_data),
+#                 symbol='data', symbol_map= this_markers_choice,
+                 category_orders={"data":list(this_palette_data.keys())},
+               labels=dict(Consistency='Consistency', method="Method"),
                 custom_data=['data','method'],
                 )
+    region_lst = []
+    for trace in fig["data"]:
+        trace["name"] = trace["name"].split(",")[0]
+
+        if trace["name"] not in region_lst and trace["marker"]['symbol'] == 'circle':
+            trace["showlegend"] = True
+            region_lst.append(trace["name"])
+        else:
+            trace["showlegend"] = False
+            
     fig.update_traces(
         hovertemplate="<br>".join([
         "Data: %{customdata[0]}",
         "Method: %{customdata[1]}",
-        "Accuracy: %{x}",
-        "Consistency: %{y}",
+        "Accuracy: %{y}",
+        "Consistency: %{x}",
             ]))
-    fig.update_traces(line=dict(width=3))
+    fig.update_traces(line=dict(width=3),marker = dict(size=10),opacity=0.9)
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
@@ -638,8 +703,14 @@ def build_cor_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None
                  ):
 
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+            &(df_split.criteria==criteria_sel)] 
+    else:
+            
  
-    dff=df[(df.data.isin(data_sel))
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
@@ -691,7 +762,13 @@ def build_cor_clus(data_sel, method_sel,
 
 def build_acc_bar_clus(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel):
     this_palette=dict((i,palette[i]) for i in method_sel)
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+            &(df_split.criteria==criteria_sel)] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
@@ -713,6 +790,8 @@ def build_acc_bar_clus(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel):
 def build_line_raw_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None):
 
+    
+    ### only for noise addition
     dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
@@ -772,7 +851,13 @@ def build_scatter_raw_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None
                  ):
 
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+            &(df_split.criteria==criteria_sel)] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
@@ -832,23 +917,31 @@ def build_heat_raw_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None
                  ):
     
-    
-    
-    cross_ave = cross[(cross.data.isin(data_sel))
+    if noise_sel==None:
+        cross_ave = cross_split[(cross_split.data.isin(data_sel))
+                &(cross_split['method1'].isin(method_sel))
+                &(cross_split['method2'].isin(method_sel))
+                &(cross_split.criteria==criteria_sel)]
+        dff=df_split[(df_split.data.isin(data_sel))
+                &(df_split.method.isin(method_sel))
+                &(df_split.criteria==criteria_sel)]
+    else:
+        cross_ave = cross[(cross.data.isin(data_sel))
                 &(cross['method1'].isin(method_sel))
                 &(cross['method2'].isin(method_sel))
                 &(cross.noise==noise_sel)
                 &(cross.sigma==sigma_sel)
                 &(cross.criteria==criteria_sel)]
-    cross_ave=cross_ave.groupby(['data','method1','method2'],as_index=False)['value'].mean()
-#     sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
-#     sub = sub[(sub['K']==k_sel)&(sub['criteria']==criteria_sel)]
-
-    dff=df[(df.data.isin(data_sel))
+        dff=df[(df.data.isin(data_sel))
                 &(df.method.isin(method_sel))
                 &(df.noise==noise_sel)
                 &(df.sigma==sigma_sel)
                 &(df.criteria==criteria_sel)]
+    cross_ave=cross_ave.groupby(['data','method1','method2'],as_index=False)['value'].mean()
+#     sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
+#     sub = sub[(sub['K']==k_sel)&(sub['criteria']==criteria_sel)]
+
+    
     
     dff = dff.groupby(['method','data']).mean().reset_index()
     subss = {}
@@ -893,8 +986,12 @@ def build_heat_raw_clus(data_sel, method_sel,
 def build_dot_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None
                  ):
-
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+                &(df_split.method.isin(method_sel))
+                &(df_split.criteria==criteria_sel)]
+    else:
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))

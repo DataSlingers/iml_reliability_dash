@@ -45,14 +45,14 @@ plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all da
                    'line_raw':'Consistency vs. predictive accuracy for all data sets',
                     'heatmap_raw':'Consistency heatmap across methods for all data sets'}
 
-markers_choice = {'LogisticLASSO':'0',
-                    'SVM':'0',
-                    'LogisticRidge':'0',
+markers_choice = {'LogisticLASSO':'circle',
+                    'SVM':'circle',
+                    'LogisticRidge':'circle',
 
-                    'Tree':'0',
+                    'Tree':'circle',
 
-                    'XGB':'0'  ,
-                    'RF':'0' ,
+                    'XGB':'circle'  ,
+                    'RF':'circle' ,
 
                     'deepLIFT (MLP)':"square",
                     'Integrated Gradients (MLP)':"square",
@@ -117,20 +117,19 @@ line_choice = {'LogisticLASSO':'solid',
                      'Shapley Value (XGB)': "dashdot",       
             'permutation (XGB)':"dashdot",     }    
 
-palette_data = {'PANCAN':"purple",
-                'Religion': 'indigo',
-                'DNase':"firebrick",
-                'TCGA':'hotpink',
-                'Madelon' :'greenyellow',
-                 'Amphibians':'lightseagreen',
-               'Author':'yellow',         
-                'Spam base':"green",
-                'MNIST Digit':"cyan",
-                'Theorem':'slateblue',
-                'Statlog':'deepskyblue',
-                'Call':'cornflowerblue',
-                'Bean':"powderblue",
-                
+palette_data = {'Bean':"powderblue",
+    'Call':'cornflowerblue',  
+    'Statlog':'deepskyblue',      
+    'Theorem':'slateblue',   
+    'MNIST Digit':"cyan",   
+    'Spam base':"green", 
+    'Author':'yellow',           
+    'Amphibians':'lightseagreen',  
+    'Madelon' :'greenyellow', 
+    'TCGA':'hotpink',
+    'DNase':"firebrick",                   
+    'Religion': 'indigo',
+    'PANCAN':"purple",
                 }
 
 def sort(df,column1,sorter1,column2=None,sorter2=None):
@@ -318,9 +317,9 @@ def App1():
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
             html.Div(id='show_heatmap'),
-#             html.Div(id='show_fit'),
+            html.Div(id='show_fit'),
 #             html.Div(id='show_dot'),
-            html.Div(id='show_cor'),
+#            html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
             html.Div(id='show_line_raw'),
@@ -597,7 +596,8 @@ def build_fit(data_sel, method_sel,
     
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
-    this_palette_data =  [i for i in palette_data.keys() if i in data_sel]   
+#     this_palette_data =  [i for i in palette_data.keys() if i in data_sel]   
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
 
     ###### input new data
     if new_data is not None:
@@ -610,24 +610,44 @@ def build_fit(data_sel, method_sel,
             this_markers_choice[mm]='star'
             
             
-            
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="Consistency", y="Accuracy", color='data', 
                      trendline="ols",
-                color_discrete_map=this_palette,
-                symbol='method', symbol_map= this_markers_choice,
-                 category_orders={"method":list(this_palette.keys())},
-               labels=dict(Consistency=criteria_sel, method="Method"),
+                color_discrete_map=this_palette_data,
+#                 symbol='method', symbol_map= this_markers_choice,
+                 category_orders={"Data":list(this_palette_data.keys())},
+               labels=dict(Consistency='Consistency', data="Data"),
 
                 custom_data=['data','method'],
-                )
+                )            
+#     fig = px.scatter(dff, x="Consistency", y="Accuracy", color='method', 
+#                      trendline="ols",
+#                 color_discrete_map=this_palette,
+#                 symbol='method', symbol_map= this_markers_choice,
+#                  category_orders={"method":list(this_palette.keys())},
+#                labels=dict(Consistency=criteria_sel, method="Method"),
+
+#                 custom_data=['data','method'],
+#                 )
+    region_lst = []
+
+
+    for trace in fig["data"]:
+        trace["name"] = trace["name"].split(",")[0]
+
+        if trace["name"] not in region_lst and trace["marker"]['symbol'] == 'circle':
+            trace["showlegend"] = True
+            region_lst.append(trace["name"])
+        else:
+            trace["showlegend"] = False
+        
     fig.update_traces(
         hovertemplate="<br>".join([
         "Data: %{customdata[0]}",
         "Method: %{customdata[1]}",
-        "Accuracy: %{x}",
-        "Consistency: %{y}",
+        "Accuracy: %{y}",
+        "Consistency: %{x}",
             ]))   
-    fig.update_traces(line=dict(width=3))
+    fig.update_traces(line=dict(width=3),marker = dict(size=10),opacity=0.9)
     
     if new_data is not None:
         fig.add_trace(

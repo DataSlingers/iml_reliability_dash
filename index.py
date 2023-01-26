@@ -44,8 +44,8 @@ meths2  = ['Ridge','LASSO','Tree','RF',
 # plot_summary_new_options = ['line_new','bump_new','fit_new','dot_new','cor_new']
 plot_raw_options = ['scatter_raw','line_raw','k_raw','heatmap_raw']
 # plot_raw_options_knn = ['line_raw','k_raw']
-plot_summary_options = ['heatmap','line','bump','cor']
-plot_summary_new_options = ['line_new','bump_new','cor_new']
+plot_summary_options = ['heatmap','line','bump','fit']
+plot_summary_new_options = ['line_new','bump_new','fit_new']
 
 # dbc.themes.LUX
 # dbc.themes.COSMO
@@ -122,6 +122,17 @@ def dropdown_options(pathname,radio_value):
     
 
     return  value
+
+## clustering select split or noise 
+@app.callback(Output('controls-container', 'style'), [Input('pert-select_clus', 'value')])
+def toggle_container(toggle_value):
+    if toggle_value == 'Data Split':
+        return {'display': 'none'}
+    else:
+        return {'display': 'block'}
+
+    
+    
 ###### select figure 
 @app.callback(
     Output("select_summary", "value"),
@@ -156,9 +167,9 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
     Output("show_heatmap", "children"),
     Output("show_line", "children"),
     Output("show_bump", "children"),
-#     Output("show_fit", "children"),
+    Output("show_fit", "children"),
 #     Output("show_dot", "children"),
-    Output("show_cor", "children"),
+#    Output("show_cor", "children"),
 
     [Input('url', 'pathname'),
     State("select_summary", "value"),
@@ -170,7 +181,7 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
 
 def show(pathname,plot_selected,click):
     if click and click>0 and pathname!='/knn':
-        options = ['heatmap','line','bump','cor']
+        options = ['heatmap','line','bump','fit']
 #        options = ['heatmap','line','bump','fit','dot','cor']
         title = []
         subtitle = []
@@ -777,16 +788,22 @@ def update_dot2(pathname,data_sel,method_sel,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
+        Input("pert-select_clus", "value"),
     ],
 )
 
 def update_heatmap_clus(data_sel_clus,method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
-                     sigma_sel_clus
+                     sigma_sel_clus,pert
                  ):
-    
-    fig=build_heat_summary_clus(data_sel_clus,method_sel_clus,
+    if pert != 'Noise Addition':
+        fig=build_heat_summary_clus(data_sel_clus,method_sel_clus,
+                    criteria_sel_clus,
+                    None,
+                     None)
+    else:
+        fig=build_heat_summary_clus(data_sel_clus,method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
                      sigma_sel_clus)
@@ -799,16 +816,23 @@ def update_heatmap_clus(data_sel_clus,method_sel_clus,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-    ],
+           Input("pert-select_clus", "value"),
+ ],
 )
 
 def update_acc_bar_clus(data_sel_clus,method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
-                     sigma_sel_clus
+                     sigma_sel_clus,pert
                  ):
+    if pert != 'Noise Addition':
+        fig=build_acc_bar_clus(data_sel_clus,method_sel_clus,
+                    criteria_sel_clus,
+                    None,
+                     None)
+    else:
     
-    fig=build_acc_bar_clus(data_sel_clus,method_sel_clus,
+        fig=build_acc_bar_clus(data_sel_clus,method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
                      sigma_sel_clus)
@@ -822,16 +846,23 @@ def update_acc_bar_clus(data_sel_clus,method_sel_clus,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-    ],
+           Input("pert-select_clus", "value"),
+ ],
 )
    
 def update_line_clus(data_sel_clus, method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
-                     sigma_sel_clus
+                     sigma_sel_clus,pert
                  ):
-
-    fig=build_line_clus(data_sel_clus, method_sel_clus,
+    if pert != 'Noise Addition':
+        fig=build_line_clus(data_sel_clus, method_sel_clus,
+                criteria_sel_clus,
+                    None,
+                     None)
+    else:
+    
+        fig=build_line_clus(data_sel_clus, method_sel_clus,
                 criteria_sel_clus,
                 noise_sel_clus,
                  sigma_sel_clus)
@@ -845,17 +876,24 @@ def update_line_clus(data_sel_clus, method_sel_clus,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-         Input('stored-data', 'data')
-    ],
+         Input('stored-data', 'data'),
+          Input("pert-select_clus", "value"),
+  ],
 )
 
 def update_line_clus2(data_sel_clus, 
                         method_sel_clus,
                         criteria_sel_clus,
                         noise_sel_clus,
-                        sigma_sel_clus,data
+                        sigma_sel_clus,data,pert
                  ):
-    fig=build_bump_clus(data_sel_clus, 
+    if pert != 'Noise Addition':
+        fig=build_line_clus(data_sel_clus, method_sel_clus,
+                criteria_sel_clus,
+                    None,
+                     None,data)
+    else:
+        fig=build_line_clus(data_sel_clus, 
                         method_sel_clus,
                         criteria_sel_clus,
                         noise_sel_clus,
@@ -870,15 +908,22 @@ def update_line_clus2(data_sel_clus,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-    ],
+           Input("pert-select_clus", "value"),
+ ],
 )
 def update_bump_clus(data_sel_clus, 
                      method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
-                     sigma_sel_clus
+                     sigma_sel_clus,pert
                  ):
-    fig=build_bump_clus(data_sel_clus, 
+    if pert != 'Noise Addition':
+        fig=build_bump_clus(data_sel_clus, method_sel_clus,
+                criteria_sel_clus,
+                    None,
+                     None)
+    else:
+        fig=build_bump_clus(data_sel_clus, 
                         method_sel_clus,
                         criteria_sel_clus,
                         noise_sel_clus,
@@ -894,17 +939,24 @@ def update_bump_clus(data_sel_clus,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-         Input('stored-data', 'data')
-    ],
+         Input('stored-data', 'data'),
+           Input("pert-select_clus", "value"),
+ ],
 )
 
 def update_bump_clus2(data_sel_clus, 
                         method_sel_clus,
                         criteria_sel_clus,
                         noise_sel_clus,
-                        sigma_sel_clus,data
+                        sigma_sel_clus,data,pert
                  ):
-    fig=build_bump_clus(data_sel_clus, 
+    if pert != 'Noise Addition':
+        fig=build_bump_clus(data_sel_clus, method_sel_clus,
+                criteria_sel_clus,
+                    None,
+                     None,data)
+    else:
+        fig=build_bump_clus(data_sel_clus, 
                         method_sel_clus,
                         criteria_sel_clus,
                         noise_sel_clus,
@@ -915,162 +967,205 @@ def update_bump_clus2(data_sel_clus,
     
 @app.callback(
     Output("fit_clus", "figure"),
-    [
-        Input("data-select_clus", "value"),
+    [Input("data-select_clus", "value"),
         Input("method-select_clus", "value"),
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-    ],
+          Input("pert-select_clus", "value"),
+  ],
 )
         
 
 def update_fit_clus(data_sel_clus, method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
-                     sigma_sel_clus
+                     sigma_sel_clus,
+                    pert
                  ):
     
+    if pert != 'Noise Addition':
+        fig=build_fit_clus(data_sel_clus, method_sel_clus,
+                criteria_sel_clus,
+                    None,
+                     None)
+    else:
         fig=build_fit_clus(data_sel_clus, method_sel_clus,
                     criteria_sel_clus,
                     noise_sel_clus,
-                     sigma_sel_clus
-                 )
-        return fig
-    
-@app.callback(
-    [Output("dot1_clus", "figure"),
-     Output("dot2_clus", "figure"),
-    ],
-    [
-        Input("data-select_clus", "value"),
-        Input("method-select_clus", "value"),
-        Input("criteria-select_clus", "value"),
-        Input("noise-select_clus", "value"),
-        Input("sigma-select_clus", "value"),
-    ],
-)
-        
-
-def update_dot_clus(data_sel_clus, method_sel_clus,
-                    criteria_sel_clus,
-                    noise_sel_clus,
-                     sigma_sel_clus
-                 ):
-    
-    fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
-                    criteria_sel_clus,
-                    noise_sel_clus,
-                     sigma_sel_clus
-                 )
-    return fig1,fig2
-@app.callback(
-    [Output("dot1_new_clus", "figure"),
-     Output("dot2_new_clus", "figure"),
-    ],
-    [
-        Input("data-select_clus", "value"),
-        Input("method-select_clus", "value"),
-        Input("criteria-select_clus", "value"),
-        Input("noise-select_clus", "value"),
-        Input("sigma-select_clus", "value"),
-    ],
-)
-        
-
-def update_dot_clus2(data_sel_clus, method_sel_clus,
-                    criteria_sel_clus,
-                    noise_sel_clus,
-                     sigma_sel_clus
-                 ):
-    
-    fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
-                    criteria_sel_clus,
-                    noise_sel_clus,
-                     sigma_sel_clus
-                 )
-    return fig1,fig2
-@app.callback(
-    Output("fit_new_clus", "figure"),
-        [
-      Input("data-select_clus", "value"),
-        Input("method-select_clus", "value"),
-        Input("criteria-select_clus", "value"),
-        Input("noise-select_clus", "value"),
-        Input("sigma-select_clus", "value"),
-         Input('stored-data', 'data')
-    ],
-)
-
-def update_fit_clus2(data_sel_clus, 
-                        method_sel_clus,
-                        criteria_sel_clus,
-                        noise_sel_clus,
-                        sigma_sel_clus,data
-                 ):
-    fig=build_fit_clus(data_sel_clus, 
-                        method_sel_clus,
-                        criteria_sel_clus,
-                        noise_sel_clus,
-                        sigma_sel_clus,data)
+                     sigma_sel_clus )
     return fig
+    
+# @app.callback(
+#     [Output("dot1_clus", "figure"),
+#      Output("dot2_clus", "figure"),
+#     ],
+#     [
+#         Input("data-select_clus", "value"),
+#         Input("method-select_clus", "value"),
+#         Input("criteria-select_clus", "value"),
+#         Input("noise-select_clus", "value"),
+#         Input("sigma-select_clus", "value"),
+#           Input("pert-select_clus", "value"),
+#   ],
+# )
+        
+
+# def update_dot_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     noise_sel_clus,
+#                      sigma_sel_clus,pert
+#                  ):
+    
+#     if pert != 'Noise Addition':
+#         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     None,
+#                      None)
+#     else:
+#         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     noise_sel_clus,
+#                      sigma_sel_clus
+#                  )
+#     return fig1,fig2
+# @app.callback(
+#     [Output("dot1_new_clus", "figure"),
+#      Output("dot2_new_clus", "figure"),
+#     ],
+#     [
+#         Input("data-select_clus", "value"),
+#         Input("method-select_clus", "value"),
+#         Input("criteria-select_clus", "value"),
+#         Input("noise-select_clus", "value"),
+#         Input("sigma-select_clus", "value"),
+#            Input("pert-select_clus", "value"),
+#  ],
+# )
+        
+
+# def update_dot_clus2(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     noise_sel_clus,
+#                      sigma_sel_clus,pert
+#                  ):
+    
+#     if pert != 'Noise Addition':
+#         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     None,
+#                      None)
+#     else:
+    
+#         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     noise_sel_clus,
+#                      sigma_sel_clus
+#                  )
+#     return fig1,fig2
+# @app.callback(
+#     Output("fit_new_clus", "figure"),
+#         [
+#       Input("data-select_clus", "value"),
+#         Input("method-select_clus", "value"),
+#         Input("criteria-select_clus", "value"),
+#         Input("noise-select_clus", "value"),
+#         Input("sigma-select_clus", "value"),
+#          Input('stored-data', 'data'),
+#            Input("pert-select_clus", "value"),
+#  ],
+# )
+
+# def update_fit_clus2(data_sel_clus, 
+#                         method_sel_clus,
+#                         criteria_sel_clus,
+#                         noise_sel_clus,
+#                         sigma_sel_clus,data,pert
+#                  ):
+    
+#     if pert != 'Noise Addition':
+#         fig=build_fit_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     None,
+#                      None,data)
+#     else:
+#         fig=build_fit_clus(data_sel_clus, 
+#                         method_sel_clus,
+#                         criteria_sel_clus,
+#                         noise_sel_clus,
+#                         sigma_sel_clus,data)
+#     return fig
 
 
     
     
-@app.callback(
-     [Output("cor1_clus", "figure"),
-     Output("cor2_clus", "figure"),
-    ],
-    #Output("cor_clus", "figure"),
-    [
-        Input("data-select_clus", "value"),
-        Input("method-select_clus", "value"),
-        Input("criteria-select_clus", "value"),
-        Input("noise-select_clus", "value"),
-        Input("sigma-select_clus", "value"),
-    ],
-)
+# @app.callback(
+#      [Output("cor1_clus", "figure"),
+#      Output("cor2_clus", "figure"),
+#     ],
+#     #Output("cor_clus", "figure"),
+#     [
+#         Input("data-select_clus", "value"),
+#         Input("method-select_clus", "value"),
+#         Input("criteria-select_clus", "value"),
+#         Input("noise-select_clus", "value"),
+#         Input("sigma-select_clus", "value"),
+#           Input("pert-select_clus", "value"),
+#   ],
+# )
 
-def update_cor_clus(data_sel_clus, method_sel_clus,
-                    criteria_sel_clus,
-                    noise_sel_clus,
-                     sigma_sel_clus
-                 ):
+# def update_cor_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     noise_sel_clus,
+#                      sigma_sel_clus,pert
+#                  ):
     
 
-    fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
-                    criteria_sel_clus,
-                    noise_sel_clus,
-                     sigma_sel_clus)
-    return fig1,fig2 
-@app.callback(
-     [Output("cor1_new_clus", "figure"),
-     Output("cor2_new_clus", "figure"),
-    ],
-    #Output("cor_new_clus", "figure"),
-        [
-      Input("data-select_clus", "value"),
-        Input("method-select_clus", "value"),
-        Input("criteria-select_clus", "value"),
-        Input("noise-select_clus", "value"),
-        Input("sigma-select_clus", "value"),
-         Input('stored-data', 'data')
-    ],
-)
+#     if pert != 'Noise Addition':
+#         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     None,
+#                      None)
+#     else:
+#         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     noise_sel_clus,
+#                      sigma_sel_clus)
+#     return fig1,fig2 
+# @app.callback(
+#      [Output("cor1_new_clus", "figure"),
+#      Output("cor2_new_clus", "figure"),
+#     ],
+#     #Output("cor_new_clus", "figure"),
+#         [
+#       Input("data-select_clus", "value"),
+#         Input("method-select_clus", "value"),
+#         Input("criteria-select_clus", "value"),
+#         Input("noise-select_clus", "value"),
+#         Input("sigma-select_clus", "value"),
+#          Input('stored-data', 'data'),
+#           Input("pert-select_clus", "value"),
+#   ],
+# )
 
-def update_cor_clus2(data_sel_clus, 
-                        method_sel_clus,
-                        criteria_sel_clus,
-                        noise_sel_clus,
-                        sigma_sel_clus,data
-                 ):
-    fig1,fig2 =build_cor_clus(data_sel_clus, 
-                        method_sel_clus,
-                        criteria_sel_clus,
-                        noise_sel_clus,
-                        sigma_sel_clus,data)
-    return fig1,fig2 
+# def update_cor_clus2(data_sel_clus, 
+#                         method_sel_clus,
+#                         criteria_sel_clus,
+#                         noise_sel_clus,
+#                         sigma_sel_clus,data,pert
+#                  ):
+#     if pert != 'Noise Addition':
+#         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
+#                     criteria_sel_clus,
+#                     None,
+#                      None,data)
+#     else:
+#         fig1,fig2 =build_cor_clus(data_sel_clus, 
+#                         method_sel_clus,
+#                         criteria_sel_clus,
+#                         noise_sel_clus,
+#                         sigma_sel_clus,data)
+#     return fig1,fig2 
             
     
     
@@ -1083,15 +1178,19 @@ def update_cor_clus2(data_sel_clus,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-    ],
+           Input("pert-select_clus", "value"),
+ ],
 )
 
 def update_scatter_raw_clus(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel
+                 criteria_sel, noise_sel,sigma_sel,pert
                  ):
     
-    
-    fig=build_scatter_raw_clus(data_sel,method_sel,
+    if pert != 'Noise Addition':
+        fig=build_scatter_raw_clus(data_sel,method_sel,
+                criteria_sel, None,None)
+    else:
+        fig=build_scatter_raw_clus(data_sel,method_sel,
                 criteria_sel, noise_sel,sigma_sel)
     return fig 
     raise PreventUpdate    
@@ -1103,7 +1202,8 @@ def update_scatter_raw_clus(data_sel, method_sel,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-    ],
+#            Input("pert-select_clus", "value"),
+ ],
 )
 
 def update_line_raw_clus(data_sel, method_sel,
@@ -1122,15 +1222,17 @@ def update_line_raw_clus(data_sel, method_sel,
         Input("criteria-select_clus", "value"),
         Input("noise-select_clus", "value"),
         Input("sigma-select_clus", "value"),
-    ],
-)
+        Input("pert-select_clus", "value")])
 
 def update_heat_raw_clus(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel
+                 criteria_sel, noise_sel,sigma_sel,pert
                  ):
     
-    
-    fig=build_heat_raw_clus(data_sel,method_sel,
+    if pert != 'Noise Addition':
+        fig=build_heat_raw_clus(data_sel,method_sel,
+                criteria_sel, None,None)
+    else:
+        fig=build_heat_raw_clus(data_sel,method_sel,
                 criteria_sel, noise_sel,sigma_sel)
     return fig             
 ###############################

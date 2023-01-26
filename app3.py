@@ -80,22 +80,19 @@ line_choice = {
 #                 'Spam base':"green",
 #                 'Statlog':"cyan"
 #                 }
+palette_data = { 
+    'Statlog':'deepskyblue',      
+    'Theorem':'slateblue',   
 
-palette_data = {'PANCAN':"purple",
-                'Religion': 'indigo',
-                'DNase':"firebrick",
-                'TCGA':'hotpink',
-                'Madelon' :'greenyellow',
-                 'Amphibians':'lightseagreen',
-               'Author':'yellow',         
-                'Spam base':"green",
-                'Darmanis':"cyan",
-                'Theorem':'slateblue',
-                'Statlog':'deepskyblue',
-#                 'Call':'cornflowerblue',
-#                 'Bean':"powderblue",
-                
-                }
+    'Spam base':"green", 
+    'Author':'yellow',           
+    'Amphibians':'lightseagreen',  
+    'Madelon' :'greenyellow', 
+    'TCGA':'hotpink',
+    'DNase':"firebrick",                   
+    'Religion': 'indigo',
+    'PANCAN':"purple",
+}
 markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
@@ -311,9 +308,9 @@ def App3():
             html.Div(id='show_line'),
             html.Div(id='show_bump'),
             html.Div(id='show_heatmap'),
-#             html.Div(id='show_fit'),
+            html.Div(id='show_fit'),
 #             html.Div(id='show_dot'),
-            html.Div(id='show_cor'),
+#            html.Div(id='show_cor'),
             ######### raw plots 
             html.Div(id='title_summary_raw'),
             html.Div(id='show_line_raw'),
@@ -561,6 +558,7 @@ def build_fit_dr(data_sel, method_sel,
             ] 
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
 
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
@@ -576,23 +574,33 @@ def build_fit_dr(data_sel, method_sel,
         
         
         
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="Consistency", y="Accuracy", color='data', 
                      trendline="ols", custom_data=['data','method'],
 
-                color_discrete_map=(this_palette),
-                symbol='method', symbol_map= this_markers_choice,
-                 category_orders={"method":list(this_palette.keys())},
-               labels=dict(Consistency=criteria_sel, method="Method"),
+                color_discrete_map=(this_palette_data),
+#                 symbol='method', symbol_map= this_markers_choice,
+                 category_orders={"data":list(this_palette_data.keys())},
+               labels=dict(Consistency='Consistency', data="Data"),
 
                 )
+    region_lst = []
+    for trace in fig["data"]:
+        trace["name"] = trace["name"].split(",")[0]
+
+        if trace["name"] not in region_lst and trace["marker"]['symbol'] == 'circle':
+            trace["showlegend"] = True
+            region_lst.append(trace["name"])
+        else:
+            trace["showlegend"] = False
+
     fig.update_traces(
         hovertemplate="<br>".join([
         "Data: %{customdata[0]}",
         "Method: %{customdata[1]}",
-        "Accuracy: %{x}",
-        "Consistency: %{y}",
+        "Accuracy: %{y}",
+        "Consistency: %{x}",
             ]))   
-    fig.update_traces(line=dict(width=3))
+    fig.update_traces(line=dict(width=3),marker = dict(size=10),opacity=0.9)
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
