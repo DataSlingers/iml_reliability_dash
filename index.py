@@ -99,7 +99,7 @@ def display_page(pathname):
     else:
         return Homepage()
     
-@app.callback(c
+@app.callback(
         [
          Output('method-select', 'value')],
         [Input('url', 'pathname'),

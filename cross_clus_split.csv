@@ -2379,14 +2379,14 @@ Spam base,Gaussian MM,Gaussian MM,ARI,1.0,Gaussian MM:Gaussian MM
 Spam base,Gaussian MM,Gaussian MM,MI,1.0,Gaussian MM:Gaussian MM
 Spam base,Gaussian MM,Gaussian MM,Fowlkes Mallows,1.0,Gaussian MM:Gaussian MM
 Spam base,Gaussian MM,Gaussian MM,V Measure,1.0,Gaussian MM:Gaussian MM
-Spam base,Gaussian MM,K-Means,ARI,0.03115105977734701,Gaussian MM:K-Means
-Spam base,Gaussian MM,K-Means,MI,0.028333791224751426,Gaussian MM:K-Means
-Spam base,Gaussian MM,K-Means,Fowlkes Mallows,0.7121799132832163,Gaussian MM:K-Means
-Spam base,Gaussian MM,K-Means,V Measure,0.02875384391414691,Gaussian MM:K-Means
-Spam base,Gaussian MM,HC (average),ARI,-0.0001899116194586281,Gaussian MM:HC (average)
-Spam base,Gaussian MM,HC (average),MI,-4.476094318553966e-05,Gaussian MM:HC (average)
-Spam base,Gaussian MM,HC (average),Fowlkes Mallows,0.5371822674891449,Gaussian MM:HC (average)
-Spam base,Gaussian MM,HC (average),V Measure,0.00021946375757812925,Gaussian MM:HC (average)
+Spam base,Gaussian MM,K-Means,ARI,0.26290258017408513,Gaussian MM:K-Means
+Spam base,Gaussian MM,K-Means,MI,0.22099876420066347,Gaussian MM:K-Means
+Spam base,Gaussian MM,K-Means,Fowlkes Mallows,0.6376994474979796,Gaussian MM:K-Means
+Spam base,Gaussian MM,K-Means,V Measure,0.22117557746501648,Gaussian MM:K-Means
+Spam base,Gaussian MM,HC (average),ARI,0.2341985607299987,Gaussian MM:HC (average)
+Spam base,Gaussian MM,HC (average),MI,0.18755803728455203,Gaussian MM:HC (average)
+Spam base,Gaussian MM,HC (average),Fowlkes Mallows,0.6236164388249703,Gaussian MM:HC (average)
+Spam base,Gaussian MM,HC (average),V Measure,0.1877424724584652,Gaussian MM:HC (average)
 Spam base,HC (average),HC (average),ARI,1.0,HC (average):HC (average)
 Spam base,HC (average),HC (average),MI,1.0,HC (average):HC (average)
 Spam base,HC (average),HC (average),Fowlkes Mallows,1.0,HC (average):HC (average)
@@ -2395,26 +2395,26 @@ Spam base,HC (average),HC (single),ARI,-0.0006897912313121476,HC (average):HC (s
 Spam base,HC (average),HC (single),MI,0.00245171985465078,HC (average):HC (single)
 Spam base,HC (average),HC (single),Fowlkes Mallows,0.715539591396998,HC (average):HC (single)
 Spam base,HC (average),HC (single),V Measure,0.0030299637432851106,HC (average):HC (single)
-Spam base,HC (average),K-Means,ARI,0.00011038512309997677,HC (average):K-Means
-Spam base,HC (average),K-Means,MI,4.55190433946068e-05,HC (average):K-Means
-Spam base,HC (average),K-Means,Fowlkes Mallows,0.6796465187583343,HC (average):K-Means
-Spam base,HC (average),K-Means,V Measure,0.00039707082556790697,HC (average):K-Means
-Spam base,HC (average),K-Means (minibatch),ARI,9.782202044501195e-05,HC (average):K-Means (minibatch)
-Spam base,HC (average),K-Means (minibatch),MI,3.2658961715006364e-06,HC (average):K-Means (minibatch)
-Spam base,HC (average),K-Means (minibatch),Fowlkes Mallows,0.661727553327341,HC (average):K-Means (minibatch)
-Spam base,HC (average),K-Means (minibatch),V Measure,0.000344472859405342,HC (average):K-Means (minibatch)
-Spam base,HC (average),K-Means++,ARI,5.578233021181242e-05,HC (average):K-Means++
-Spam base,HC (average),K-Means++,MI,3.254981098246716e-05,HC (average):K-Means++
-Spam base,HC (average),K-Means++,Fowlkes Mallows,0.6806358252832198,HC (average):K-Means++
-Spam base,HC (average),K-Means++,V Measure,0.00038612404162398763,HC (average):K-Means++
-Spam base,Birch,HC (average),ARI,-3.9244242708845676e-05,Birch:HC (average)
-Spam base,Birch,HC (average),MI,4.753850100357143e-05,Birch:HC (average)
-Spam base,Birch,HC (average),Fowlkes Mallows,0.6677284038788345,Birch:HC (average)
-Spam base,Birch,HC (average),V Measure,0.00039804581162767493,Birch:HC (average)
-Spam base,Gaussian MM,HC (complete),ARI,2.5638086114554832e-05,Gaussian MM:HC (complete)
-Spam base,Gaussian MM,HC (complete),MI,-4.122314033267355e-05,Gaussian MM:HC (complete)
-Spam base,Gaussian MM,HC (complete),Fowlkes Mallows,0.6779295111844361,Gaussian MM:HC (complete)
-Spam base,Gaussian MM,HC (complete),V Measure,0.0003478249670766163,Gaussian MM:HC (complete)
+Spam base,HC (average),K-Means,ARI,0.43999147023688034,HC (average):K-Means
+Spam base,HC (average),K-Means,MI,0.36213217351000593,HC (average):K-Means
+Spam base,HC (average),K-Means,Fowlkes Mallows,0.7287438533754849,HC (average):K-Means
+Spam base,HC (average),K-Means,V Measure,0.3622785703025344,HC (average):K-Means
+Spam base,HC (average),K-Means (minibatch),ARI,0.43088232059783443,HC (average):K-Means (minibatch)
+Spam base,HC (average),K-Means (minibatch),MI,0.3535242376506117,HC (average):K-Means (minibatch)
+Spam base,HC (average),K-Means (minibatch),Fowlkes Mallows,0.7240317524931078,HC (average):K-Means (minibatch)
+Spam base,HC (average),K-Means (minibatch),V Measure,0.3536724957036259,HC (average):K-Means (minibatch)
+Spam base,HC (average),K-Means++,ARI,0.439592740591338,HC (average):K-Means++
+Spam base,HC (average),K-Means++,MI,0.36175633589115597,HC (average):K-Means++
+Spam base,HC (average),K-Means++,Fowlkes Mallows,0.7285378439638984,HC (average):K-Means++
+Spam base,HC (average),K-Means++,V Measure,0.36190281329969004,HC (average):K-Means++
+Spam base,Birch,HC (average),ARI,0.40489848401604456,Birch:HC (average)
+Spam base,Birch,HC (average),MI,0.36554230061292114,Birch:HC (average)
+Spam base,Birch,HC (average),Fowlkes Mallows,0.7209776580424304,Birch:HC (average)
+Spam base,Birch,HC (average),V Measure,0.36569145210873416,Birch:HC (average)
+Spam base,Gaussian MM,HC (complete),ARI,0.0032870018898912144,Gaussian MM:HC (complete)
+Spam base,Gaussian MM,HC (complete),MI,0.003798556565009145,Gaussian MM:HC (complete)
+Spam base,Gaussian MM,HC (complete),Fowlkes Mallows,0.6434405650375146,Gaussian MM:HC (complete)
+Spam base,Gaussian MM,HC (complete),V Measure,0.00411711650621443,Gaussian MM:HC (complete)
 Spam base,HC (average),HC (complete),ARI,0.004186254669935915,HC (average):HC (complete)
 Spam base,HC (average),HC (complete),MI,0.006464181069254131,HC (average):HC (complete)
 Spam base,HC (average),HC (complete),Fowlkes Mallows,0.65209335730724,HC (average):HC (complete)
@@ -2427,50 +2427,50 @@ Spam base,HC (complete),HC (single),ARI,0.01092759243037338,HC (complete):HC (si
 Spam base,HC (complete),HC (single),MI,0.009702458941136707,HC (complete):HC (single)
 Spam base,HC (complete),HC (single),Fowlkes Mallows,0.906276179843518,HC (complete):HC (single)
 Spam base,HC (complete),HC (single),V Measure,0.010429881521764568,HC (complete):HC (single)
-Spam base,HC (complete),K-Means,ARI,0.0016943687232353925,HC (complete):K-Means
-Spam base,HC (complete),K-Means,MI,-7.125623268863494e-05,HC (complete):K-Means
-Spam base,HC (complete),K-Means,Fowlkes Mallows,0.8595187943836987,HC (complete):K-Means
-Spam base,HC (complete),K-Means,V Measure,0.0005963842089647129,HC (complete):K-Means
-Spam base,HC (complete),K-Means (minibatch),ARI,0.001319331740076065,HC (complete):K-Means (minibatch)
-Spam base,HC (complete),K-Means (minibatch),MI,-4.53176950843061e-05,HC (complete):K-Means (minibatch)
-Spam base,HC (complete),K-Means (minibatch),Fowlkes Mallows,0.8378119037069365,HC (complete):K-Means (minibatch)
-Spam base,HC (complete),K-Means (minibatch),V Measure,0.0006154576881376439,HC (complete):K-Means (minibatch)
-Spam base,HC (complete),K-Means++,ARI,0.0015826421282561975,HC (complete):K-Means++
-Spam base,HC (complete),K-Means++,MI,-0.00014713046377000095,HC (complete):K-Means++
-Spam base,HC (complete),K-Means++,Fowlkes Mallows,0.8607922627878034,HC (complete):K-Means++
-Spam base,HC (complete),K-Means++,V Measure,0.0005281424478346988,HC (complete):K-Means++
-Spam base,Birch,HC (complete),ARI,0.0007284799464019221,Birch:HC (complete)
-Spam base,Birch,HC (complete),MI,-4.742872854176702e-05,Birch:HC (complete)
-Spam base,Birch,HC (complete),Fowlkes Mallows,0.8449961787943905,Birch:HC (complete)
-Spam base,Birch,HC (complete),V Measure,0.000636417102986938,Birch:HC (complete)
-Spam base,Gaussian MM,HC (single),ARI,-6.535586913478769e-05,Gaussian MM:HC (single)
-Spam base,Gaussian MM,HC (single),MI,-2.50633395748804e-05,Gaussian MM:HC (single)
-Spam base,Gaussian MM,HC (single),Fowlkes Mallows,0.747716519327189,Gaussian MM:HC (single)
-Spam base,Gaussian MM,HC (single),V Measure,0.0005584106623615571,Gaussian MM:HC (single)
+Spam base,HC (complete),K-Means,ARI,0.006614098186637852,HC (complete):K-Means
+Spam base,HC (complete),K-Means,MI,0.008110048988603473,HC (complete):K-Means
+Spam base,HC (complete),K-Means,Fowlkes Mallows,0.6542696867843267,HC (complete):K-Means
+Spam base,HC (complete),K-Means,V Measure,0.008432437737552066,HC (complete):K-Means
+Spam base,HC (complete),K-Means (minibatch),ARI,0.007208720202782381,HC (complete):K-Means (minibatch)
+Spam base,HC (complete),K-Means (minibatch),MI,0.008855387055804778,HC (complete):K-Means (minibatch)
+Spam base,HC (complete),K-Means (minibatch),Fowlkes Mallows,0.654031644805319,HC (complete):K-Means (minibatch)
+Spam base,HC (complete),K-Means (minibatch),V Measure,0.009177387483685854,HC (complete):K-Means (minibatch)
+Spam base,HC (complete),K-Means++,ARI,0.006593306945633807,HC (complete):K-Means++
+Spam base,HC (complete),K-Means++,MI,0.008077543142635913,HC (complete):K-Means++
+Spam base,HC (complete),K-Means++,Fowlkes Mallows,0.654232472277072,HC (complete):K-Means++
+Spam base,HC (complete),K-Means++,V Measure,0.008399930950799111,HC (complete):K-Means++
+Spam base,Birch,HC (complete),ARI,0.013269706742085663,Birch:HC (complete)
+Spam base,Birch,HC (complete),MI,0.00768473817634911,Birch:HC (complete)
+Spam base,Birch,HC (complete),Fowlkes Mallows,0.6693526177017131,Birch:HC (complete)
+Spam base,Birch,HC (complete),V Measure,0.008016474038328765,Birch:HC (complete)
+Spam base,Gaussian MM,HC (single),ARI,0.00032460391382435687,Gaussian MM:HC (single)
+Spam base,Gaussian MM,HC (single),MI,0.0031547842239531576,Gaussian MM:HC (single)
+Spam base,Gaussian MM,HC (single),Fowlkes Mallows,0.7068736118353999,Gaussian MM:HC (single)
+Spam base,Gaussian MM,HC (single),V Measure,0.003728649937616969,Gaussian MM:HC (single)
 Spam base,HC (single),HC (single),ARI,1.0,HC (single):HC (single)
 Spam base,HC (single),HC (single),MI,1.0,HC (single):HC (single)
 Spam base,HC (single),HC (single),Fowlkes Mallows,1.0,HC (single):HC (single)
 Spam base,HC (single),HC (single),V Measure,1.0,HC (single):HC (single)
-Spam base,HC (single),K-Means,ARI,0.0001820225283638677,HC (single):K-Means
-Spam base,HC (single),K-Means,MI,-0.0002078273469401886,HC (single):K-Means
-Spam base,HC (single),K-Means,Fowlkes Mallows,0.9459760982197,HC (single):K-Means
-Spam base,HC (single),K-Means,V Measure,0.0005988668877200225,HC (single):K-Means
-Spam base,HC (single),K-Means (minibatch),ARI,0.00023822040594197627,HC (single):K-Means (minibatch)
-Spam base,HC (single),K-Means (minibatch),MI,-0.0001877176635179832,HC (single):K-Means (minibatch)
-Spam base,HC (single),K-Means (minibatch),Fowlkes Mallows,0.9209938058464968,HC (single):K-Means (minibatch)
-Spam base,HC (single),K-Means (minibatch),V Measure,0.0005699381589585028,HC (single):K-Means (minibatch)
-Spam base,HC (single),K-Means++,ARI,0.0003646558380044054,HC (single):K-Means++
-Spam base,HC (single),K-Means++,MI,-0.00020189486475637048,HC (single):K-Means++
-Spam base,HC (single),K-Means++,Fowlkes Mallows,0.9473934555209879,HC (single):K-Means++
-Spam base,HC (single),K-Means++,V Measure,0.0006140561628146276,HC (single):K-Means++
-Spam base,Birch,HC (single),ARI,-0.00010581967918097493,Birch:HC (single)
-Spam base,Birch,HC (single),MI,-0.00025940118666374363,Birch:HC (single)
-Spam base,Birch,HC (single),Fowlkes Mallows,0.9294563817621979,Birch:HC (single)
-Spam base,Birch,HC (single),V Measure,0.0005169230018401668,Birch:HC (single)
-Spam base,Gaussian MM,HC (ward),ARI,-0.00026781008646832095,Gaussian MM:HC (ward)
-Spam base,Gaussian MM,HC (ward),MI,-2.1309555764215744e-08,Gaussian MM:HC (ward)
-Spam base,Gaussian MM,HC (ward),Fowlkes Mallows,0.5446371294814556,Gaussian MM:HC (ward)
-Spam base,Gaussian MM,HC (ward),V Measure,0.0002701072942223719,Gaussian MM:HC (ward)
+Spam base,HC (single),K-Means,ARI,-0.0008188828702928394,HC (single):K-Means
+Spam base,HC (single),K-Means,MI,0.002036948384280414,HC (single):K-Means
+Spam base,HC (single),K-Means,Fowlkes Mallows,0.7164439196031451,HC (single):K-Means
+Spam base,HC (single),K-Means,V Measure,0.0026139239275190496,HC (single):K-Means
+Spam base,HC (single),K-Means (minibatch),ARI,-0.0007760535548407044,HC (single):K-Means (minibatch)
+Spam base,HC (single),K-Means (minibatch),MI,0.0021308048168213376,HC (single):K-Means (minibatch)
+Spam base,HC (single),K-Means (minibatch),Fowlkes Mallows,0.7158789713237433,HC (single):K-Means (minibatch)
+Spam base,HC (single),K-Means (minibatch),V Measure,0.002707557154717348,HC (single):K-Means (minibatch)
+Spam base,HC (single),K-Means++,ARI,-0.0008199917633065451,HC (single):K-Means++
+Spam base,HC (single),K-Means++,MI,0.0020320798449774418,HC (single):K-Means++
+Spam base,HC (single),K-Means++,Fowlkes Mallows,0.7164082037578992,HC (single):K-Means++
+Spam base,HC (single),K-Means++,V Measure,0.002609038750571503,HC (single):K-Means++
+Spam base,Birch,HC (single),ARI,-6.089590990166188e-05,Birch:HC (single)
+Spam base,Birch,HC (single),MI,0.0028708141370183456,Birch:HC (single)
+Spam base,Birch,HC (single),Fowlkes Mallows,0.7317795693333441,Birch:HC (single)
+Spam base,Birch,HC (single),V Measure,0.0034510427167856283,Birch:HC (single)
+Spam base,Gaussian MM,HC (ward),ARI,0.20367218691981023,Gaussian MM:HC (ward)
+Spam base,Gaussian MM,HC (ward),MI,0.16380649802383043,Gaussian MM:HC (ward)
+Spam base,Gaussian MM,HC (ward),Fowlkes Mallows,0.6147837879949801,Gaussian MM:HC (ward)
+Spam base,Gaussian MM,HC (ward),V Measure,0.1639990332781926,Gaussian MM:HC (ward)
 Spam base,HC (average),HC (ward),ARI,0.4624528150841207,HC (average):HC (ward)
 Spam base,HC (average),HC (ward),MI,0.41818194859087726,HC (average):HC (ward)
 Spam base,HC (average),HC (ward),Fowlkes Mallows,0.7459160881012383,HC (average):HC (ward)
@@ -2487,78 +2487,78 @@ Spam base,HC (ward),HC (ward),ARI,1.0,HC (ward):HC (ward)
 Spam base,HC (ward),HC (ward),MI,1.0,HC (ward):HC (ward)
 Spam base,HC (ward),HC (ward),Fowlkes Mallows,1.0,HC (ward):HC (ward)
 Spam base,HC (ward),HC (ward),V Measure,1.0,HC (ward):HC (ward)
-Spam base,HC (ward),K-Means,ARI,-0.0003810005469473756,HC (ward):K-Means
-Spam base,HC (ward),K-Means,MI,9.749026066137007e-05,HC (ward):K-Means
-Spam base,HC (ward),K-Means,Fowlkes Mallows,0.6886482836216978,HC (ward):K-Means
-Spam base,HC (ward),K-Means,V Measure,0.0004567674555909276,HC (ward):K-Means
-Spam base,HC (ward),K-Means (minibatch),ARI,-6.636287244276255e-05,HC (ward):K-Means (minibatch)
-Spam base,HC (ward),K-Means (minibatch),MI,2.698506351978187e-05,HC (ward):K-Means (minibatch)
-Spam base,HC (ward),K-Means (minibatch),Fowlkes Mallows,0.6706829643827922,HC (ward):K-Means (minibatch)
-Spam base,HC (ward),K-Means (minibatch),V Measure,0.00037646915613205015,HC (ward):K-Means (minibatch)
-Spam base,HC (ward),K-Means++,ARI,-0.00035227197043534366,HC (ward):K-Means++
-Spam base,HC (ward),K-Means++,MI,8.097620240868732e-05,HC (ward):K-Means++
-Spam base,HC (ward),K-Means++,Fowlkes Mallows,0.6896791982707106,HC (ward):K-Means++
-Spam base,HC (ward),K-Means++,V Measure,0.0004423243929953143,HC (ward):K-Means++
-Spam base,Birch,HC (ward),ARI,-0.00012260214031982447,Birch:HC (ward)
-Spam base,Birch,HC (ward),MI,0.00012596374728166576,Birch:HC (ward)
-Spam base,Birch,HC (ward),Fowlkes Mallows,0.6765473397759793,Birch:HC (ward)
-Spam base,Birch,HC (ward),V Measure,0.00048218448176499685,Birch:HC (ward)
+Spam base,HC (ward),K-Means,ARI,0.37110291282595925,HC (ward):K-Means
+Spam base,HC (ward),K-Means,MI,0.3265921580464451,HC (ward):K-Means
+Spam base,HC (ward),K-Means,Fowlkes Mallows,0.7008076792464547,HC (ward):K-Means
+Spam base,HC (ward),K-Means,V Measure,0.32674902646619813,HC (ward):K-Means
+Spam base,HC (ward),K-Means (minibatch),ARI,0.3587911172082684,HC (ward):K-Means (minibatch)
+Spam base,HC (ward),K-Means (minibatch),MI,0.3164477093761653,HC (ward):K-Means (minibatch)
+Spam base,HC (ward),K-Means (minibatch),Fowlkes Mallows,0.6945803817232614,HC (ward):K-Means (minibatch)
+Spam base,HC (ward),K-Means (minibatch),V Measure,0.3166067992726581,HC (ward):K-Means (minibatch)
+Spam base,HC (ward),K-Means++,ARI,0.3715057687968584,HC (ward):K-Means++
+Spam base,HC (ward),K-Means++,MI,0.32676375542990743,HC (ward):K-Means++
+Spam base,HC (ward),K-Means++,Fowlkes Mallows,0.7009692757388801,HC (ward):K-Means++
+Spam base,HC (ward),K-Means++,V Measure,0.32692057309300876,HC (ward):K-Means++
+Spam base,Birch,HC (ward),ARI,0.3468144011540437,Birch:HC (ward)
+Spam base,Birch,HC (ward),MI,0.32044246557401246,Birch:HC (ward)
+Spam base,Birch,HC (ward),Fowlkes Mallows,0.6978030899725381,Birch:HC (ward)
+Spam base,Birch,HC (ward),V Measure,0.3206042414603235,Birch:HC (ward)
 Spam base,K-Means,K-Means,ARI,1.0,K-Means:K-Means
 Spam base,K-Means,K-Means,MI,1.0,K-Means:K-Means
 Spam base,K-Means,K-Means,Fowlkes Mallows,1.0,K-Means:K-Means
 Spam base,K-Means,K-Means,V Measure,1.0,K-Means:K-Means
-Spam base,Gaussian MM,K-Means (minibatch),ARI,0.03129788220389007,Gaussian MM:K-Means (minibatch)
-Spam base,Gaussian MM,K-Means (minibatch),MI,0.02993775090660116,Gaussian MM:K-Means (minibatch)
-Spam base,Gaussian MM,K-Means (minibatch),Fowlkes Mallows,0.6931315096651374,Gaussian MM:K-Means (minibatch)
-Spam base,Gaussian MM,K-Means (minibatch),V Measure,0.030334106215724865,Gaussian MM:K-Means (minibatch)
-Spam base,K-Means,K-Means (minibatch),ARI,0.6920348399498336,K-Means:K-Means (minibatch)
-Spam base,K-Means,K-Means (minibatch),MI,0.6128137346944112,K-Means:K-Means (minibatch)
-Spam base,K-Means,K-Means (minibatch),Fowlkes Mallows,0.9543165141240741,K-Means:K-Means (minibatch)
-Spam base,K-Means,K-Means (minibatch),V Measure,0.6130921630579688,K-Means:K-Means (minibatch)
+Spam base,Gaussian MM,K-Means (minibatch),ARI,0.2561695983775453,Gaussian MM:K-Means (minibatch)
+Spam base,Gaussian MM,K-Means (minibatch),MI,0.21437346384202982,Gaussian MM:K-Means (minibatch)
+Spam base,Gaussian MM,K-Means (minibatch),Fowlkes Mallows,0.6340773589397087,Gaussian MM:K-Means (minibatch)
+Spam base,Gaussian MM,K-Means (minibatch),V Measure,0.21455166939755646,Gaussian MM:K-Means (minibatch)
+Spam base,K-Means,K-Means (minibatch),ARI,0.9195026727119513,K-Means:K-Means (minibatch)
+Spam base,K-Means,K-Means (minibatch),MI,0.868043564939847,K-Means:K-Means (minibatch)
+Spam base,K-Means,K-Means (minibatch),Fowlkes Mallows,0.9609204735477279,K-Means:K-Means (minibatch)
+Spam base,K-Means,K-Means (minibatch),V Measure,0.8680737900489011,K-Means:K-Means (minibatch)
 Spam base,K-Means (minibatch),K-Means (minibatch),ARI,1.0,K-Means (minibatch):K-Means (minibatch)
 Spam base,K-Means (minibatch),K-Means (minibatch),MI,1.0,K-Means (minibatch):K-Means (minibatch)
 Spam base,K-Means (minibatch),K-Means (minibatch),Fowlkes Mallows,1.0,K-Means (minibatch):K-Means (minibatch)
 Spam base,K-Means (minibatch),K-Means (minibatch),V Measure,1.0,K-Means (minibatch):K-Means (minibatch)
-Spam base,Birch,K-Means (minibatch),ARI,0.5513660279786233,Birch:K-Means (minibatch)
-Spam base,Birch,K-Means (minibatch),MI,0.47955390062361575,Birch:K-Means (minibatch)
-Spam base,Birch,K-Means (minibatch),Fowlkes Mallows,0.9365166696473622,Birch:K-Means (minibatch)
-Spam base,Birch,K-Means (minibatch),V Measure,0.47994503680404443,Birch:K-Means (minibatch)
-Spam base,Gaussian MM,K-Means++,ARI,0.03179147230174521,Gaussian MM:K-Means++
-Spam base,Gaussian MM,K-Means++,MI,0.028601515788510848,Gaussian MM:K-Means++
-Spam base,Gaussian MM,K-Means++,Fowlkes Mallows,0.7132619032539945,Gaussian MM:K-Means++
-Spam base,Gaussian MM,K-Means++,V Measure,0.029024242251056105,Gaussian MM:K-Means++
-Spam base,K-Means,K-Means++,ARI,0.9795826962818194,K-Means:K-Means++
-Spam base,K-Means,K-Means++,MI,0.9675497700426576,K-Means:K-Means++
-Spam base,K-Means,K-Means++,Fowlkes Mallows,0.99834319781622,K-Means:K-Means++
-Spam base,K-Means,K-Means++,V Measure,0.9675799530093621,K-Means:K-Means++
-Spam base,K-Means (minibatch),K-Means++,ARI,0.6759483639680404,K-Means (minibatch):K-Means++
-Spam base,K-Means (minibatch),K-Means++,MI,0.5951574888947102,K-Means (minibatch):K-Means++
-Spam base,K-Means (minibatch),K-Means++,Fowlkes Mallows,0.9530384471453743,K-Means (minibatch):K-Means++
-Spam base,K-Means (minibatch),K-Means++,V Measure,0.5954535521987785,K-Means (minibatch):K-Means++
+Spam base,Birch,K-Means (minibatch),ARI,0.3164995675798729,Birch:K-Means (minibatch)
+Spam base,Birch,K-Means (minibatch),MI,0.2868814371704604,Birch:K-Means (minibatch)
+Spam base,Birch,K-Means (minibatch),Fowlkes Mallows,0.6779000664751871,Birch:K-Means (minibatch)
+Spam base,Birch,K-Means (minibatch),V Measure,0.28704855954946074,Birch:K-Means (minibatch)
+Spam base,Gaussian MM,K-Means++,ARI,0.26282537441724896,Gaussian MM:K-Means++
+Spam base,Gaussian MM,K-Means++,MI,0.220867059412155,Gaussian MM:K-Means++
+Spam base,Gaussian MM,K-Means++,Fowlkes Mallows,0.6376444419409129,Gaussian MM:K-Means++
+Spam base,Gaussian MM,K-Means++,V Measure,0.22104389636390018,Gaussian MM:K-Means++
+Spam base,K-Means,K-Means++,ARI,0.9938706864700033,K-Means:K-Means++
+Spam base,K-Means,K-Means++,MI,0.9862059716563768,K-Means:K-Means++
+Spam base,K-Means,K-Means++,Fowlkes Mallows,0.9970332286112275,K-Means:K-Means++
+Spam base,K-Means,K-Means++,V Measure,0.9862091373179703,K-Means:K-Means++
+Spam base,K-Means (minibatch),K-Means++,ARI,0.9189725810917444,K-Means (minibatch):K-Means++
+Spam base,K-Means (minibatch),K-Means++,MI,0.867398330242834,K-Means (minibatch):K-Means++
+Spam base,K-Means (minibatch),K-Means++,Fowlkes Mallows,0.9606626188504462,K-Means (minibatch):K-Means++
+Spam base,K-Means (minibatch),K-Means++,V Measure,0.8674287023258367,K-Means (minibatch):K-Means++
 Spam base,K-Means++,K-Means++,ARI,1.0,K-Means++:K-Means++
 Spam base,K-Means++,K-Means++,MI,1.0,K-Means++:K-Means++
 Spam base,K-Means++,K-Means++,Fowlkes Mallows,1.0,K-Means++:K-Means++
 Spam base,K-Means++,K-Means++,V Measure,1.0,K-Means++:K-Means++
-Spam base,Birch,K-Means++,ARI,0.6130022075017817,Birch:K-Means++
-Spam base,Birch,K-Means++,MI,0.5235506667457475,Birch:K-Means++
-Spam base,Birch,K-Means++,Fowlkes Mallows,0.956081797974266,Birch:K-Means++
-Spam base,Birch,K-Means++,V Measure,0.5239289158851043,Birch:K-Means++
-Spam base,Birch,Gaussian MM,ARI,0.024747642354893826,Birch:Gaussian MM
-Spam base,Birch,Gaussian MM,MI,0.024605310430989805,Birch:Gaussian MM
-Spam base,Birch,Gaussian MM,Fowlkes Mallows,0.6983976385265105,Birch:Gaussian MM
-Spam base,Birch,Gaussian MM,V Measure,0.025012018706095544,Birch:Gaussian MM
-Spam base,Birch,K-Means,ARI,0.6186254894029435,Birch:K-Means
-Spam base,Birch,K-Means,MI,0.5283968009983583,Birch:K-Means
-Spam base,Birch,K-Means,Fowlkes Mallows,0.9562320992300403,Birch:K-Means
-Spam base,Birch,K-Means,V Measure,0.528767076115229,Birch:K-Means
+Spam base,Birch,K-Means++,ARI,0.32254785514362394,Birch:K-Means++
+Spam base,Birch,K-Means++,MI,0.2933307728497411,Birch:K-Means++
+Spam base,Birch,K-Means++,Fowlkes Mallows,0.6811110824947751,Birch:K-Means++
+Spam base,Birch,K-Means++,V Measure,0.2934965136128673,Birch:K-Means++
+Spam base,Birch,Gaussian MM,ARI,0.2183040367640782,Birch:Gaussian MM
+Spam base,Birch,Gaussian MM,MI,0.18472215975163603,Birch:Gaussian MM
+Spam base,Birch,Gaussian MM,Fowlkes Mallows,0.6251947942593812,Birch:Gaussian MM
+Spam base,Birch,Gaussian MM,V Measure,0.18491090721112852,Birch:Gaussian MM
+Spam base,Birch,K-Means,ARI,0.3228768726282334,Birch:K-Means
+Spam base,Birch,K-Means,MI,0.2936400998077425,Birch:K-Means
+Spam base,Birch,K-Means,Fowlkes Mallows,0.6812920441103336,Birch:K-Means
+Spam base,Birch,K-Means,V Measure,0.2938057766649832,Birch:K-Means
 Spam base,Birch,Birch,ARI,1.0,Birch:Birch
 Spam base,Birch,Birch,MI,1.0,Birch:Birch
 Spam base,Birch,Birch,Fowlkes Mallows,1.0,Birch:Birch
 Spam base,Birch,Birch,V Measure,1.0,Birch:Birch
-Spam base,Gaussian MM,Spectral (NN),ARI,9.533400692764248e-05,Gaussian MM:Spectral (NN)
-Spam base,Gaussian MM,Spectral (NN),MI,-0.00011457188007555441,Gaussian MM:Spectral (NN)
-Spam base,Gaussian MM,Spectral (NN),Fowlkes Mallows,0.7434530483507008,Gaussian MM:Spectral (NN)
-Spam base,Gaussian MM,Spectral (NN),V Measure,0.0004619396020232084,Gaussian MM:Spectral (NN)
+Spam base,Gaussian MM,Spectral (NN),ARI,0.0017952717515246465,Gaussian MM:Spectral (NN)
+Spam base,Gaussian MM,Spectral (NN),MI,0.013748923158748176,Gaussian MM:Spectral (NN)
+Spam base,Gaussian MM,Spectral (NN),Fowlkes Mallows,0.7032932250706907,Gaussian MM:Spectral (NN)
+Spam base,Gaussian MM,Spectral (NN),V Measure,0.014180432686134366,Gaussian MM:Spectral (NN)
 Spam base,HC (average),Spectral (NN),ARI,-0.0009003358481861287,HC (average):Spectral (NN)
 Spam base,HC (average),Spectral (NN),MI,0.01208502277765269,HC (average):Spectral (NN)
 Spam base,HC (average),Spectral (NN),Fowlkes Mallows,0.7113391530787316,HC (average):Spectral (NN)
@@ -2575,22 +2575,22 @@ Spam base,HC (ward),Spectral (NN),ARI,0.001193417285443115,HC (ward):Spectral (N
 Spam base,HC (ward),Spectral (NN),MI,0.013045023370834024,HC (ward):Spectral (NN)
 Spam base,HC (ward),Spectral (NN),Fowlkes Mallows,0.7215315766322747,HC (ward):Spectral (NN)
 Spam base,HC (ward),Spectral (NN),V Measure,0.013501782098423681,HC (ward):Spectral (NN)
-Spam base,K-Means,Spectral (NN),ARI,-0.0001351805494293455,K-Means:Spectral (NN)
-Spam base,K-Means,Spectral (NN),MI,-0.0002003587092110337,K-Means:Spectral (NN)
-Spam base,K-Means,Spectral (NN),Fowlkes Mallows,0.9404478902464148,K-Means:Spectral (NN)
-Spam base,K-Means,Spectral (NN),V Measure,0.001200908756252482,K-Means:Spectral (NN)
-Spam base,K-Means (minibatch),Spectral (NN),ARI,-0.0001833886857770062,K-Means (minibatch):Spectral (NN)
-Spam base,K-Means (minibatch),Spectral (NN),MI,-0.0001725517565651565,K-Means (minibatch):Spectral (NN)
-Spam base,K-Means (minibatch),Spectral (NN),Fowlkes Mallows,0.9155847137341953,K-Means (minibatch):Spectral (NN)
-Spam base,K-Means (minibatch),Spectral (NN),V Measure,0.0010756882257181568,K-Means (minibatch):Spectral (NN)
-Spam base,K-Means++,Spectral (NN),ARI,-0.0002521825211013053,K-Means++:Spectral (NN)
-Spam base,K-Means++,Spectral (NN),MI,-0.000170747072401203,K-Means++:Spectral (NN)
-Spam base,K-Means++,Spectral (NN),Fowlkes Mallows,0.9418500206772572,K-Means++:Spectral (NN)
-Spam base,K-Means++,Spectral (NN),V Measure,0.0012576068237275184,K-Means++:Spectral (NN)
-Spam base,Birch,Spectral (NN),ARI,0.00010572863481436748,Birch:Spectral (NN)
-Spam base,Birch,Spectral (NN),MI,-0.00030807852442579607,Birch:Spectral (NN)
-Spam base,Birch,Spectral (NN),Fowlkes Mallows,0.9240069781649153,Birch:Spectral (NN)
-Spam base,Birch,Spectral (NN),V Measure,0.0009612344889230903,Birch:Spectral (NN)
+Spam base,K-Means,Spectral (NN),ARI,-0.0034143984868268357,K-Means:Spectral (NN)
+Spam base,K-Means,Spectral (NN),MI,0.010450952954723142,K-Means:Spectral (NN)
+Spam base,K-Means,Spectral (NN),Fowlkes Mallows,0.7113901448251941,K-Means:Spectral (NN)
+Spam base,K-Means,Spectral (NN),V Measure,0.01089341422080989,K-Means:Spectral (NN)
+Spam base,K-Means (minibatch),Spectral (NN),ARI,-0.003408444800064254,K-Means (minibatch):Spectral (NN)
+Spam base,K-Means (minibatch),Spectral (NN),MI,0.010369950606912672,K-Means (minibatch):Spectral (NN)
+Spam base,K-Means (minibatch),Spectral (NN),Fowlkes Mallows,0.710813837300886,K-Means (minibatch):Spectral (NN)
+Spam base,K-Means (minibatch),Spectral (NN),V Measure,0.01081182715389777,K-Means (minibatch):Spectral (NN)
+Spam base,K-Means++,Spectral (NN),ARI,-0.0034193435434126257,K-Means++:Spectral (NN)
+Spam base,K-Means++,Spectral (NN),MI,0.010447778787679367,K-Means++:Spectral (NN)
+Spam base,K-Means++,Spectral (NN),Fowlkes Mallows,0.7113534353450099,K-Means++:Spectral (NN)
+Spam base,K-Means++,Spectral (NN),V Measure,0.010890207338293045,K-Means++:Spectral (NN)
+Spam base,Birch,Spectral (NN),ARI,-0.0013194097082463829,Birch:Spectral (NN)
+Spam base,Birch,Spectral (NN),MI,0.011492272622783002,Birch:Spectral (NN)
+Spam base,Birch,Spectral (NN),Fowlkes Mallows,0.7272190032818362,Birch:Spectral (NN)
+Spam base,Birch,Spectral (NN),V Measure,0.011955407353109657,Birch:Spectral (NN)
 Spam base,Spectral (NN),Spectral (NN),ARI,1.0,Spectral (NN):Spectral (NN)
 Spam base,Spectral (NN),Spectral (NN),MI,1.0,Spectral (NN):Spectral (NN)
 Spam base,Spectral (NN),Spectral (NN),Fowlkes Mallows,1.0,Spectral (NN):Spectral (NN)
@@ -2599,10 +2599,10 @@ Spam base,Spectral (NN),Spectral (RBF),ARI,0.0007951191746907745,Spectral (NN):S
 Spam base,Spectral (NN),Spectral (RBF),MI,0.012822391769669959,Spectral (NN):Spectral (RBF)
 Spam base,Spectral (NN),Spectral (RBF),Fowlkes Mallows,0.7086578222411153,Spectral (NN):Spectral (RBF)
 Spam base,Spectral (NN),Spectral (RBF),V Measure,0.0132601847855241,Spectral (NN):Spectral (RBF)
-Spam base,Gaussian MM,Spectral (RBF),ARI,-0.00011754912436604178,Gaussian MM:Spectral (RBF)
-Spam base,Gaussian MM,Spectral (RBF),MI,-5.046644788280385e-05,Gaussian MM:Spectral (RBF)
-Spam base,Gaussian MM,Spectral (RBF),Fowlkes Mallows,0.5347196909622095,Gaussian MM:Spectral (RBF)
-Spam base,Gaussian MM,Spectral (RBF),V Measure,0.00021259016887511327,Gaussian MM:Spectral (RBF)
+Spam base,Gaussian MM,Spectral (RBF),ARI,0.15192360571897007,Gaussian MM:Spectral (RBF)
+Spam base,Gaussian MM,Spectral (RBF),MI,0.11710904977551703,Gaussian MM:Spectral (RBF)
+Spam base,Gaussian MM,Spectral (RBF),Fowlkes Mallows,0.5808665272076807,Gaussian MM:Spectral (RBF)
+Spam base,Gaussian MM,Spectral (RBF),V Measure,0.11730867688123085,Gaussian MM:Spectral (RBF)
 Spam base,HC (average),Spectral (RBF),ARI,0.30351308894295603,HC (average):Spectral (RBF)
 Spam base,HC (average),Spectral (RBF),MI,0.24927035228107544,HC (average):Spectral (RBF)
 Spam base,HC (average),Spectral (RBF),Fowlkes Mallows,0.6609644548899019,HC (average):Spectral (RBF)
@@ -2619,22 +2619,22 @@ Spam base,HC (ward),Spectral (RBF),ARI,0.261981231728566,HC (ward):Spectral (RBF
 Spam base,HC (ward),Spectral (RBF),MI,0.21944858826171565,HC (ward):Spectral (RBF)
 Spam base,HC (ward),Spectral (RBF),Fowlkes Mallows,0.6461592726741163,HC (ward):Spectral (RBF)
 Spam base,HC (ward),Spectral (RBF),V Measure,0.21962933079175964,HC (ward):Spectral (RBF)
-Spam base,K-Means,Spectral (RBF),ARI,-0.00018717555433968563,K-Means:Spectral (RBF)
-Spam base,K-Means,Spectral (RBF),MI,-3.74978878057879e-05,K-Means:Spectral (RBF)
-Spam base,K-Means,Spectral (RBF),Fowlkes Mallows,0.6764774943451688,K-Means:Spectral (RBF)
-Spam base,K-Means,Spectral (RBF),V Measure,0.0003118649392997697,K-Means:Spectral (RBF)
-Spam base,K-Means (minibatch),Spectral (RBF),ARI,1.0666088783588826e-05,K-Means (minibatch):Spectral (RBF)
-Spam base,K-Means (minibatch),Spectral (RBF),MI,-5.32584583918437e-05,K-Means (minibatch):Spectral (RBF)
-Spam base,K-Means (minibatch),Spectral (RBF),Fowlkes Mallows,0.6587008851710201,K-Means (minibatch):Spectral (RBF)
-Spam base,K-Means (minibatch),Spectral (RBF),V Measure,0.00028576345708213697,K-Means (minibatch):Spectral (RBF)
-Spam base,K-Means++,Spectral (RBF),ARI,-0.0001464611846056957,K-Means++:Spectral (RBF)
-Spam base,K-Means++,Spectral (RBF),MI,-2.116871736398174e-05,K-Means++:Spectral (RBF)
-Spam base,K-Means++,Spectral (RBF),Fowlkes Mallows,0.6775024982256279,K-Means++:Spectral (RBF)
-Spam base,K-Means++,Spectral (RBF),V Measure,0.00033023151618663017,K-Means++:Spectral (RBF)
-Spam base,Birch,Spectral (RBF),ARI,-3.816550680892483e-05,Birch:Spectral (RBF)
-Spam base,Birch,Spectral (RBF),MI,2.0172494195972034e-05,Birch:Spectral (RBF)
-Spam base,Birch,Spectral (RBF),Fowlkes Mallows,0.6647571669602701,Birch:Spectral (RBF)
-Spam base,Birch,Spectral (RBF),V Measure,0.0003684083051505273,Birch:Spectral (RBF)
+Spam base,K-Means,Spectral (RBF),ARI,0.616675287725164,K-Means:Spectral (RBF)
+Spam base,K-Means,Spectral (RBF),MI,0.5604972163765567,K-Means:Spectral (RBF)
+Spam base,K-Means,Spectral (RBF),Fowlkes Mallows,0.8140458117761357,K-Means:Spectral (RBF)
+Spam base,K-Means,Spectral (RBF),V Measure,0.5605977603800796,K-Means:Spectral (RBF)
+Spam base,K-Means (minibatch),Spectral (RBF),ARI,0.6292727430139582,K-Means (minibatch):Spectral (RBF)
+Spam base,K-Means (minibatch),Spectral (RBF),MI,0.5737697842441215,K-Means (minibatch):Spectral (RBF)
+Spam base,K-Means (minibatch),Spectral (RBF),Fowlkes Mallows,0.8200845482144231,K-Means (minibatch):Spectral (RBF)
+Spam base,K-Means (minibatch),Spectral (RBF),V Measure,0.5738672582676209,K-Means (minibatch):Spectral (RBF)
+Spam base,K-Means++,Spectral (RBF),ARI,0.6167291852923799,K-Means++:Spectral (RBF)
+Spam base,K-Means++,Spectral (RBF),MI,0.5605329493746798,K-Means++:Spectral (RBF)
+Spam base,K-Means++,Spectral (RBF),Fowlkes Mallows,0.8140749679054937,K-Means++:Spectral (RBF)
+Spam base,K-Means++,Spectral (RBF),V Measure,0.560633484134835,K-Means++:Spectral (RBF)
+Spam base,Birch,Spectral (RBF),ARI,0.2291470288772392,Birch:Spectral (RBF)
+Spam base,Birch,Spectral (RBF),MI,0.19631563267420643,Birch:Spectral (RBF)
+Spam base,Birch,Spectral (RBF),Fowlkes Mallows,0.634536944276287,Birch:Spectral (RBF)
+Spam base,Birch,Spectral (RBF),V Measure,0.19650333600589384,Birch:Spectral (RBF)
 Spam base,Spectral (RBF),Spectral (RBF),ARI,1.0,Spectral (RBF):Spectral (RBF)
 Spam base,Spectral (RBF),Spectral (RBF),MI,1.0,Spectral (RBF):Spectral (RBF)
 Spam base,Spectral (RBF),Spectral (RBF),Fowlkes Mallows,1.0,Spectral (RBF):Spectral (RBF)
