@@ -25,11 +25,12 @@ nav = Navbar()
 
 df = pd.read_csv("dr_clustering.csv")
 cross = pd.read_csv('cross_dr.csv')
+# accs = pd.read_csv('dr_accs.csv')
+df_split = pd.read_csv("dr_clustering_split.csv")
+cross_split = pd.read_csv('cross_dr_split.csv')
+# accs_split = pd.read_csv('dr_accs_split.csv')
 
 
-
-data_options = df['data'].unique().tolist()
-method_options = df['method'].unique().tolist()
 criteria_options = df['criteria'].unique().tolist()
 rank_options = df['rank'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
@@ -38,8 +39,8 @@ clus_options = df['clustering'].unique().tolist()
 plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
-                        'dot':'Consistency/predictive accuracy vs. methods',
-#                         'fit':'Consistency vs. predictive accuracy',
+#                        'dot':'Consistency/predictive accuracy vs. methods',
+                        'fit':'Scatter plots of interpretation consistency, predictive consistency, and preditvie accuracy',
                        # 'cor': 'Correlation between onsistency and predictive accuracy'
                        }
 plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all data sets',
@@ -55,7 +56,7 @@ palette = {
             #  'NMDS':'cyan', 
             'Isomap':'lime',
             't-SNE': 'green',
-            'UMAPP':'limegreen',
+            'UMAP':'limegreen',
             'DAE':'yellow',
             'Random Projection':'grey'
             }
@@ -68,7 +69,7 @@ line_choice = {
             #  'NMDS':'cyan', 
             'Isomap':'dash',
             't-SNE': 'dash',
-            'UMAPP':'dash',
+            'UMAP':'dash',
             'DAE':'dot',
             'Random Projection':'solid'
             }
@@ -80,19 +81,34 @@ line_choice = {
 #                 'Spam base':"green",
 #                 'Statlog':"cyan"
 #                 }
+# palette_data = { 
+#     'Statlog':'deepskyblue',      
+#     'Theorem':'slateblue',   
+#     'Spam base':"green", 
+#     'Author':'yellow',           
+#     'Amphibians':'lightseagreen',  
+#     'Madelon' :'greenyellow', 
+#     'TCGA':'hotpink',
+#     'DNase':"firebrick",                   
+#     'Religion': 'indigo',
+#    'PANCAN':"purple",
+# }
 palette_data = { 
-    'Statlog':'deepskyblue',      
-    'Theorem':'slateblue',   
-
-    'Spam base':"green", 
-    'Author':'yellow',           
-    'Amphibians':'lightseagreen',  
-    'Madelon' :'greenyellow', 
-    'TCGA':'hotpink',
-    'DNase':"firebrick",                   
-    'Religion': 'indigo',
+        'Statlog':'deepskyblue',      
+           'Spam base':"purple", 
+      'WDBC':'cyan',
+     'Tetragonula': 'indigo',
+      'Author':'yellow',           
+    'Ceramic':'slateblue',   
+      'TCGA':'hotpink',
+    'Psychiatrist':"green", 
+    'Veronica':"firebrick",   
+    
+     'Religion': 'indigo',
     'PANCAN':"purple",
-}
+   'Darmanis':'powderblue'
+           }
+
 markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
@@ -101,7 +117,7 @@ markers_choice = {
                 'Spectral (NN)': "0",
                 'Spectral (RBF)': "0",
                 't-SNE': 'x',
-                'UMAPP':'x',
+                'UMAP':'x',
                 'Isomap':'x',
                 'DAE':'x',
 
@@ -122,9 +138,9 @@ def sort(df,column1,sorter1,column2=None,sorter2=None):
     return df
 
 df=sort(df,'data',list(palette_data.keys()),'method',list(palette.keys()))
+df_split=sort(df_split,'data',list(palette_data.keys()),'method',list(palette.keys()))
 meths = list(palette.keys())
 datas = list(palette_data.keys())
-
 
 
 def description_card():
@@ -188,25 +204,47 @@ def generate_control_card():
                 
                 value=2,
             ),
-                
-            html.Br(),
-            html.Hr(),
-            html.P("Select: Noise Type"),
+                ## select data split or noise addition 
+            html.P("Select: Pertubation Method"),
             dcc.RadioItems(
-                id="noise-select_dr",
-                options=[{"label": i, "value": i} for i in noise_options],
-                value=noise_options[1],
+                id="pert-select_dr",
+                options=[{"label": i, "value": i} for i in ['Data Split','Noise Addition']],
+                value='Data Split',
             ),
-                
-            html.Hr(),
-            html.P("Select: Noise Level (sigma)"),
-            dcc.Dropdown(
-                id="sigma-select_dr",
-                options=[{"label": i, "value": i} for i in sigma_options],
-                value=1,
             
-            ),
-            html.Hr(),
+            html.Hr(),            
+            
+            
+            html.Div(id='controls-container_dr', children=[
+            
+                html.P("Select: Noise Type"),
+                dcc.RadioItems(
+                    id="noise-select_dr",
+                    options=[{"label": i, "value": i} for i in noise_options],
+                    value=noise_options[1],
+                ),
+
+                html.Hr(),
+                html.P("Select: Noise Level (sigma)"),
+                dcc.Dropdown(
+                    id="sigma-select_dr",
+                    options=[{"label": i, "value": i} for i in sigma_options],
+                    value=0.5,
+
+                ),
+            ]),
+                     
+                     
+            html.Hr(),          
+
+            html.P("Select: Consistency/Accuracy Metric"),
+            dcc.RadioItems(
+                id="criteria-select_dr",
+                options=[{"label": i, "value": i} for i in criteria_options],
+                value=criteria_options[0],
+            ),  
+           
+
             
             html.Hr(),
             html.P("Select: Clustering Method"),
@@ -216,14 +254,7 @@ def generate_control_card():
                 value=clus_options[0],
             
             ),
-            html.Hr(),          
-
-            html.P("Select: Consistency Metric"),
-            dcc.RadioItems(
-                id="criteria-select_dr",
-                options=[{"label": i, "value": i} for i in criteria_options],
-                value=criteria_options[0],
-            ),            
+          
             ###############################
             ###############################
             
@@ -241,8 +272,8 @@ def generate_control_card():
             html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_dr",
-                options=[{"label": i, "value": i} for i in data_options],
-                value=data_options[:],
+                options=[{"label": i, "value": i} for i in datas],
+                value=datas[:],
                 multi=True,
             ),
             html.Br(),
@@ -271,10 +302,10 @@ def generate_control_card():
 
             html.Hr(),
            
-            dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
-            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+#             dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
+#             dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
 
-            html.Hr(),
+#             html.Hr(),
         
         
         ],
@@ -306,6 +337,7 @@ def App3():
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
             html.Div(id='show_line'),
+            html.Div(id='show_heat2'),
             html.Div(id='show_bump'),
             html.Div(id='show_heatmap'),
             html.Div(id='show_fit'),
@@ -315,7 +347,8 @@ def App3():
             html.Div(id='title_summary_raw'),
             html.Div(id='show_line_raw'),
             html.Div(id='show_scatter_raw'),
-            html.Div(id='show_heatmap_raw'),
+#                html.Div(id='show_acc_raw'),
+         html.Div(id='show_heatmap_raw'),
            
         ], 
           width={"size": 7, "offset": 1},
@@ -330,9 +363,14 @@ def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_s
 
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_markers_choice =dict((i,markers_choice[i]) for i in method_sel)
-    
-    
-    dff=df[(df.data.isin(data_sel))
+
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+                    &(df_split['rank'] ==int(rank_sel))
+                    &(df_split.clustering == clus_sel)
+                     &(df_split.method.isin(method_sel))] 
+    else:    
+        dff=df[(df.data.isin(data_sel))
                 &(df.method.isin(method_sel))
                 &(df.noise ==noise_sel)
                 &(df.sigma ==float(sigma_sel))
@@ -362,11 +400,97 @@ def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_s
 )
     return fig
 
+
+
+def build_heat_consis_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
+                 ):
+
+    if noise_sel==None: ## data spkit
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.criteria==criteria_sel)
+                      &(df_split.clustering == clus_sel)
+                      &(df_split['rank'] ==rank_sel)
+                    &(df_split.method.isin(method_sel))] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
+            &(df.method.isin(method_sel))
+            &(df.noise ==noise_sel)
+            &(df.sigma ==float(sigma_sel))
+            &(df['rank'] ==rank_sel)
+            &(df.clustering == clus_sel)
+            &(df.criteria==criteria_sel)] 
+
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_line_choice=dict((i,line_choice[i]) for i in method_sel)
+    ###### input new data
+    if new_data is not None:
+        new_data = pd.DataFrame(new_data)
+        neww = new_data[(new_data.noise ==noise_sel)
+                &(new_data['rank'] ==int(rank_sel))
+                &(new_data.sigma ==float(sigma_sel))
+               &(new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww]) 
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_line_choice[mm]='solid'
+
+    
+
+    sub = dff.pivot("data", "method", "Consistency")
+    sub=round(sub,3)
+    sub= pd.DataFrame(sub, index=data_sel)
+    sub=sub[method_sel]
+    h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
+                             color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                  origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
+
+    h.update_layout({
+    'plot_bgcolor':'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    h.layout.height = 500
+    h.layout.width = 1000
+    
+    
+    dff_ac = dff[["data", "method", "Accuracy"]].drop_duplicates()
+    sub = dff_ac.pivot("data", "method", "Accuracy")
+    sub=round(sub,3)
+    sub= pd.DataFrame(sub, index=data_sel)
+    h2=px.imshow(sub, text_auto=True, aspect="auto",
+                 color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                 range_color=(0,1),
+                 origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
+    h2.layout.height = 500
+    h2.layout.width = 700
+
+    fig= make_subplots(rows=1, cols=2, column_widths=[0.5, 0.5], 
+                                horizontal_spacing=0.15,
+                            vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
+
+    for trace in h.data:
+        fig.add_trace(trace, 1, 1)
+    for trace in h2.data:
+        fig.add_trace(trace, 1, 2)
+    fig.update_xaxes(tickangle=45)# for trace in bar1.data:
+    fig.update_layout(                             
+                  coloraxis=dict(colorscale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                                 showscale = False),)
+    
+    return fig
 def build_bump_dr(data_sel, method_sel,
                  criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None):
 ####### filter data
-    
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+             &(df_split['rank'] ==int(rank_sel))
+                                 &(df_split.criteria==criteria_sel)
+   &(df_split.clustering == clus_sel)
+                     &(df_split.method.isin(method_sel))] 
+     
+    else:
+        dff=df[(df.data.isin(data_sel))
                 &(df.method.isin(method_sel))
                 &(df.noise ==noise_sel)
                 &(df['rank'] ==int(rank_sel))
@@ -374,8 +498,10 @@ def build_bump_dr(data_sel, method_sel,
                &(df.criteria==criteria_sel)
                       &(df.clustering == clus_sel)
                 ]
-    
-    
+    df_ave = dff.groupby(['method'],as_index=False).mean()
+    df_ave['data']='Average'
+    df_ave=df_ave[['data','method','Consistency','Accuracy']]
+    dff=pd.concat([dff,df_ave])
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
 
@@ -388,11 +514,7 @@ def build_bump_dr(data_sel, method_sel,
         dff = pd.concat([dff, neww]) 
         for mm in set(neww['method']):
             this_palette[mm]='black'
-##### bump plot 
-    df_ave = dff.groupby(['method','noise','sigma','criteria','rank'],as_index=False).mean()
-    df_ave['data']='Average'
-    df_ave=df_ave[['data','method','Consistency']]
-    dff=pd.concat([dff,df_ave])
+
 
 ########################
                        
@@ -441,28 +563,48 @@ def build_bump_dr(data_sel, method_sel,
                 showlegend=False,
                 hoverinfo='none',                                                                               )
                     )
-
+    fig.add_annotation(dict(font=dict(color="grey",size=12),
+                        x=-0.05, y=-0.1, 
+                        text="Large N",
+                        xref='paper',
+                        yref='paper', 
+                        showarrow=False))
+    fig.add_annotation(dict(font=dict(color="grey",size=12),
+                        x=1.1, y=-0.1, 
+                        text="Large P",
+                        xref='paper',
+                        yref='paper', 
+                        showarrow=False))
+ 
     return fig  
 
 
 
-def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel
-                 ):
-        cross_ave = cross[cross.data.isin(data_sel)&(cross.clustering == clus_sel)]
-        
-        cross_ave=cross_ave.groupby(['method1','method2','criteria','noise','sigma','rank'],as_index=False)['value'].mean()
-        sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
-        sub = sub[(sub['sigma']==sigma_sel)&(sub['criteria']==criteria_sel)&(sub['noise']==noise_sel)&(sub['rank']==rank_sel)]
-        sub = sub.pivot("method1", "method2", "value")
-        sub = sub.fillna(0)+sub.fillna(0).T
-        np.fill_diagonal(sub.values, 1)
-        sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
+
+    
+    
+    
+#     if noise_sel!=None:
+
+
+#             cross_ave = cross[cross.data.isin(data_sel) &(cross['clustering'] == clus_sel)&(cross['rank']==rank_sel)
+#                              &(cross['sigma']==sigma_sel)&(cross['criteria']==criteria_sel)&(cross['noise']==noise_sel)]
+#         else:
+#             cross_ave = cross_split[cross_split.data.isin(data_sel) &(cross_split['clustering'] == clus_sel)
+#                                     &(cross_split['criteria']==criteria_sel)&(cross_split['rank']==rank_sel)]
+            
+#         sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
+#         sub=sub.groupby(['method1','method2'],as_index=False)['value'].mean()
+#         sub = sub.pivot("method1", "method2", "value")
+#         sub = sub.fillna(0)+sub.fillna(0).T
+#         np.fill_diagonal(sub.values, 1)
+#         sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
                
-        fig = px.imshow(sub, text_auto=True, origin='lower',
-                        aspect="auto",color_continuous_scale='Purp',
-                        labels=dict(x="Method", y="Method", color="Consistency"))        
-        fig.layout.coloraxis.showscale = False
-        return fig
+#         fig = px.imshow(sub, text_auto=True, origin='lower',
+#                         aspect="auto",color_continuous_scale='Purp',
+#                         labels=dict(x="Method", y="Method", color="Consistency"))        
+#         fig.layout.coloraxis.showscale = False
+#         return fig
 
 def build_acc_bar_dr(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel
                  ):
@@ -493,14 +635,21 @@ def build_line_dr(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
                  ):
 
-####### filter data
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None: ## data spkit
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.criteria==criteria_sel)
+                      &(df_split.clustering == clus_sel)
+                      &(df_split['rank'] ==rank_sel)
+                    &(df_split.method.isin(method_sel))] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df['rank'] ==rank_sel)
-            &(df.criteria==criteria_sel) 
-            &(df.clustering == clus_sel)]
+            &(df.clustering == clus_sel)
+            &(df.criteria==criteria_sel)] 
 
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_line_choice=dict((i,line_choice[i]) for i in method_sel)
@@ -516,7 +665,7 @@ def build_line_dr(data_sel, method_sel,
             this_palette[mm]='black'
             this_line_choice[mm]='solid'
 
-    fig = px.line(dff,x="data", y='Consistency',color = 'method',markers=True,
+    fig1 = px.line(dff,x="data", y='Consistency',color = 'method',markers=True,
 
                         color_discrete_map=this_palette,
                             line_dash = 'method',
@@ -526,9 +675,8 @@ def build_line_dr(data_sel, method_sel,
                      },
                  # title=
                  )
-    fig.update_traces(line=dict(width=3))
     if new_data is not None:
-        fig.add_trace(
+        fig1.add_trace(
                 go.Scatter(
                     x=neww['data'],
                     y=neww['Consistency'],
@@ -542,20 +690,92 @@ def build_line_dr(data_sel, method_sel,
                 )
             )
     
-    
+    fig2 = px.line(dff,x="data", y='Accuracy',color = 'method',markers=True,
+
+                            color_discrete_map=this_palette,
+                      line_dash_map = this_line_choice,
+                      labels={
+                             "method": "Method",'data':'Data'
+                         },
+                     )
+
+    for i in range(len(fig2['data'])):
+        fig2['data'][i]['showlegend']=False
+        
+    fig= make_subplots(rows=1, cols=2, column_widths=[0.5, 0.5], 
+                                horizontal_spacing=0.15,
+                            vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
+    for trace in fig1.data:
+        fig.add_trace(trace, 1, 1)
+    for trace in fig2.data:
+        fig.add_trace(trace, 1, 2)
+    fig.update_traces(line=dict(width=3))
+    fig.add_annotation(dict(font=dict(color="grey",size=12),
+                        x=-0.05, y=-0.1, 
+                        text="Large N",
+                        xref='paper',
+                        yref='paper', 
+                        showarrow=False))
+    fig.add_annotation(dict(font=dict(color="grey",size=12),
+                        x=0.55, y=-0.1, 
+                        text="Large P",
+                        xref='paper',
+                        yref='paper', 
+                        showarrow=False))
+    fig.update_xaxes(categoryorder='array', categoryarray= datas)
+
+    fig.update_xaxes(tickangle=45)
+     
     return fig
 
+def build_acc_raw_clus(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None):
+    if noise_sel==None:
+        acc=accs_split[(accs_split.data.isin(data_sel))
+            &(accs_split.method.isin(method_sel))
+            &(accs_split['rank'] ==rank_sel)
+            &(accs_split.criteria==criteria_sel)
+               &(accs_split.clustering == clus_sel)
+                    ] 
+    else:
+        acc=accs[(accs.data.isin(data_sel))
+                  &(accs['method'].isin(method_sel))
+                 &(accs.noise==noise_sel)
+                 &(accs_split['rank'] ==rank_sel)
+                &(accs_split.criteria==criteria_sel)
+               &(accs_split.clustering == clus_sel)
+                 &(accs.sigma==sigma_sel)]
+
+    fig = px.box(acc, x="method", y="Accuracy", color='method', 
+                     facet_col="data",facet_col_wrap=3,facet_row_spacing=0.1,
+                        color_discrete_map =palette, 
+               labels=dict(data='Data',Accuracy='Accuracy', method="Method"))
+   
+    fig.update_traces(marker_size=10)
+    fig.update_xaxes(matches=None,showticklabels=True)
+    
+    return fig
 def build_fit_dr(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
                  ):
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+            &(df_split['rank'] ==rank_sel)
+            &(df_split.criteria==criteria_sel)
+               &(df.clustering == clus_sel)
+                    ] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
             &(df['rank'] ==rank_sel)
             &(df.criteria==criteria_sel)
-               &(df.clustering == clus_sel)
-            ] 
+               &(df.clustering == clus_sel)] 
+
+    
+    
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
     this_palette_data=dict((i,palette_data[i]) for i in data_sel)
@@ -574,17 +794,27 @@ def build_fit_dr(data_sel, method_sel,
         
         
         
-    fig = px.scatter(dff, x="Consistency", y="Accuracy", color='data', 
-                     trendline="ols", custom_data=['data','method'],
-
-                color_discrete_map=(this_palette_data),
-#                 symbol='method', symbol_map= this_markers_choice,
-                 category_orders={"data":list(this_palette_data.keys())},
+            
+    fig1 = px.scatter(dff, x="Consistency", y="Accuracy", color='data', 
+                     trendline="ols",
+                color_discrete_map=this_palette_data,
+                 category_orders={"Data":list(this_palette_data.keys())},
                labels=dict(Consistency='Consistency', data="Data"),
-
-                )
+                custom_data=['data','method'],
+                )            
+    fig1.update_traces(
+        hovertemplate="<br>".join([
+        "Data: %{customdata[0]}",
+        "Method: %{customdata[1]}",
+        "Accuracy: %{y}",
+        "Consistency: %{x}",
+            ]))   
+    fig1.update_traces(line=dict(width=3),marker = dict(size=10),opacity=0.9)
+    
     region_lst = []
-    for trace in fig["data"]:
+    pv1 = pd.DataFrame(columns = ['data','p-values'])
+
+    for trace in fig1["data"]:
         trace["name"] = trace["name"].split(",")[0]
 
         if trace["name"] not in region_lst and trace["marker"]['symbol'] == 'circle':
@@ -592,17 +822,39 @@ def build_fit_dr(data_sel, method_sel,
             region_lst.append(trace["name"])
         else:
             trace["showlegend"] = False
+    model = px.get_trendline_results(fig1)
+    nn=len(fig1['data'])//2
+    for i in range(0,len(fig1['data']),2):
+        print(i)
+        fig1["data"][i+1]['customdata'] = fig1["data"][i]['customdata']
+        order = np.argsort(fig1["data"][i]['x'])
+        fig1["data"][i]['x'] = fig1["data"][i]['x'][order]
+        fig1["data"][i]['y'] = fig1["data"][i]['y'][order]
 
-    fig.update_traces(
-        hovertemplate="<br>".join([
-        "Data: %{customdata[0]}",
-        "Method: %{customdata[1]}",
-        "Accuracy: %{y}",
-        "Consistency: %{x}",
-            ]))   
-    fig.update_traces(line=dict(width=3),marker = dict(size=10),opacity=0.9)
+
+        
+        results = model.iloc[i//2]["px_fit_results"]
+        alpha = results.params[0]
+        beta = results.params[1]
+        p_beta = results.pvalues[1]
+        r_squared = results.rsquared
+
+        line1 = 'y = ' + str(round(alpha, 4)) + ' + ' + str(round(beta, 4))+'x'
+        line2 = 'p-value = ' + '{:.5f}'.format(p_beta)
+        line3 = 'R^2 = ' + str(round(r_squared, 3))
+        # summary = line1 + '<br>' + line2 + '<br>' + line3
+        fitted = np.repeat([[line1,line2,line3]], len(fig1["data"][i+1]['x']), axis=0)
+        fig1["data"][i+1]['customdata']=np.column_stack((fig1["data"][i+1]['customdata'],fitted))
+        fig1["data"][i+1]['hovertemplate'] = 'Data: %{customdata[0]}<br>Method: %{customdata[1]}<br> %{customdata[2]} <br> %{customdata[3]}<br> %{customdata[4]}'
+        if beta<0 and p_beta*nn<0.05:
+            pv1.loc[len(pv1)]=[fig1["data"][i+1]['name'],str(min(round(p_beta*nn,3),1))+ ' (Negative)']
+        else:
+            pv1.loc[len(pv1)]=[fig1["data"][i+1]['name'],min(round(p_beta*nn,3),1)]
+
+
+            
     if new_data is not None:
-        fig.add_trace(
+        fig1.add_trace(
         go.Scatter(
             x=neww['Accuracy'],
             y=neww['Consistency'],
@@ -617,14 +869,136 @@ def build_fit_dr(data_sel, method_sel,
         )
         )
         
-    return fig
+    fig2 = px.scatter(dff, x="Consistency", y="Accuracy", color='method', 
+                     trendline="ols",
+                color_discrete_map=this_palette_data,
+                 category_orders={"Method":list(this_palette.keys())},
+               labels=dict(Consistency='Consistency', method="Method"),
+                custom_data=['data','method'],
+                )            
+        
+    fig2.update_traces(
+        hovertemplate="<br>".join([
+        "Data: %{customdata[0]}",
+        "Method: %{customdata[1]}",
+        "Accuracy: %{y}",
+        "Consistency: %{x}",
+            ]))   
+    fig2.update_traces(line=dict(width=3),marker = dict(size=10),opacity=0.9)
+    
+    region_lst2 = []
+    pv2 = pd.DataFrame(columns = ['data','p-values'])
+
+    for trace in fig2["data"]:
+        trace["name"] = trace["name"].split(",")[0]
+
+        if trace["name"] not in region_lst2 and trace["marker"]['symbol'] == 'circle':
+            trace["showlegend"] = True
+            region_lst2.append(trace["name"])
+        else:
+            trace["showlegend"] = False
+    model2 = px.get_trendline_results(fig2)
+    nn=len(fig2['data'])//2
+    for i in range(0,len(fig2['data']),2):
+        fig2["data"][i+1]['customdata'] = fig2["data"][i]['customdata']
+        order = np.argsort(fig2["data"][i]['x'])
+        fig2["data"][i]['x'] = fig2["data"][i]['x'][order]
+        fig2["data"][i]['y'] = fig2["data"][i]['y'][order]
+
+
+        
+        results2 = model2.iloc[i//2]["px_fit_results"]
+        alpha = results2.params[0]
+        beta = results2.params[1]
+        p_beta = results2.pvalues[1]
+        r_squared = results2.rsquared
+
+        line1 = 'y = ' + str(round(alpha, 4)) + ' + ' + str(round(beta, 4))+'x'
+        line2 = 'p-value = ' + '{:.5f}'.format(p_beta)
+        line3 = 'R^2 = ' + str(round(r_squared, 3))
+        # summary = line1 + '<br>' + line2 + '<br>' + line3
+        fitted = np.repeat([[line1,line2,line3]], len(fig2["data"][i+1]['x']), axis=0)
+        fig2["data"][i+1]['customdata']=np.column_stack((fig2["data"][i+1]['customdata'],fitted))
+        fig2["data"][i+1]['hovertemplate'] = 'Data: %{customdata[0]}<br>Method: %{customdata[1]}<br> %{customdata[2]} <br> %{customdata[3]}<br> %{customdata[4]}'
+        if beta<0 and p_beta*nn<0.05:
+            pv2.loc[len(pv2)]=[fig2["data"][i+1]['name'],str(min(round(p_beta*nn,3),1))+ ' (Negative)']
+        else:
+            pv2.loc[len(pv2)]=[fig2["data"][i+1]['name'],min(round(p_beta*nn,3),1)]
+
+
+    if new_data is not None:
+        fig2.add_trace(
+        go.Scatter(
+            x=neww['Accuracy'],
+            y=neww['Consistency'],
+            mode='markers',
+            marker=dict(
+                color=[this_palette[i] for i in neww['method']],
+                symbol=[this_markers_choice[i] for i in neww['method']], 
+                size=20
+            ),
+            showlegend=False,
+            hoverinfo='none'
+        )
+        )        
+    pv1=round(pv1,3)
+    fig_pv1 = go.Figure(data=[go.Table(header=dict(values=['Data','Interpretation Consistency vs. Prediction Accuracy',
+            ]),
+                 cells=dict(values=np.array(pv1.T)))
+                     ])
+    fig_pv1.update_layout(title_text='P-values of fitted line (bonferroni corrected)')
+    pv2=round(pv1,3)
+    fig_pv2 = go.Figure(data=[go.Table(header=dict(values=['Data','Interpretation Consistency vs. Prediction Accuracy',
+            ]),
+                 cells=dict(values=np.array(pv2.T)))
+                     ])
+    fig_pv2.update_layout(title_text='P-values of fitted line (bonferroni corrected)')
+    
+    return fig1,fig2,fig_pv1,fig_pv2
+def build_acc_raw_dr(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
+                 ):
+
+    if noise_sel==None:
+        acc=accs_split[(accs_split.data.isin(data_sel)) 
+                       &(accs_split['method'].isin(method_sel))
+                       &(accs_split['clustering']==(clus_sel))
+                       &(accs_split['rank']==(rank_sel))
+                        &(accs_split.criteria==criteria_sel)]
+    else:
+        acc=accs[(accs.data.isin(data_sel))
+                  &(accs['method'].isin(method_sel))
+                   &(accs['clustering']==(clus_sel))
+                  &(accs['rank']==(rank_sel))  
+                 &(accs.noise==noise_sel)
+                 &(accs.criteria==criteria_sel)
+                 &(accs.sigma==sigma_sel)]
+
+    fig = px.box(acc, x="method", y="Accuracy", color='method', 
+                     facet_col="data",facet_col_wrap=3,facet_row_spacing=0.1,
+                        color_discrete_map =palette, 
+               labels=dict(data='Data',Accuracy='Accuracy', method="Method"))
+   
+    fig.update_traces(marker_size=10)
+    fig.update_xaxes(matches=None,showticklabels=True)
+    
+    return fig 
 
 def build_cor_dr(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
                  ):
 
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))
+                     &(df_split['rank'] ==rank_sel)
+            &(df_split.criteria==criteria_sel)
+           &(df_split.clustering == clus_sel)
+                    ] 
+    else:
+            
  
-    dff=df[(df.data.isin(data_sel))
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
@@ -739,13 +1113,14 @@ def build_line_raw_dr(data_sel, method_sel,
                 
 def build_scatter_raw_dr(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None):
-
- 
-#     dff=df[(df.data.isin(data_sel))
-#             &(df.method.isin(method_sel))
-#           #  &(df.K ==k_sel)
-#             &(df.criteria==criteria_sel)]
-    dff=df[(df.data.isin(data_sel))
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+                        &(df_split['rank'] ==rank_sel)
+            &(df_split.criteria==criteria_sel)
+                       &(df_split.clustering == clus_sel)
+            &(df_split.method.isin(method_sel))] 
+    else:
+        dff=df[(df.data.isin(data_sel))
             &(df.method.isin(method_sel))
             &(df.noise ==noise_sel)
             &(df.sigma ==float(sigma_sel))
@@ -811,8 +1186,16 @@ def build_heat_raw_dr(data_sel, method_sel,
                  ):
     
 
+    if noise_sel==None:
+        cross_ave = cross_split[(cross_split.data.isin(data_sel))
+                &(cross_split['method1'].isin(method_sel))
+                &(cross_split['method2'].isin(method_sel))
+                        &(cross['rank'] ==rank_sel)
+               &(cross_split.criteria==criteria_sel)    &(cross.clustering == clus_sel)]
+        
+    else:
     
-    cross_ave = cross[(cross.data.isin(data_sel))
+        cross_ave = cross[(cross.data.isin(data_sel))
                 &(cross['method1'].isin(method_sel))
                 &(cross['method2'].isin(method_sel))
                &(cross['rank'] ==rank_sel)
@@ -957,7 +1340,31 @@ def build_dot_dr(data_sel, method_sel,
 
 
 
+def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel
+                 ):
+        if noise_sel!=None:
 
+            cross_ave = cross[cross.data.isin(data_sel)&(cross['clustering'] == clus_sel)&(cross['rank']==rank_sel)
+                            & (cross['sigma']==sigma_sel)&(cross['criteria']==criteria_sel)&(cross['noise']==noise_sel)]
+            
+        else:
+            cross_ave = cross_split[cross_split.data.isin(data_sel)&(cross_split['clustering'] == clus_sel)&(cross_split['rank']==rank_sel)&(cross['criteria']==criteria_sel)]
+        cross_ave=cross_ave.groupby(['method1','method2'],as_index=False)['value'].mean()
+        print(cross_ave)
+        sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
+
+        sub = sub.pivot("method1", "method2", "value")
+        sub = sub.fillna(0)+sub.fillna(0).T
+        np.fill_diagonal(sub.values, 1)
+        sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
+        
+        
+        fig = px.imshow(sub, text_auto=True, aspect="auto",color_continuous_scale='Purp', origin='lower',
+               labels=dict(x="Method", y="Method", color="Consistency"))
+        fig.update_xaxes(tickangle=45)
+        fig.layout.coloraxis.showscale = False
+        return fig
+    
 
 
 

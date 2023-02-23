@@ -50,6 +50,7 @@ def display_figure(pp,plot_selected, click,pathname):
     #             }
         heads = {'heatmap':'Summary Figure: Consistency Heatmap (Between methods, aggregated over data sets)',
                  'line':'Summary Figure: Consistency Lineplot (Within methods)',
+                 'heat2':'Summary Figure: Consistency Heatmap (Within methods)',
                  # (across data sets)',
                  'bump':'Summary Figure: Consistency Bump Plot (Within methods)',
                  #of the most consistent methods across data sets',
@@ -69,11 +70,14 @@ def display_figure(pp,plot_selected, click,pathname):
                  'scatter_raw':'Raw Results: Consistency Scatterplot wrt. predictive accuracy (all data sets)',
                  'k_raw': 'Raw Results: Consistency Lineplot wrt. number of local neighbors (all data sets)',
                  'heatmap_raw': 'Raw Results: Consistency Heatmap across methods (Between methods, all data sets)',
+                 'acc_raw': 'Raw Results: Prediction Accuracy Boxplot'
                 }
 
 
         describ = {'heatmap':['Among different methods, we aim to evaluate whether different methods would result in similar interpretations, the heatmap shows the cross-method average consistency of interpretations obtain from each pair of IML methods. For example, the cell of method i and method j represents the consistency between the interpretations of i and j, averaged over 100 repeats and different data sets.'],
                  'line':['Within each method, we aim to measure whether interpretations are consistent among repeats. The line plot shows the data sets versus the average pairwise consistency of 100 repeats of an IML method, with colors representing different methods. The x-axis is the data sets we used, ordered by # feature/# observation ratio, and the y-axis is the consistency score of this task, ranging in [0,1]. '],
+                   'heat2':['Within each method, we aim to measure whether interpretations are consistent among repeats. The heatmap shows the data sets versus the average pairwise consistency of 100 repeats of an IML method. The x-axis is the data sets we used, ordered by # observation/# feature ratio, and the y-axis is the consistency score of this task.'],
+                   
                  'bump':['The bump plot ranks IML methods by their consistency score for each data, averaged over 100 repeats.'],
                      'fit':['The scatterplot shows the consistency score vs. predictive accuracy, with colors representing different IML methods. The points with the same color represent data sets, averaged over 100 repeats. The fitted regression lines between consistency score and predictive accuracy does not necessarily have positive coefficients.'],
                    'dot':['The scatterplot of consistency/accuracy vs. methods, colored by data and sized by accuracy/consistency.'],
@@ -87,21 +91,22 @@ def display_figure(pp,plot_selected, click,pathname):
                  'line_raw2':['Line plot of interpretation consistency scores of each data, colored by IML methods. '],
                  'scatter_raw':['Scatter plots of interpretation consistency scores vs. predictive accuracy for each data set, colored by IML methods. '],
                    'k_raw':['Line plots of interpretation consistency scores vs. number of local neighbors K for each data set, colored by IML methods. '],
-                 'heatmap_raw':['Consistency heatmap cross methods for each data. ']
-
-
+                 'heatmap_raw':['Consistency heatmap cross methods for each data. '],
+                 'acc_raw': ['Prediction Accuracy Boxplot'],
                     }
 
 
         
         if pp in plot_selected:
-            if pp=='cor':
-                fig_id1 = 'cor1_'+paths[pathname] if pathname in paths else 'cor1'
-                fig_id2 = 'cor2_'+paths[pathname] if pathname in paths else 'cor2'
-#             if pp=='dot':
-#                 fig_id1 = 'dot1_'+paths[pathname] if pathname in paths else 'dot1'
-#                 fig_id2 = 'dot2_'+paths[pathname] if pathname in paths else 'dot2'
-                return html.Div([
+            
+            if pp=='fit': 
+                fig_id1 = 'fit1_'+paths[pathname] if pathname in paths else 'fit1'
+                fig_id2 = 'fit2_'+paths[pathname] if pathname in paths else 'fit2'
+                fig_id3 = 'pv1_'+paths[pathname] if pathname in paths else 'pv1'
+                fig_id4 = 'pv2_'+paths[pathname] if pathname in paths else 'pv2'
+                if pathname !='/clustering'and pathname !='/dimension_reduction_clustering' :
+#                 if fig_id1=='fit1' or fig_id1=='fit1_reg':
+                    return html.Div([
                                 html.Details([
                                 html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
                                 html.Div([
@@ -116,29 +121,150 @@ def display_figure(pp,plot_selected, click,pathname):
 
                                 dls.Hash(                        
                                 dcc.Graph(id=fig_id1,
-                                      style={'width': '80vh', 'height': '70vh'}
+                                      style={'width': '180vh', 'height': '60vh'}
                                          ),
                                 color="#435278",
                                 speed_multiplier=2,
                                 size=100,
                                     ),
+                                
+                                    
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id3,
+                                      style={'width': '150vh', 'height': '70vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),      
+                                 
+                                    
                                 dls.Hash(                        
                                 dcc.Graph(id=fig_id2,
-                                      style={'width': '80vh', 'height': '70vh'}
+                                      style={'width': '190vh', 'height': '60vh'}
                                          ),
                                 color="#435278",
                                 speed_multiplier=2,
                                 size=100,
                                     ),
+                                    
+                                    
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id4,
+                                      style={'width': '150vh', 'height': '70vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),      
+                                    
+                                    
                                 ])
                             ],
                                 id="desc-dropdown",
                                 open=True
                             ), 
                     ])
+            
+                
+                else:
+                    return html.Div([
+                                html.Details([
+                                html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
+                                html.Div([
+                                       html.Details([
+                                        html.Summary('Description'),
+                                        html.Div(children=describ[pp], className='desc',
+                                                 id='my-description')
+                                    ],
+                                        id="desc-dropdown",
+                                        open=False
+                                     ),
 
-                
-                
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id1,
+                                      style={'width': '80vh', 'height': '60vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),
+                                
+                                    
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id3,
+                                      style={'width': '80vh', 'height': '70vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),      
+                                 
+                                    
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id2,
+                                      style={'width': '80vh', 'height': '60vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),
+                                    
+                                    
+                                dls.Hash(                        
+                                dcc.Graph(id=fig_id4,
+                                      style={'width': '80vh', 'height': '70vh'}
+                                         ),
+                                color="#435278",
+                                speed_multiplier=2,
+                                size=100,
+                                    ),      
+                                    
+                                    
+                                ])
+                            ],
+                                id="desc-dropdown",
+                                open=True
+                            ), 
+                    ])
+#                     return html.Div([
+#                                 html.Details([
+#                                 html.Summary(heads[pp],style={'color':'midnightblue','fontSize':'25px'}),
+#                                 html.Div([
+#                                        html.Details([
+#                                         html.Summary('Description'),
+#                                         html.Div(children=describ[pp], className='desc',
+#                                                  id='my-description')
+#                                     ],
+#                                         id="desc-dropdown",
+#                                         open=False
+#                                      ),
+
+#                                 dls.Hash(                        
+#                                 dcc.Graph(id=fig_id1,
+#                                       style={'width': '60vh', 'height': '40vh'}
+#                                          ),
+#                                 color="#435278",
+#                                 speed_multiplier=2,
+#                                 size=100,
+#                                     ),
+ 
+#                                 dls.Hash(                        
+#                                 dcc.Graph(id=fig_id2,
+#                                       style={'width': '70vh', 'height': '40vh'}
+#                                          ),
+#                                 color="#435278",
+#                                 speed_multiplier=2,
+#                                 size=100,
+#                                     ),
+             
+#                                 ])
+#                             ],
+#                                 id="desc-dropdown",
+#                                 open=True
+#                             ), 
+#                     ])
+ 
                 
             else:
                 fig_id = pp+'_'+paths[pathname] if pathname in paths else pp
@@ -162,7 +288,7 @@ def display_figure(pp,plot_selected, click,pathname):
 
                                 dls.Hash(                        
                                 dcc.Graph(id=fig_id,
-                                      style={'width': '90vh', 'height': '70vh'}
+                                      style={'width': '120vh', 'height': '70vh'}
                                          ),
                                 color="#435278",
                                 speed_multiplier=2,
@@ -174,39 +300,25 @@ def display_figure(pp,plot_selected, click,pathname):
                                 open=True
                             ), 
                     ])
-                    
-                    
-#                     if pp=='heatmap_raw':
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-#                 if pp!='heatmap_raw': ## all other figures
-#                     if pp=='line_raw' and pathname in paths:
-#                         pp='line_raw2'
-                if pp == 'scatter_raw' or pp=='line_raw' or pp=='k_raw':
+          
+                if pp == 'line' or pp=='heat2':
+                    this_width = '170vh'
+                    this_height = '70vh' 
+                elif pp == 'scatter_raw' or pp=='line_raw' or pp=='k_raw' or pp=='acc_raw':
                     if pp=='line_raw' and pathname in paths:
                         pp='line_raw2'
                     this_height = '100vh'
                     this_width = '100vh'
                             
                 elif pp == 'heatmap_raw':
-                    this_height = '500vh'
-                    this_width = '80vh'                    
+#                     this_height = '500vh'
+                    #this_width = '80vh'             
+                     this_height = '200vh'
+                     this_width = '250vh'
+                  
                 else:
                     this_width = '100vh'
-                    this_height = '50vh'                   
+                    this_height = '70vh'                   
                     
                 return html.Div([
                                 html.Details([
@@ -224,7 +336,7 @@ def display_figure(pp,plot_selected, click,pathname):
 
                                 dls.Hash(                        
                                 dcc.Graph(id=fig_id,
-                                      style={'width': '100vh', 'height': this_height}
+                                      style={'width': this_width, 'height': this_height}
                                          ),
                                 color="#435278",
                                 speed_multiplier=2,

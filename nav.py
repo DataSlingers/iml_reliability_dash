@@ -1,5 +1,12 @@
 import dash_bootstrap_components as dbc
 def Navbar():
+    navbar2 = dbc.NavbarSimple(
+    brand="NavbarSimple",
+    brand_href="#",
+    color="primary",
+    dark=True,
+)
+    
     navbar = dbc.NavbarSimple(
            children=[
                 dbc.NavItem(dbc.NavLink("How to use", href="/instruction"),style={'text-align': 'center',"margin-left": "50px",'width': '200px'}),

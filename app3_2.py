@@ -23,8 +23,8 @@ df = pd.read_csv("dr_auc.csv")
 
 dr_knn=pd.read_csv('dr_knn.csv')
 
-data_options = df['data'].unique().tolist()
-method_options = df['method'].unique().tolist()
+
+
 criteria_options = df['criteria'].unique().tolist()
 rank_options = df['rank'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
@@ -32,7 +32,7 @@ sigma_options =df['sigma'].unique().tolist()
 plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
-                        'fit':'Consistency vs. predictive accuracy',
+                        'fit':'Scatter plots of interpretation consistency, predictive consistency, and preditvie accuracy',
                        # 'cor': 'Correlation between onsistency and predictive accuracy'
                        }
 plot_raw_options_knn = {
@@ -75,21 +75,36 @@ line_choice = {
 #                 'Statlog':"cyan",
 #                 'Madelon' :'greenyellow',
 #                 }
-palette_data = {'PANCAN':"purple",
-                'Religion': 'indigo',
-                'DNase':"firebrick",
-                'TCGA':'hotpink',
-                'Madelon' :'greenyellow',
-                 'Amphibians':'lightseagreen',
-               'Author':'yellow',         
-                'Spam base':"green",
-                'Darmanis':"cyan",
-                'Theorem':'slateblue',
-                'Statlog':'deepskyblue',
-#                 'Call':'cornflowerblue',
-#                 'Bean':"powderblue",
-                
-                }
+palette_data = { 
+        'Statlog':'deepskyblue',      
+           'Spam base':"purple", 
+      'WDBC':'cyan',
+     'Tetragonula': 'indigo',
+      'Author':'yellow',           
+    'Madelon' :'greenyellow', 
+      'TCGA':'hotpink',
+    'Psychiatrist':"green", 
+    'Veronica':"firebrick",   
+    
+     'Religion': 'indigo',
+    'PANCAN':"purple",
+   'Darmanis':'powderblue'
+           }
+# palette_data = { 
+#         'Statlog':'deepskyblue',      
+#            'Spam base':"purple", 
+#       'WDBC':'cyan',
+#      'Tetragonula': 'indigo',
+#       'Author':'yellow',           
+#     'Ceramic':'slateblue',   
+#       'TCGA':'hotpink',
+#     'Psychiatrist':"green", 
+#     'Veronica':"firebrick",   
+    
+#      'Religion': 'indigo',
+#     'PANCAN':"purple",
+#    'Darmanis':'powderblue'
+#            }
 markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
@@ -234,8 +249,8 @@ def generate_control_card():
             html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_knn",
-                options=[{"label": i, "value": i} for i in data_options],
-                value=data_options[:],
+                options=[{"label": i, "value": i} for i in datas],
+                value=datas[:],
                 multi=True,
             ),
             html.Br(),
@@ -260,10 +275,10 @@ def generate_control_card():
             ),                    
 
 
-            html.Hr(),
+#             html.Hr(),
            
-            dbc.Button('Submit', id='submit-button',n_clicks=100, color="primary",className="me-1"),
-            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+#             dbc.Button('Submit', id='submit-button',n_clicks=100, color="primary",className="me-1"),
+#             dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
             html.Hr(),        ],
     )            
 
@@ -388,6 +403,18 @@ def build_line_knn(data_sel, method_sel,criteria_sel,
                  )
     fig.update_traces(line=dict(width=3))
     fig.update_xaxes(categoryorder='array', categoryarray= datas)
+    fig.add_annotation(dict(font=dict(color="grey",size=12),
+                        x=-0.05, y=-0.1, 
+                        text="Large N",
+                        xref='paper',
+                        yref='paper', 
+                        showarrow=False))
+    fig.add_annotation(dict(font=dict(color="grey",size=12),
+                        x=1.1, y=-0.1, 
+                        text="Large P",
+                        xref='paper',
+                        yref='paper', 
+                        showarrow=False))
     return fig
 
 def build_bump_knn(data_sel, method_sel,
@@ -463,7 +490,18 @@ def build_bump_knn(data_sel, method_sel,
                 showlegend=False,
                 hoverinfo='none',                                                                               )
                     )
-
+    fig.add_annotation(dict(font=dict(color="grey",size=12),
+                        x=-0.05, y=-0.1, 
+                        text="Large N",
+                        xref='paper',
+                        yref='paper', 
+                        showarrow=False))
+    fig.add_annotation(dict(font=dict(color="grey",size=12),
+                        x=1.1, y=-0.1, 
+                        text="Large P",
+                        xref='paper',
+                        yref='paper', 
+                        showarrow=False))
     return fig  
               
                      
