@@ -29,8 +29,8 @@ df_split = pd.read_csv("clustering_split.csv")
 cross_split = pd.read_csv('cross_clus_split.csv')
 # accs_split = pd.read_csv('clustering_accs_split.csv')
 
-
-
+data_options = df['data'].unique().tolist()
+method_options = df['method'].unique().tolist()
 criteria_options = df['criteria'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
 sigma_options =df['sigma'].unique().tolist()
@@ -257,7 +257,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="method-select_clus",
                 options=[{"label": i, "value": i} for i in meths],
-                value=meths[:],
+                value=meths[:10],
                 multi=True,
             ),
             html.Br(),
@@ -269,8 +269,8 @@ def generate_control_card():
             html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_clus",
-                options=[{"label": i, "value": i} for i in datas],
-                value=datas[:],
+                options=[{"label": i, "value": i} for i in data_options],
+                value=data_options[:],
                 multi=True,
             ),
             html.Br(),
@@ -339,7 +339,6 @@ def App2():
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
             html.Div(id='show_line'),
-            html.Div(id='show_heat2'),
             html.Div(id='show_bump'),
             html.Div(id='show_heatmap'),
             html.Div(id='show_fit'),
@@ -349,7 +348,7 @@ def App2():
             html.Div(id='title_summary_raw'),
             html.Div(id='show_line_raw'),
             html.Div(id='show_scatter_raw'),
-#             html.Div(id='show_acc_raw'),
+            html.Div(id='show_acc_raw'),
             html.Div(id='show_heatmap_raw'),
 
            
@@ -453,70 +452,7 @@ def build_heat_summary_clus(data_sel,method_sel,
 #                 dcc.Graph(id="line_clus",
 #                           style={'width': '105vh', 'height': '100vh'}),
 #                 ])
-
-
-def build_heat_consis_clus(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,new_data=None
-                 ):
-
-####### filter data
-    if noise_sel==None:
-        dff=df_split[(df_split.data.isin(data_sel))
-            &(df_split.method.isin(method_sel))&(df_split.criteria==(criteria_sel))] 
-    else:
-            
-        dff=df[(df.data.isin(data_sel))
-            &(df.method.isin(method_sel))
-            &(df.noise ==noise_sel)
-            &(df.sigma ==float(sigma_sel))
-            &(df.criteria==criteria_sel)] 
-
-    this_palette=dict((i,palette[i]) for i in method_sel)
-    this_line_choice=dict((i,line_choice[i]) for i in method_sel)
-    this_palette_data =  [i for i in palette_data.keys() if i in data_sel]   
-
-    sub = dff.pivot("data", "method", "Consistency")
-    sub=round(sub,3)
-    sub= pd.DataFrame(sub, index=data_sel)
-    sub=sub[method_sel]
-    h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
-                             color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                  origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
-
-    h.update_layout({
-    'plot_bgcolor':'rgba(0, 0, 0, 0)',
-    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-    })
-    h.layout.height = 500
-    h.layout.width = 1000
-    
-    
-    dff_ac = dff[["data", "method", "Accuracy"]].drop_duplicates()
-    sub = dff_ac.pivot("data", "method", "Accuracy")
-    sub=round(sub,3)
-    sub= pd.DataFrame(sub, index=data_sel)
-    h2=px.imshow(sub, text_auto=True, aspect="auto",
-                 color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                 range_color=(0,1),
-                 origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
-    h2.layout.height = 500
-    h2.layout.width = 700
-
-    fig= make_subplots(rows=1, cols=2, column_widths=[0.5, 0.5], 
-                                horizontal_spacing=0.15,
-                            vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
-
-    for trace in h.data:
-        fig.add_trace(trace, 1, 1)
-    for trace in h2.data:
-        fig.add_trace(trace, 1, 2)
-    fig.update_xaxes(tickangle=45)# for trace in bar1.data:
-    fig.update_layout(                             
-                  coloraxis=dict(colorscale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                                 showscale = False),)
-    
-    return fig
-
+        
 def build_line_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None
                  ):

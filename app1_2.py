@@ -21,13 +21,13 @@ nav = Navbar()
 # header = html.H3(
 #     'Reliability of Feature Importance'
 # )
-accs=pd.read_csv('feature_impo_accs_reg.csv')
-accs['test_acc']=np.exp(-accs['test_acc'])
-accs=accs[accs.model!='LASSO']
+# accs=pd.read_csv('feature_impo_accs_reg.csv')
+# accs['test_acc']=np.exp(-accs['test_acc'])
+# accs=accs[accs.model!='LASSO']
 # accs['test_acc']=(accs['test_acc']-min(accs['test_acc']))/(max(accs['test_acc'])-min(accs['test_acc']))
 df = pd.read_csv("feature_impo_reg.csv")
 #msee =[1/float(i) for i in df['Accuracy']]
-msee =np.array([float(i) for i in df['Accuracy']])
+msee =np.array([float(i) for i in df['MSE']])
 df['Accuracy']= np.exp(-msee)
 
 cross = pd.read_csv('cross_reg.csv')
@@ -38,8 +38,7 @@ cross_pred['Consistency']=np.exp(-cross_pred['value'])
 puris=pd.read_csv('feature_impo_pur_reg.csv')
 
 
-# data_options = df['data'].unique().tolist()
-# method_options = df['method'].unique().tolist()
+
 criteria_options = df['criteria'].unique().tolist()
 k_options =df['K'].unique().tolist()
 method_category_options = ['Selected','Model Specific','Model Agnostic','All']
@@ -54,83 +53,6 @@ plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all da
                    'line_raw':'Consistency vs. predictive accuracy for all data sets',
                                    'acc_raw':'Predictive accuracy for all data sets',
     'heatmap_raw':'Consistency heatmap across methods for all data sets'}
-palette  = {
-    ## purple 
-        'Ridge': 'indigo',
-        'Permutation (Ridge)':'purple',
-       'Shapley Value (Ridge)':'firebrick',
-    
-    
-        'LASSO':"tomato",
-
-        'SVM':"deeppink",           
-        'Tree':'skyblue',
-    
-    ## blue 
-    
-        'RF':"slateblue",
-       'Permutation (RF)':"skyblue",
-               'Shapley Value (RF)': "cornflowerblue",           
-
-    'XGB':"violet",
-         'Permutation (XGB)':"peru", 
-   'Shapley Value (XGB)': "magenta",       
-
-    ## green 
-       'MLP':"green",
-        'Epsilon-LRP (MLP)':"green",
-        'Guided Backpropagation (MLP)':"greenyellow",  
-            'Permutation (MLP)':"yellow",       
-               'Shapley Value (MLP)':'gold',
-    
-        'deepLIFT (MLP)':"darkcyan",
-        'Integrated Gradients (MLP)':'medianseagreen',    
-        'Saliency Maps (MLP)':"olivedrab",
-        'Occlusion (MLP)' :'limegreen'  ,
-}
-
-line_choice = {'LASSO':'solid',
-               'Ridge':'solid',
-                 'SVM':'solid',
-              'Tree':'dot',
-                  'RF':'dot' ,
-                   'XGB':'dot',
-                          'MLP':'dash',
-                 'deepLIFT (MLP)':'dash',
-               'Integrated Gradients (MLP)':'dash',
-               'Epsilon-LRP (MLP)':'dash',
-            'Permutation (MLP)':'dashdot',
-             'Shapley Value (MLP)':'dashdot',
-              
-                        
-            'Guided Backpropagation (MLP)':"dash",           
-            'Saliency Maps (MLP)':"dash",
-            'Occlusion (MLP)' :'dash'  ,
-            'Permutation (Ridge)':'dashdot',
-            'Permutation (RF)':"dashdot",
-            'Shapley Value (Ridge)':'dashdot',
-            'Shapley Value (RF)': "dashdot",       
-            'Shapley Value (XGB)': "dashdot",       
-            'Permutation (XGB)':"dashdot",
-
-              }    
-
-palette_data = {
-         'News':"powderblue",   #671
-    'Blog':"cornflowerblue",  #187.13
-    'Satellite': 'slateblue' ,# 178 
-    'Star':'cyan',#55  
-    'Communities' :"green",#20   '
-    'Bike':"orange",  
-    'CPU':'yellow',  
-    'Wine':'lightseagreen',  
-    'Music':'greenyellow',    
-    'Residential':'hotpink', #3.6  
-    'Tecator':'firebrick',#1.9 
-    'Word':"indigo",#0.9'
-    'Riboflavin':"purple",
-               }
-
 markers_choice = {'LASSO':'0',
                     'SVM':'0',
                     'Ridge':'0',
@@ -212,6 +134,83 @@ markers_choice = {'LASSO':'0',
 # }
 
 
+palette  = {
+    ## purple 
+        'SVM':"deeppink",           
+         'LASSO':"tomato",
+       'Ridge': 'indigo',
+        'Permutation (Ridge)':'purple',
+       'Shapley Value (Ridge)':'firebrick',
+    
+    
+
+        'Tree':'skyblue',
+    
+    ## blue 
+    
+        'RF':"slateblue",
+       'Permutation (RF)':"powderblue",
+               'Shapley Value (RF)': "cornflowerblue",           
+
+    'XGB':"violet",
+         'Permutation (XGB)':"peru", 
+   'Shapley Value (XGB)': "magenta",       
+
+    ## green 
+       'MLP':"green",
+        'Epsilon-LRP (MLP)':"green",
+        'Guided Backpropagation (MLP)':"greenyellow",  
+            'Permutation (MLP)':"yellow",       
+               'Shapley Value (MLP)':'gold',
+    
+        'deepLIFT (MLP)':"darkcyan",
+        'Integrated Gradients (MLP)':'medianseagreen',    
+        'Saliency Maps (MLP)':"olivedrab",
+        'Occlusion (MLP)' :'limegreen'  ,
+}
+
+
+line_choice = {'LASSO':'solid',
+               'Ridge':'solid',
+                 'SVM':'solid',
+              'Tree':'dot',
+                  'RF':'dot' ,
+                   'XGB':'dot',
+                          'MLP':'dash',
+                 'deepLIFT (MLP)':'dash',
+               'Integrated Gradients (MLP)':'dash',
+               'Epsilon-LRP (MLP)':'dash',
+            'Permutation (MLP)':'dashdot',
+             'Shapley Value (MLP)':'dashdot',
+              
+                        
+            'Guided Backpropagation (MLP)':"dash",           
+            'Saliency Maps (MLP)':"dash",
+            'Occlusion (MLP)' :'dash'  ,
+            'Permutation (Ridge)':'dashdot',
+            'Permutation (RF)':"dashdot",
+            'Shapley Value (Ridge)':'dashdot',
+            'Shapley Value (RF)': "dashdot",       
+            'Shapley Value (XGB)': "dashdot",       
+            'Permutation (XGB)':"dashdot",
+
+              }    
+
+palette_data = {
+         'News':"powderblue",   #671
+    'Blog':"cornflowerblue",  #187.13
+    'Satellite': 'slateblue' ,# 178 
+    'Star':'cyan',#55  
+    'Communities' :"green",#20   '
+    'Bike':"orange",  
+    'CPU':'yellow',  
+    'Wine':'lightseagreen',  
+    'Music':'greenyellow',    
+    'Residential':'hotpink', #3.6  
+    'Tecator':'firebrick',#1.9 
+    'Word':"indigo",#0.9'
+    'Riboflavin':"purple",
+               }
 
 
 def sort(df,column1,sorter1,column2=None,sorter2=None):
@@ -364,9 +363,9 @@ def generate_control_card():
 
             
 
-#             html.Hr(),
-#             dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
-#             dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+            html.Hr(),
+            dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
+            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
 
             html.Hr(),
        
@@ -470,70 +469,7 @@ def build_scatter_reg(data_sel, method_sel,
        textposition='top right' 
 )
     return fig
-def build_heat_consis_reg(data_sel, method_sel,
-                 k_sel, criteria_sel,new_data=None):
-    dff=df[(df.data.isin(data_sel))
-                &(df.method.isin(method_sel))
-                &(df.K ==k_sel)
-                &(df.criteria==criteria_sel)]
-    method_sel2 = method_sel+['MLP']
-    this_palette=dict((i,palette[i]) for i in method_sel2)
-    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
-    this_line_choice=dict((i,line_choice[i]) for i in method_sel2)
-    
-    ###### input new data
-    if new_data is not None:
-        new_data = pd.DataFrame(new_data)
-        neww = new_data[(new_data.K ==k_sel)
-                &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(new_data['method']):
-            this_palette[mm]='black'
-            this_line_choice[mm]='solid'
-            
 
-    sub = dff.pivot("data", "method", "Consistency")
-    sub=round(sub,3)
-    sub=sub[method_sel]
-    sub= pd.DataFrame(sub, index=this_palette_data)
-    
-    h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
-                  origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
-
-    h.update_layout({
-    'plot_bgcolor':'rgba(0, 0, 0, 0)',
-    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-    })
-    h.layout.height = 500
-    h.layout.width = 1000
-    h.update_layout(coloraxis=dict(showscale = False),)
-    dff_ac = dff[dff.model!='LASSO'] 
-    dff_ac=dff[["data", "model", "Accuracy"]].drop_duplicates()
-    sub2 = dff_ac.pivot("data", "model", "Accuracy")
-    sub2=round(sub2,3)
-    sub2= pd.DataFrame(sub2, index=data_sel)
-    h2=px.imshow(sub2, text_auto=True, aspect="auto",                         
-                 color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                 range_color=(0,1),
-                    origin='lower',labels=dict(x="Method", y="Data", color="Accuracy"))
-    h2.layout.height = 500
-    h2.layout.width = 700    
-
-
-    fig= make_subplots(rows=1, cols=2, column_widths=[0.5, 0.5], 
-                                horizontal_spacing=0.15,
-                            vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
-
-    for trace in h.data:
-        print(trace)
-        fig.add_trace(trace, 1, 1)
-    for trace in h2.data:
-        fig.add_trace(trace, 1, 2)
-    fig.update_xaxes(tickangle=45)# for trace in bar1.data:
-    fig.update_layout(                             
-                  coloraxis=dict(colorscale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                                 showscale = False),)
-    return fig
 def build_bump_reg(data_sel, method_sel,
                  k_sel, criteria_sel,new_data=None
                  ):
@@ -548,9 +484,11 @@ def build_bump_reg(data_sel, method_sel,
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.K ==k_sel)
                 &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(neww['method']):
-            this_palette[mm]='black'    
+        dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+        for mm in set(new_data['data']):
+            data_sel = data_sel+[mm]
 ##### bump plot 
     df_ave = dff.groupby(['method','K','criteria'],as_index=False).mean()
     df_ave['data']='Average'
@@ -591,21 +529,28 @@ def build_bump_reg(data_sel, method_sel,
                             xref="paper",
                             yref="y"
                            ))
-    fig.update_layout(margin=dict( r=150))
     if new_data is not None:
         new_rankk = rankk[rankk.data.isin(set(neww.data))]
+        
         fig.add_trace(
             go.Scatter(
                 x=new_rankk['data'],
                 y=new_rankk['ranking'],
                 mode='markers',
                 marker=dict(
-                    color=[this_palette[i] for i in new_rankk['method']],
-                    size=20
+                    color='black',
+                    size=15,
+                    line=dict(
+                            color='MediumPurple',
+                            width=5
+                                ),
                 ),
                 showlegend=False,
                 hoverinfo='none',                                                                               )
                     )
+
+#         fig.update_layout(margin=dict( r=150))
+
 
     fig.add_annotation(dict(font=dict(color="grey",size=12),
                         x=-0.05, y=-0.1, 
@@ -708,7 +653,76 @@ def build_heat_summary_reg(data_sel, method_sel,
     
 
 
+def build_heat_consis_reg(data_sel, method_sel,
+                 k_sel, criteria_sel,new_data=None):
 
+    dff=df[(df.data.isin(data_sel))
+                &(df.method.isin(method_sel))
+                &(df.K ==k_sel)
+                &(df.criteria==criteria_sel)]
+
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_line_choice=dict((i,line_choice[i]) for i in method_sel) 
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
+    
+    ###### input new data
+    if new_data is not None:
+        new_data = pd.DataFrame(new_data)
+        neww = new_data[(new_data.K ==k_sel)
+                &(new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww]) 
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_line_choice[mm]='solid'
+            
+        for mm in set(new_data['data']):
+            this_palette_data[mm]='black'
+
+            
+
+    sub = dff.pivot("data", "method", "Consistency")
+    sub=round(sub,3)
+    sub= pd.DataFrame(sub, index=this_palette_data)
+    sub=sub[method_sel]
+    h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
+                             color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                  origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
+
+    h.update_layout({
+    'plot_bgcolor':'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    h.layout.height = 500
+    h.layout.width = 1000
+    
+    
+    dff_ac = dff[["data", "model", "Accuracy"]].drop_duplicates()
+    print(dff_ac)
+    sub2 = dff_ac.pivot("data", "model", "Accuracy")
+    sub2=round(sub2,3)
+    sub2= pd.DataFrame(sub2, index=this_palette_data)
+    sub2=sub2[['Ridge','SVM','Tree','RF','XGB','MLP']]
+    h2=px.imshow(sub2, text_auto=True, aspect="auto",
+                 color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                 range_color=(0,1),
+                 origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
+    h2.layout.height = 500
+    h2.layout.width = 700
+
+    fig= make_subplots(rows=1, cols=2, column_widths=[0.5, 0.5], 
+                                horizontal_spacing=0.15,
+                            vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
+
+    for trace in h.data:
+        fig.add_trace(trace, 1, 1)
+    for trace in h2.data:
+        fig.add_trace(trace, 1, 2)
+    fig.update_xaxes(tickangle=45)# for trace in bar1.data:
+    fig.update_layout(                             
+                  coloraxis=dict(colorscale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                                 showscale = False),)
+    
+    return fig
 
 def build_line_reg(data_sel, method_sel,
                  k_sel, criteria_sel,new_data=None
@@ -722,23 +736,32 @@ def build_line_reg(data_sel, method_sel,
     
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_line_choice=dict((i,line_choice[i]) for i in method_sel)
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
     ###### input new data
     if new_data is not None:
+        
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.K ==k_sel)
                 &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
+        
+        dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
+        
+        
         for mm in set(new_data['method']):
             this_palette[mm]='black'
-            this_line_choice[mm]='solid'
+            this_line_choice[mm]='dash'
+        for mm in set(new_data['data']):
+            this_palette_data[mm]='black'
+
+
             
 
 
     fig1 = px.line(dff,x="data", y='Consistency',color = 'method',markers=True,
 
                         color_discrete_map=this_palette,
-                            line_dash = 'method',
-                  line_dash_map = this_line_choice,
+#                             line_dash = 'method',
+#                   line_dash_map = this_line_choice,
                   labels=dict(Consistency=criteria_sel, data=  "Data",
                                       method="Method"),
                  # title=
@@ -751,9 +774,13 @@ def build_line_reg(data_sel, method_sel,
                     y=neww['Consistency'],
                     mode='markers',
                     marker=dict(
-                        color=[this_palette[i] for i in neww['method']],
-                        size=20
-                    ),
+                        color='black',
+                        size=15,
+                        line=dict(
+                                color='MediumPurple',
+                                width=5
+                                    ),
+                ),
                     showlegend=False,
                     hoverinfo='none',                                                                              
                 )
@@ -767,6 +794,24 @@ def build_line_reg(data_sel, method_sel,
                          },
                      )
 
+    if new_data is not None:
+        fig2.add_trace(
+                go.Scatter(
+                    x=neww['data'],
+                    y=neww['Accuracy'],
+                    mode='markers',
+                    marker=dict(
+                        color='black',
+                        size=15,
+                        line=dict(
+                                color='MediumPurple',
+                                width=5
+                                    ),
+                ),
+                    showlegend=False,
+                    hoverinfo='none',                                                                              
+                )
+            )
     for i in range(len(fig2['data'])):
         if fig2['data'][i]['name']!='MLP':
             fig2['data'][i]['showlegend']=False

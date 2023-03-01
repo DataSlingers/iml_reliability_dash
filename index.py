@@ -47,8 +47,14 @@ meths2  = ['Ridge','LASSO','SVM',
 plot_raw_options = ['scatter_raw','line_raw','k_raw','heatmap_raw']
 # plot_raw_options_knn = ['line_raw','k_raw']
 plot_summary_options = ['heatmap','line','heat2','bump','fit']
-plot_summary_new_options = ['line_new','bump_new','fit_new']
+plot_summary_new_options = ['line_new','heat2_new','bump_new']
+plot_summary_options = {'heatmap':'Consistency heatmap across methods',
+                        'line':'Consistency line plot within methods',
+                        'heat2':'Consistency heatmap within methods',
+                        'bump':'Bump plot of the most consistent methods across data sets',
+                        'fit':'Scatter plot of consistency vs. prediction accuracy',
 
+                       }
 # dbc.themes.LUX
 # dbc.themes.COSMO
 # dbc.themes.FLATLY
@@ -337,7 +343,7 @@ def update_options(contents):
             dcc.Checklist(id="all_summary_new",
                           options=[{"label": 'All', "value":'All_summary_new' }],value= []),
             dcc.Checklist(id="select_summary_new",
-                options=[{"label": i, "value": i+'_new'} for i in plot_summary_options[1:]],
+                          options=[{"label": plot_summary_options[i], "value": i+'_new'} for i in list(plot_summary_options.keys())[1:4]],
                 value=[],
             ),        
  
@@ -394,9 +400,10 @@ def update_summary_checklists(select_summary, all_summary,reset):
 @app.callback(    
     Output("title_summary_new", "children"),
     Output("show_line_new", "children"),
+     Output("show_heat2_new", "children"),
     Output("show_bump_new", "children"),
-#     Output("show_dot_new", "children"),
-    Output("show_cor_new", "children"),
+
+#     Output("show_fit_new", "children"),
 
     [ Input('url', 'pathname'),
         Input("select_summary_new", "value"),
@@ -409,7 +416,7 @@ def update_summary_checklists(select_summary, all_summary,reset):
 def show_new(pathname,plot_selected,click):
 
     if click and click>0 and pathname!='/knn':
-        options = ['line_new','bump_new','dot_new'] 
+        options = ['line_new','heat2_new','bump_new'] 
         title = []
         if len(plot_selected)>0:
             title=html.H4("Summary Figures with New Data", style={"color": "slateblue",'text-align':'center'})
@@ -434,7 +441,7 @@ def show_new(pathname,plot_selected,click):
 def show_knn_new(pathname,plot_selected,click):
 
     if click and click>0 and pathname=='/knn':
-        options = ['line_new','bump_new']      
+        options = ['line_new','heat2_new','bump_new']      
         title = []
         if len(plot_selected)>0:
             title=html.H4("Summary Figures with New Data", style={"color": "slateblue",'text-align':'center'})
@@ -469,31 +476,8 @@ def update_bump(pathname,data_sel, method_sel,
             return fig
 
     
-    
-    
-@app.callback(
-    Output("bump_new", "figure"),
-        [Input('url', 'pathname'),
-        Input("data-select", "value"),
-        Input("method-select", "value"),
-        Input("k-select", "value"),
-        Input("criteria-select", "value"),
-         Input('stored-data', 'data')
-    ],
-)
+        
 
-def update_bump2(pathname,data_sel, method_sel,
-                 k_sel, criteria_sel,data
-                 ):
-
-    if pathname == '/feature_importance_classification':
-        fig=build_bump(data_sel, method_sel,
-                 k_sel, criteria_sel,data)
-        return fig
-    if pathname == '/feature_importance_regression':
-        fig=build_bump_reg(data_sel, method_sel,
-                 k_sel, criteria_sel,data)
-        return fig
     
 
 @app.callback(
@@ -610,34 +594,7 @@ def update_heat2(pathname,data_sel,method_sel,
         fig=build_heat_consis_reg(data_sel,method_sel,
                  k_sel, criteria_sel)
         return fig 
-        
-@app.callback(
-    Output("line_new", "figure"),
-        [Input('url', 'pathname'),
-        Input("data-select", "value"),
-        Input("method-select", "value"),
-        Input("k-select", "value"),
-        Input("criteria-select", "value"),
-         Input('stored-data', 'data')
-    ],
-)
 
-def update_line2(pathname,data_sel, method_sel,
-                 k_sel, criteria_sel,data
-                 ):
-
-    if pathname == '/feature_importance_classification':
-        fig=build_line(data_sel, method_sel,
-                 k_sel, criteria_sel,data)
-        return fig
-    if pathname == '/feature_importance_regression':
-        fig=build_line_reg(data_sel, method_sel,
-                 k_sel, criteria_sel,data)
-        return fig        
-    raise PreventUpdate    
-        
-   
-    
 @app.callback(
     Output("line_raw", "figure"),
     [Input('url', 'pathname'),
@@ -647,7 +604,9 @@ def update_line2(pathname,data_sel, method_sel,
         Input("criteria-select", "value"),
     ],
 )
-
+    
+    
+    
 def update_line_raw(pathname,data_sel,method_sel,
                  k_sel, criteria_sel
                 #,noise_sel,sigma_sel
@@ -693,31 +652,31 @@ def update_fit(pathname,data_sel,method_sel,
         return fig1,fig2,pv1,pv2
     raise PreventUpdate    
 
-@app.callback(
-    [Output("fit1_new", "figure"),
-     Output("fit2_new", "figure"),
-    ], 
-    [Input('url', 'pathname'),
-        Input("data-select", "value"),
-        Input("method-select", "value"),
-        Input("k-select", "value"),
-        Input("criteria-select", "value"),
-         Input('stored-data', 'data')
-    ],
-)
+# @app.callback(
+#     [Output("fit1_new", "figure"),
+#      Output("fit2_new", "figure"),
+#     ], 
+#     [Input('url', 'pathname'),
+#         Input("data-select", "value"),
+#         Input("method-select", "value"),
+#         Input("k-select", "value"),
+#         Input("criteria-select", "value"),
+#          Input('stored-data', 'data')
+#     ],
+# )
 
-def update_fit2(pathname,data_sel, method_sel,
-                 k_sel, criteria_sel,data):
+# def update_fit2(pathname,data_sel, method_sel,
+#                  k_sel, criteria_sel,data):
 
-    if pathname == '/feature_importance_classification':
-        fig1,fig2=build_fit(data_sel, method_sel,
-                 k_sel, criteria_sel,data)
-        return fig1,fig2
-    if pathname == '/feature_importance_regression':
-        fig1,fig2=build_fit_reg(data_sel, method_sel,
-                 k_sel, criteria_sel,data)
-        return fig1,fig2        
-    raise PreventUpdate    
+#     if pathname == '/feature_importance_classification':
+#         fig1,fig2=build_fit(data_sel, method_sel,
+#                  k_sel, criteria_sel,data)
+#         return fig1,fig2
+#     if pathname == '/feature_importance_regression':
+#         fig1,fig2=build_fit_reg(data_sel, method_sel,
+#                  k_sel, criteria_sel,data)
+#         return fig1,fig2        
+#     raise PreventUpdate    
            
 #########################
 
@@ -748,39 +707,8 @@ def update_scatter_raw(pathname,data_sel,method_sel,
     
 
 #####################################
-    
 @app.callback(
-    [Output("cor1", "figure"),
-     Output("cor2", "figure"),
-    ],    
-#     Output("cor", "figure"),
-    [Input('url', 'pathname'),
-        Input("data-select", "value"),
-        Input("method-select", "value"),
-        Input("k-select", "value"),
-        Input("criteria-select", "value"),
-    ],
-)
-
-def update_cor(pathname,data_sel,method_sel,
-                 k_sel, criteria_sel
-                 ):
-    
-    if pathname == '/feature_importance_classification':
-        fig1,fig2 =build_cor(data_sel, method_sel,
-                 k_sel, criteria_sel)
-        return fig1,fig2        
-    if pathname == '/feature_importance_regression':
-        fig1,fig2 =build_cor_reg(data_sel,method_sel,
-                 k_sel, criteria_sel)
-        return fig1,fig2        
-    raise PreventUpdate    
-    
-@app.callback(
-    [Output("cor1_new", "figure"),
-     Output("cor2_new", "figure"),
-    ],    
-#     Output("cor_new", "figure"),
+    Output("line_new", "figure"),
         [Input('url', 'pathname'),
         Input("data-select", "value"),
         Input("method-select", "value"),
@@ -790,51 +718,23 @@ def update_cor(pathname,data_sel,method_sel,
     ],
 )
 
-def update_cor2(pathname,data_sel, method_sel,
+def update_line2(pathname,data_sel, method_sel,
                  k_sel, criteria_sel,data
                  ):
 
     if pathname == '/feature_importance_classification':
-        fig1,fig2 =build_cor(data_sel, method_sel,
+        fig=build_line(data_sel, method_sel,
                  k_sel, criteria_sel,data)
         return fig
     if pathname == '/feature_importance_regression':
-        fig1,fig2 =build_cor_reg(data_sel, method_sel,
+        fig=build_line_reg(data_sel, method_sel,
                  k_sel, criteria_sel,data)
-        return fig1,fig2  
+        return fig        
     raise PreventUpdate    
-            
-    
+        
 @app.callback(
-    [Output("dot1", "figure"),
-     Output("dot2", "figure"),
-    ],
-    [Input('url', 'pathname'),
-        Input("data-select", "value"),
-        Input("method-select", "value"),
-        Input("k-select", "value"),
-        Input("criteria-select", "value"),
-    ],
-)
-def update_dot(pathname,data_sel,method_sel,
-                 k_sel, criteria_sel
-                 ):
-    if pathname == '/feature_importance_classification':    
-        fig1,fig2=build_dot(data_sel, method_sel,
-                    k_sel,
-                    criteria_sel)
-    if pathname == '/feature_importance_regression':    
-        fig1,fig2=build_dot_reg(data_sel, method_sel,
-                    k_sel,
-                    criteria_sel
-                 )
-    return fig1,fig2
-
-@app.callback(
-    [Output("dot1_new", "figure"),
-     Output("dot2_new", "figure"),
-    ],
-    [Input('url', 'pathname'),
+    Output("heat2_new", "figure"),
+        [Input('url', 'pathname'),
         Input("data-select", "value"),
         Input("method-select", "value"),
         Input("k-select", "value"),
@@ -842,24 +742,159 @@ def update_dot(pathname,data_sel,method_sel,
          Input('stored-data', 'data')
     ],
 )
-        
 
-def update_dot2(pathname,data_sel,method_sel,
+def update_heat22(pathname,data_sel, method_sel,
                  k_sel, criteria_sel,data
                  ):
-    if pathname == '/feature_importance_classification':    
+
+    if pathname == '/feature_importance_classification':
+        fig=build_heat_consis(data_sel, method_sel,
+                 k_sel, criteria_sel,data)
+        return fig
+    if pathname == '/feature_importance_regression':
+        fig=build_heat_consis_reg(data_sel, method_sel,
+                 k_sel, criteria_sel,data)
+        return fig        
+    raise PreventUpdate    
     
-        fig1,fig2=build_dot(data_sel, method_sel,
-                    k_sel,
-                    criteria_sel,data
-                 )
-    if pathname == '/feature_importance_regression':    
+
     
-        fig1,fig2=build_dot_reg(data_sel, method_sel,
-                    k_sel,
-                    criteria_sel,data
-                 )
-    return fig1,fig2    
+@app.callback(
+    Output("bump_new", "figure"),
+        [Input('url', 'pathname'),
+        Input("data-select", "value"),
+        Input("method-select", "value"),
+        Input("k-select", "value"),
+        Input("criteria-select", "value"),
+         Input('stored-data', 'data')
+    ],
+)
+
+def update_bump2(pathname,data_sel, method_sel,
+                 k_sel, criteria_sel,data
+                 ):
+
+    if pathname == '/feature_importance_classification':
+        fig=build_bump(data_sel, method_sel,
+                 k_sel, criteria_sel,data)
+        return fig
+    if pathname == '/feature_importance_regression':
+        fig=build_bump_reg(data_sel, method_sel,
+                 k_sel, criteria_sel,data)
+        return fig
+    
+    
+# @app.callback(
+#     [Output("cor1", "figure"),
+#      Output("cor2", "figure"),
+#     ],    
+# #     Output("cor", "figure"),
+#     [Input('url', 'pathname'),
+#         Input("data-select", "value"),
+#         Input("method-select", "value"),
+#         Input("k-select", "value"),
+#         Input("criteria-select", "value"),
+#     ],
+# )
+
+# def update_cor(pathname,data_sel,method_sel,
+#                  k_sel, criteria_sel
+#                  ):
+    
+#     if pathname == '/feature_importance_classification':
+#         fig1,fig2 =build_cor(data_sel, method_sel,
+#                  k_sel, criteria_sel)
+#         return fig1,fig2        
+#     if pathname == '/feature_importance_regression':
+#         fig1,fig2 =build_cor_reg(data_sel,method_sel,
+#                  k_sel, criteria_sel)
+#         return fig1,fig2        
+#     raise PreventUpdate    
+    
+# @app.callback(
+#     [Output("cor1_new", "figure"),
+#      Output("cor2_new", "figure"),
+#     ],    
+# #     Output("cor_new", "figure"),
+#         [Input('url', 'pathname'),
+#         Input("data-select", "value"),
+#         Input("method-select", "value"),
+#         Input("k-select", "value"),
+#         Input("criteria-select", "value"),
+#          Input('stored-data', 'data')
+#     ],
+# )
+
+# def update_cor2(pathname,data_sel, method_sel,
+#                  k_sel, criteria_sel,data
+#                  ):
+
+#     if pathname == '/feature_importance_classification':
+#         fig1,fig2 =build_cor(data_sel, method_sel,
+#                  k_sel, criteria_sel,data)
+#         return fig
+#     if pathname == '/feature_importance_regression':
+#         fig1,fig2 =build_cor_reg(data_sel, method_sel,
+#                  k_sel, criteria_sel,data)
+#         return fig1,fig2  
+#     raise PreventUpdate    
+            
+    
+# @app.callback(
+#     [Output("dot1", "figure"),
+#      Output("dot2", "figure"),
+#     ],
+#     [Input('url', 'pathname'),
+#         Input("data-select", "value"),
+#         Input("method-select", "value"),
+#         Input("k-select", "value"),
+#         Input("criteria-select", "value"),
+#     ],
+# )
+# def update_dot(pathname,data_sel,method_sel,
+#                  k_sel, criteria_sel
+#                  ):
+#     if pathname == '/feature_importance_classification':    
+#         fig1,fig2=build_dot(data_sel, method_sel,
+#                     k_sel,
+#                     criteria_sel)
+#     if pathname == '/feature_importance_regression':    
+#         fig1,fig2=build_dot_reg(data_sel, method_sel,
+#                     k_sel,
+#                     criteria_sel
+#                  )
+#     return fig1,fig2
+
+# @app.callback(
+#     [Output("dot1_new", "figure"),
+#      Output("dot2_new", "figure"),
+#     ],
+#     [Input('url', 'pathname'),
+#         Input("data-select", "value"),
+#         Input("method-select", "value"),
+#         Input("k-select", "value"),
+#         Input("criteria-select", "value"),
+#          Input('stored-data', 'data')
+#     ],
+# )
+        
+
+# def update_dot2(pathname,data_sel,method_sel,
+#                  k_sel, criteria_sel,data
+#                  ):
+#     if pathname == '/feature_importance_classification':    
+    
+#         fig1,fig2=build_dot(data_sel, method_sel,
+#                     k_sel,
+#                     criteria_sel,data
+#                  )
+#     if pathname == '/feature_importance_regression':    
+    
+#         fig1,fig2=build_dot_reg(data_sel, method_sel,
+#                     k_sel,
+#                     criteria_sel,data
+#                  )
+#     return fig1,fig2    
     
     
 ######################################
@@ -972,13 +1007,13 @@ def update_heat2_clus(data_sel_clus, method_sel_clus,
                      sigma_sel_clus,pert
                  ):
     if pert != 'Noise Addition':
-        fig=build_line_clus(data_sel_clus, method_sel_clus,
+        fig=build_heat_consis_clus(data_sel_clus, method_sel_clus,
                 criteria_sel_clus,
                     None,
                      None)
     else:
     
-        fig=build_line_clus(data_sel_clus, method_sel_clus,
+        fig=build_heat_consis_clus(data_sel_clus, method_sel_clus,
                 criteria_sel_clus,
                 noise_sel_clus,
                  sigma_sel_clus)
@@ -1164,155 +1199,155 @@ def update_fit_clus2(data_sel_clus,
 # )
         
 
-# def update_dot_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     noise_sel_clus,
-#                      sigma_sel_clus,pert
-#                  ):
+# # def update_dot_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     noise_sel_clus,
+# #                      sigma_sel_clus,pert
+# #                  ):
     
-#     if pert != 'Noise Addition':
-#         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     None,
-#                      None)
-#     else:
-#         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     noise_sel_clus,
-#                      sigma_sel_clus
-#                  )
-#     return fig1,fig2
-# @app.callback(
-#     [Output("dot1_new_clus", "figure"),
-#      Output("dot2_new_clus", "figure"),
-#     ],
-#     [
-#         Input("data-select_clus", "value"),
-#         Input("method-select_clus", "value"),
-#         Input("criteria-select_clus", "value"),
-#         Input("noise-select_clus", "value"),
-#         Input("sigma-select_clus", "value"),
-#            Input("pert-select_clus", "value"),
-#  ],
-# )
+# #     if pert != 'Noise Addition':
+# #         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     None,
+# #                      None)
+# #     else:
+# #         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     noise_sel_clus,
+# #                      sigma_sel_clus
+# #                  )
+# #     return fig1,fig2
+# # @app.callback(
+# #     [Output("dot1_new_clus", "figure"),
+# #      Output("dot2_new_clus", "figure"),
+# #     ],
+# #     [
+# #         Input("data-select_clus", "value"),
+# #         Input("method-select_clus", "value"),
+# #         Input("criteria-select_clus", "value"),
+# #         Input("noise-select_clus", "value"),
+# #         Input("sigma-select_clus", "value"),
+# #            Input("pert-select_clus", "value"),
+# #  ],
+# # )
         
 
-# def update_dot_clus2(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     noise_sel_clus,
-#                      sigma_sel_clus,pert
-#                  ):
+# # def update_dot_clus2(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     noise_sel_clus,
+# #                      sigma_sel_clus,pert
+# #                  ):
     
-#     if pert != 'Noise Addition':
-#         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     None,
-#                      None)
-#     else:
+# #     if pert != 'Noise Addition':
+# #         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     None,
+# #                      None)
+# #     else:
     
-#         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     noise_sel_clus,
-#                      sigma_sel_clus
-#                  )
-#     return fig1,fig2
+# #         fig1,fig2=build_dot_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     noise_sel_clus,
+# #                      sigma_sel_clus
+# #                  )
+# #     return fig1,fig2
 
 
     
     
-# @app.callback(
-#      [Output("cor1_clus", "figure"),
-#      Output("cor2_clus", "figure"),
-#     ],
-#     #Output("cor_clus", "figure"),
-#     [
-#         Input("data-select_clus", "value"),
-#         Input("method-select_clus", "value"),
-#         Input("criteria-select_clus", "value"),
-#         Input("noise-select_clus", "value"),
-#         Input("sigma-select_clus", "value"),
-#           Input("pert-select_clus", "value"),
-#   ],
-# )
+# # @app.callback(
+# #      [Output("cor1_clus", "figure"),
+# #      Output("cor2_clus", "figure"),
+# #     ],
+# #     #Output("cor_clus", "figure"),
+# #     [
+# #         Input("data-select_clus", "value"),
+# #         Input("method-select_clus", "value"),
+# #         Input("criteria-select_clus", "value"),
+# #         Input("noise-select_clus", "value"),
+# #         Input("sigma-select_clus", "value"),
+# #           Input("pert-select_clus", "value"),
+# #   ],
+# # )
 
-# def update_cor_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     noise_sel_clus,
-#                      sigma_sel_clus,pert
-#                  ):
+# # def update_cor_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     noise_sel_clus,
+# #                      sigma_sel_clus,pert
+# #                  ):
     
 
-#     if pert != 'Noise Addition':
-#         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     None,
-#                      None)
-#     else:
-#         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     noise_sel_clus,
-#                      sigma_sel_clus)
-#     return fig1,fig2 
-# @app.callback(
-#      [Output("cor1_new_clus", "figure"),
-#      Output("cor2_new_clus", "figure"),
-#     ],
-#     #Output("cor_new_clus", "figure"),
-#         [
-#       Input("data-select_clus", "value"),
-#         Input("method-select_clus", "value"),
-#         Input("criteria-select_clus", "value"),
-#         Input("noise-select_clus", "value"),
-#         Input("sigma-select_clus", "value"),
-#          Input('stored-data', 'data'),
-#           Input("pert-select_clus", "value"),
-#   ],
-# )
+# #     if pert != 'Noise Addition':
+# #         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     None,
+# #                      None)
+# #     else:
+# #         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     noise_sel_clus,
+# #                      sigma_sel_clus)
+# #     return fig1,fig2 
+# # @app.callback(
+# #      [Output("cor1_new_clus", "figure"),
+# #      Output("cor2_new_clus", "figure"),
+# #     ],
+# #     #Output("cor_new_clus", "figure"),
+# #         [
+# #       Input("data-select_clus", "value"),
+# #         Input("method-select_clus", "value"),
+# #         Input("criteria-select_clus", "value"),
+# #         Input("noise-select_clus", "value"),
+# #         Input("sigma-select_clus", "value"),
+# #          Input('stored-data', 'data'),
+# #           Input("pert-select_clus", "value"),
+# #   ],
+# # )
 
-# def update_cor_clus2(data_sel_clus, 
-#                         method_sel_clus,
-#                         criteria_sel_clus,
-#                         noise_sel_clus,
-#                         sigma_sel_clus,data,pert
-#                  ):
-#     if pert != 'Noise Addition':
-#         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
-#                     criteria_sel_clus,
-#                     None,
-#                      None,data)
-#     else:
-#         fig1,fig2 =build_cor_clus(data_sel_clus, 
-#                         method_sel_clus,
-#                         criteria_sel_clus,
-#                         noise_sel_clus,
-#                         sigma_sel_clus,data)
-#     return fig1,fig2 
+# # def update_cor_clus2(data_sel_clus, 
+# #                         method_sel_clus,
+# #                         criteria_sel_clus,
+# #                         noise_sel_clus,
+# #                         sigma_sel_clus,data,pert
+# #                  ):
+# #     if pert != 'Noise Addition':
+# #         fig1,fig2 =build_cor_clus(data_sel_clus, method_sel_clus,
+# #                     criteria_sel_clus,
+# #                     None,
+# #                      None,data)
+# #     else:
+# #         fig1,fig2 =build_cor_clus(data_sel_clus, 
+# #                         method_sel_clus,
+# #                         criteria_sel_clus,
+# #                         noise_sel_clus,
+# #                         sigma_sel_clus,data)
+# #     return fig1,fig2 
             
     
     
-# @app.callback(
-#     Output("acc_raw_clus", "figure"),
-#     [Input("data-select_clus", "value"),
-#         Input("method-select_clus", "value"),
-#         Input("criteria-select_clus", "value"),
-#         Input("noise-select_clus", "value"),
-#         Input("sigma-select_clus", "value"),
-#            Input("pert-select_clus", "value"),
-#  ],
-# )
+# # @app.callback(
+# #     Output("acc_raw_clus", "figure"),
+# #     [Input("data-select_clus", "value"),
+# #         Input("method-select_clus", "value"),
+# #         Input("criteria-select_clus", "value"),
+# #         Input("noise-select_clus", "value"),
+# #         Input("sigma-select_clus", "value"),
+# #            Input("pert-select_clus", "value"),
+# #  ],
+# # )
 
-# def update_acc_raw_clus(data_sel, method_sel,
-#                  criteria_sel, noise_sel,sigma_sel,pert
-#                  ):
+# # def update_acc_raw_clus(data_sel, method_sel,
+# #                  criteria_sel, noise_sel,sigma_sel,pert
+# #                  ):
     
-#     if pert != 'Noise Addition':
-#         fig=build_acc_raw_clus(data_sel,method_sel,
-#                 criteria_sel, None,None)
-#     else:
-#         fig=build_acc_raw_clus(data_sel,method_sel,
-#                 criteria_sel, noise_sel,sigma_sel)
-#     return fig 
-#     raise PreventUpdate       
+# #     if pert != 'Noise Addition':
+# #         fig=build_acc_raw_clus(data_sel,method_sel,
+# #                 criteria_sel, None,None)
+# #     else:
+# #         fig=build_acc_raw_clus(data_sel,method_sel,
+# #                 criteria_sel, noise_sel,sigma_sel)
+# #     return fig 
+# #     raise PreventUpdate       
     
 @app.callback(
     Output("scatter_raw_clus", "figure"),
@@ -2171,10 +2206,6 @@ def update_bump_knn2(data_sel_knn,
 
 # @app.callback(Output('submit_button','n_clicks'),
 #              [Input('reset_button','n_clicks')])
-#     return 0
-
-    
-
-
+#     return 
 if __name__ == '__main__':
     app.run_server()

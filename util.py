@@ -58,10 +58,12 @@ def display_figure(pp,plot_selected, click,pathname):
                  #vs. predictive accuracy',
 #                  'dot':'Summary Figure: Consistency & Accuracy Scatterplot (aggregated over data sets)', 
                  'cor':'Summary Figure: Correlation between onsistency and predictive accuracy',
-                 'line_new':'Line with new data',
-                 'bump_new':'Bump with new data',
-                 'fit_new':'Fit with new data',
-#                  'cor_new':'Cor with new data',
+                 
+                 ##new data
+                 'line_new':'Consistency Lineplot plot with new data (Within methods)',
+                 'heat2_new':'Consistency Heatmap with new data (Within methods)',
+                 'bump_new':'Consistency Bump Plot with new data (Within methods) ',
+#                  'fit_new':'Consistency & Accuracy Scatterplot with new data (All data sets)',
 
                  'line_raw':'Raw Results: Consistency Lineplot wrt. top K features (all data sets)',
                  #vs number of features for all data sets',
@@ -83,10 +85,10 @@ def display_figure(pp,plot_selected, click,pathname):
                    'dot':['The scatterplot of consistency/accuracy vs. methods, colored by data and sized by accuracy/consistency.'],
 
                  'cor':['The histogram plots the correlation between consistency score and predictive accuracy for each method, average over different data sets and 100 repeats. '],
-                 'line_new':['Line with new data'],
-                 'bump_new':['Bump with new data'],
-                 'fit_new':['Fit with new data'],
-                 'cor_new':['Cor with new data'],
+                 'line_new':['Consistency line plot with new data'],
+                 'heat2_new':['Consistency heatmap with new data'],
+                 'bump_new':['Consistency bump [plot with new data'],
+                 'fit_new':['Consistency & Accuracy Scatterplot with new data (All data sets)'],
                  'line_raw':['Line plot of interpretation consistency scores of each data, colored by IML methods. '],
                  'line_raw2':['Line plot of interpretation consistency scores of each data, colored by IML methods. '],
                  'scatter_raw':['Scatter plots of interpretation consistency scores vs. predictive accuracy for each data set, colored by IML methods. '],
@@ -301,7 +303,7 @@ def display_figure(pp,plot_selected, click,pathname):
                             ), 
                     ])
           
-                if pp == 'line' or pp=='heat2':
+                if pp == 'line' or pp=='line_new' or pp=='heat2' or pp=='heat2_new':
                     this_width = '170vh'
                     this_height = '70vh' 
                 elif pp == 'scatter_raw' or pp=='line_raw' or pp=='k_raw' or pp=='acc_raw':
@@ -579,9 +581,10 @@ def parse_contents(contents, filename, date,pathname):
           ###### summary plots
         html.Div(id='title_summary_new'),
         html.Div(id='show_line_new'),
+        html.Div(id='show_heat2_new'),
         html.Div(id='show_bump_new'),
-        html.Div(id='show_fit_new'),
-        html.Div(id='show_cor_new'),
+#         html.Div(id='C'),
+#         html.Div(id='show_cor_new'),
 
    
 #         html.B('Line with new data'),
@@ -589,7 +592,7 @@ def parse_contents(contents, filename, date,pathname):
 #                               style={'width': '80vh', 'height': '50vh'}),
 #         html.Hr(),  # horizontal line
 #         html.B('Bump with new data'),
-#         dcc.Graph(id="bump_new_"+paths[pathname] if pathname in paths else "bump_new",
+#         dcc.Graph(id="bump_new_"+pathfs[pathname] if pathname in paths else "bump_new",
 #                               style={'width': '80vh', 'height': '50vh'}),
 #         html.Hr(),  # horizontal line
 #         html.B('Fit with new data'),

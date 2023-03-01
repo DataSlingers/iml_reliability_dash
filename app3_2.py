@@ -23,8 +23,8 @@ df = pd.read_csv("dr_auc.csv")
 
 dr_knn=pd.read_csv('dr_knn.csv')
 
-
-
+data_options = df['data'].unique().tolist()
+method_options = df['method'].unique().tolist()
 criteria_options = df['criteria'].unique().tolist()
 rank_options = df['rank'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
@@ -249,8 +249,8 @@ def generate_control_card():
             html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_knn",
-                options=[{"label": i, "value": i} for i in datas],
-                value=datas[:],
+                options=[{"label": i, "value": i} for i in data_options],
+                value=data_options[:],
                 multi=True,
             ),
             html.Br(),

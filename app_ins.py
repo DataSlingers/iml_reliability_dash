@@ -177,13 +177,13 @@ cri_image = base64.b64encode(open(crii, 'rb').read())
 noisee = 'fig/noise.png' # replace with your own image
 noise_image = base64.b64encode(open(noisee, 'rb').read())
 
-heat_sum = 'fig/heat_sum.png' # replace with your own image
+heat_sum = 'fig/class_heat.png' # replace with your own image
 heat_sum_image = base64.b64encode(open(heat_sum, 'rb').read())
 
 heat_raww = 'fig/heat_raw.png' # replace with your own image
 heat_raw_image = base64.b64encode(open(heat_raww, 'rb').read())
 
-line_sum = 'fig/line_sum.png' # replace with your own image
+line_sum = 'fig/class_line.png' # replace with your own image
 line_sum_image = base64.b64encode(open(line_sum, 'rb').read())
 
 line_raww = 'fig/line_raw.png' # replace with your own image
@@ -192,13 +192,13 @@ line_raw_image = base64.b64encode(open(line_raww, 'rb').read())
 scatterr = 'fig/scatter_raw.png' # replace with your own image
 scatter_image = base64.b64encode(open(scatterr, 'rb').read())
 
-dot_sum1 = 'fig/dot_sum1.png' # replace with your own image
+dot_sum1 = 'fig/class_fit1.png' # replace with your own image
 dot_sum1_image = base64.b64encode(open(dot_sum1, 'rb').read())
 
-dot_sum2 = 'fig/dot_sum2.png' # replace with your own image
+dot_sum2 = 'fig/class_fit2.png' # replace with your own image
 dot_sum2_image = base64.b64encode(open(dot_sum2, 'rb').read())
 
-bump_sum = 'fig/bump_sum.png' # replace with your own image
+bump_sum = 'fig/class_bump.png' # replace with your own image
 bump_sum_image = base64.b64encode(open(bump_sum, 'rb').read())
 
 aucc = 'fig/auc.png' # replace with your own image
@@ -234,12 +234,13 @@ def App_ins():
         other,
         
         ## summary figures
-        heat,
-        html.Img(src='data:image/png;base64,{}'.format(heat_sum_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
+
         line,
         html.Img(src='data:image/png;base64,{}'.format(line_sum_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
         bump,
         html.Img(src='data:image/png;base64,{}'.format(bump_sum_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
+        heat,
+        html.Img(src='data:image/png;base64,{}'.format(heat_sum_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
         dot,
         html.Img(src='data:image/png;base64,{}'.format(dot_sum1_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
         html.Img(src='data:image/png;base64,{}'.format(dot_sum2_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),

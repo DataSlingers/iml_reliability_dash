@@ -38,11 +38,10 @@ method_category_options = ['Selected','Model Specific','Model Agnostic','All']
 
 k_options =df['K'].unique().tolist()
 plot_summary_options = {'heatmap':'Consistency heatmap across methods',
-                        'line':'Consistency across data sets',
+                        'line':'Consistency line plot within methods',
+                        'heat2':'Consistency heatmap within methods',
                         'bump':'Bump plot of the most consistent methods across data sets',
-#                         'fit':'Consistency vs. predictive accuracy',
-                        'dot':'Consistency/predictive accuracy vs. methods',
-                       # 'cor': 'Correlation between onsistency and predictive accuracy'
+                        'fit':'Scatter plot of consistency vs. prediction accuracy',
                        }
 plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all data sets',
                    'line_raw':'Consistency vs. predictive accuracy for all data sets',
@@ -72,6 +71,8 @@ markers_choice = {'LogisticLASSO':'circle',
                   'Shapley Value (LogisticRidge)':"x" ,
                     'Shapley Value (RF)':"x",
                     'Shapley Value (MLP)':"x"}
+
+
 palette  = {
     ## purple 
         'SVM':"deeppink",           
@@ -87,7 +88,7 @@ palette  = {
     ## blue 
     
         'RF':"slateblue",
-       'Permutation (RF)':"skyblue",
+       'Permutation (RF)':"powderblue",
                'Shapley Value (RF)': "cornflowerblue",           
     'XGB':"violet",
          'Permutation (XGB)':"peru", 
@@ -432,9 +433,9 @@ def build_scatter(data_sel, method_sel,
                 size=10,
            #opacity=0.1,
                 color="darkgrey"),
-            marker=dict(size=20,
+            marker=dict(size=15,
                         #opacity=0.1,
-                        line=dict(width=2,
+                        line=dict(width=5,
                         color='DarkSlateGrey')),
                   selector=dict(mode='markers'),
      
@@ -460,22 +461,27 @@ def build_bump(data_sel, method_sel,
                 &(df.K ==k_sel)
                 &(df.criteria==criteria_sel)]
     this_palette=dict((i,palette[i]) for i in method_sel)
+    
     this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
     
+    ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.K ==k_sel)
                 &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(neww['method']):
+        dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
+        for mm in set(new_data['method']):
             this_palette[mm]='black'
+        for mm in set(new_data['data']):
+            data_sel = data_sel+[mm]
+
+            
         
     ##### bump plot 
     df_ave = dff.groupby(['method','K','criteria'],as_index=False).mean()
     df_ave['data']='Average'
     df_ave=df_ave[['data','method','Consistency']]
     dff=pd.concat([dff,df_ave])
-
 ########################
                        
 
@@ -484,12 +490,13 @@ def build_bump(data_sel, method_sel,
     rankk=pd.merge(dff,rankk,how='left',on = ['data','method'])
     top= rankk[rankk["data"] == 'Average'].nsmallest(len(set(rankk.method)), "ranking")
     rankk['ranking']=[str(i) for i in rankk['ranking']]
-    
     fig = px.line(rankk, 
         x="data", y="ranking",
              color='method',markers=True,
              color_discrete_map=this_palette,
-             category_orders={"data":list(dff.data.unique()),
+            category_orders={
+    #                "data":data_sel+['Average'],
+                    "data":list(dff.data.unique()),
                               'ranking':[str(i) for i in range(1,len(set(rankk['ranking']))+1)]
                               },
                   labels=dict(data="Data",ranking='Rank')
@@ -509,24 +516,29 @@ def build_bump(data_sel, method_sel,
                             xref="paper",
                             yref="y"
                            ))
-    fig.update_layout(margin=dict( r=150))
+#     fig.update_layout(margin=dict( r=150))
     
     if new_data is not None:
         new_rankk = rankk[rankk.data.isin(set(neww.data))]
+        
         fig.add_trace(
             go.Scatter(
                 x=new_rankk['data'],
                 y=new_rankk['ranking'],
                 mode='markers',
                 marker=dict(
-                    color=[this_palette[i] for i in new_rankk['method']],
-                    size=20
+                    color='black',
+                    size=15,
+                    line=dict(
+                            color='MediumPurple',
+                            width=5
+                                ),
                 ),
                 showlegend=False,
                 hoverinfo='none',                                                                               )
                     )
 
-    fig.update_xaxes(categoryorder='array', categoryarray= datas)
+#     fig.update_xaxes(categoryorder='array', categoryarray= datas)
 
     fig.add_annotation(dict(font=dict(color="grey",size=12),
                         x=-0.05, y=-0.1, 
@@ -564,11 +576,8 @@ def build_heat_summary(data_sel, method_sel,
         np.fill_diagonal(sub2.values, 1)
         sub2=round(sub2,3)
 
-#         fig = px.imshow(sub, text_auto=True, aspect="auto",color_continuous_scale='Purp',
-#                                                 origin='lower',
-#                labels=dict(x="Method", y="Method", color="Consistency"))
-#         fig.update_xaxes(tickangle=45)
-#         fig.layout.coloraxis.showscale = False
+
+        
         
         fig = make_subplots(rows=1, cols=2, column_widths=[0.6, 0.4], 
                             horizontal_spacing=0.15,
@@ -638,7 +647,9 @@ def build_heat_consis(data_sel, method_sel,
             this_palette[mm]='black'
             this_line_choice[mm]='solid'
             
-
+        for mm in set(new_data['data']):
+            this_palette_data[mm]='black'
+            
     sub = dff.pivot("data", "method", "Consistency")
     sub=round(sub,3)
     sub=sub[method_sel]
@@ -696,13 +707,20 @@ def build_line(data_sel, method_sel,
     
     ###### input new data
     if new_data is not None:
+        
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.K ==k_sel)
                 &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
+        
+        dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
+        
+        
         for mm in set(new_data['method']):
             this_palette[mm]='black'
-            this_line_choice[mm]='solid'
+            this_line_choice[mm]='dash'
+        for mm in set(new_data['data']):
+            this_palette_data[mm]='black'
+
             
     fig1 = px.line(dff,x="data", y='Consistency',color = 'method',markers=True,
 
@@ -723,9 +741,13 @@ def build_line(data_sel, method_sel,
                     y=neww['Consistency'],
                     mode='markers',
                     marker=dict(
-                        color=[this_palette[i] for i in neww['method']],
-                        size=20
-                    ),
+                    color='black',
+                    size=15,
+                    line=dict(
+                            color='MediumPurple',
+                            width=5
+                                ),
+                ),
                     showlegend=False,
                     hoverinfo='none',                                                                              
                 )
@@ -741,7 +763,24 @@ def build_line(data_sel, method_sel,
                              "model": "Method",'data':'Data'
                          },
                      )
-
+    if new_data is not None:
+        fig2.add_trace(
+                go.Scatter(
+                    x=neww['data'],
+                    y=neww['Accuracy'],
+                    mode='markers',
+                    marker=dict(
+                        color='black',
+                        size=15,
+                        line=dict(
+                                color='MediumPurple',
+                                width=5
+                                    ),
+                ),
+                    showlegend=False,
+                    hoverinfo='none',                                                                              
+                )
+            )
     for i in range(len(fig2['data'])):
         if fig2['data'][i]['name']!='MLP':
             fig2['data'][i]['showlegend']=False
@@ -790,24 +829,27 @@ def build_fit(data_sel, method_sel,
     dff=sort(dff,'data',list(palette_data.keys()),'method',list(palette.keys()))
 
     this_palette=dict((i,palette[i]) for i in method_sel)
-    this_markers_choice=dict((i,markers_choice[i]) for i in method_sel)
+#     this_markers_choice=dict((i,'circle') for i in method_sel)
 #     this_palette_data =  [i for i in palette_data.keys() if i in data_sel]   
     this_palette_data=dict((i,palette_data[i]) for i in data_sel)
+
 
     ###### input new data
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
         neww = new_data[(new_data.K ==k_sel)
                 &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
+        dff = pd.concat([dff, neww],ignore_index=True) 
         for mm in set(new_data['method']):
             this_palette[mm]='black'
-            this_markers_choice[mm]='star'
-            
+#             this_markers_choice[mm] = 'x'
+        for mm in set(new_data['data']):
+            this_palette_data[mm]='black'
 
+            
     def get_scatter(df,x,y,color,palette,color_name,custom):
         f = px.scatter(df, x=x, y=y, color=color, 
-                         trendline="ols",
+                         trendline="ols", 
                     color_discrete_map=palette,
                      category_orders={color_name:list(palette.keys())},
                     custom_data=[color,custom],
@@ -837,7 +879,8 @@ def build_fit(data_sel, method_sel,
                 "Prediction Consistency: %{y}",
                 "Prediction Accuracy: %{x}",
                     ])) 
-        f.update_layout(xaxis_range=[0,1])
+        f.update_layout(xaxis_range=[0,1],yaxis_range = [0,1])
+
         model = px.get_trendline_results(f)
         pvs = pd.DataFrame(columns = ['data','p-values'])
         
@@ -870,28 +913,46 @@ def build_fit(data_sel, method_sel,
                 pvs.loc[len(pvs)]=[f["data"][i+1]['name'],min(round(p_beta*nn,5),1)]
    
 #         pvs['p-values']=[min(round(i*len(pvs),3),1) for i in pvs['p-values']]
-        
         return f,pvs
     
     
     fig1,pv1 = get_scatter(dff,'Consistency',y="Accuracy",color='data',
                 palette=this_palette_data,color_name='Data',custom='method')
     fig2,pv2 = get_scatter(dff, x="Consistency", y="Purity", color='data', 
-                    palette=this_palette_data,color_name='Data',custom='method')
+                    palette=this_palette_data, color_name='Data',custom='method')
 
     fig3,pv3 = get_scatter(dff, x="Accuracy", y="Purity", color='data', 
-                    palette=this_palette_data,color_name='Data',custom='method')
+                    palette=this_palette_data, color_name='Data',custom='method')
     
     fig4,pv4= get_scatter(dff,'Consistency',y="Accuracy",color='method',
-                palette=this_palette,color_name='Method',custom='data')
+                palette=this_palette, color_name='Method',custom='data')
     
     fig5,pv5= get_scatter(dff, x="Consistency", y="Purity", color='method', 
-                    palette=this_palette,color_name='Method',custom='data')
+                    palette=this_palette, color_name='Method',custom='data')
 
     fig6,pv6 = get_scatter(dff, x="Accuracy", y="Purity", color='method', 
-                    palette=this_palette,color_name='Method',custom='data')
+                    palette=this_palette,  color_name='Method',custom='data')
     
-    
+    if new_data is not None:
+        fig1.add_trace(
+                go.Scatter(
+                    x=neww['Consistency'],
+                    y=neww['Accuracy'],
+                    mode='markers',
+                    marker=dict(
+                       
+                        size=15,
+                        color='black',
+            
+                        line=dict(
+                            color='MediumPurple',
+                            width=5
+                                ),
+                                showlegend=False,
+                                                                                            
+                )
+            ))
+
     
     fig = make_subplots(rows=1, cols=3, horizontal_spacing=0.1,vertical_spacing=0.05)
                        #subplot_titles=('Interpretation Consistency vs. Prediction Accuracy',
@@ -922,10 +983,10 @@ def build_fit(data_sel, method_sel,
     fig.update_yaxes(title_text="Prediction Consistency",  row=1, col=3,title_standoff = 0)
 
 
-
     fig.update_traces(line=dict(width=3),marker = dict(size=7),opacity=0.8)
     
-    
+    fig.update_layout(xaxis_range=[-0.1,1.1],yaxis_range = [-0.1,1.1])
+
     figg = make_subplots(rows=1, cols=3, horizontal_spacing=0.1,vertical_spacing=0.05)
 #                          subplot_titles=('Interpretation Consistency vs. Prediction Accuracy',
 #               'Interpretation Consistency vs.Prediction Consistency',
@@ -955,7 +1016,7 @@ def build_fit(data_sel, method_sel,
     figg.update_yaxes(title_text="Prediction Consistency",  row=1, col=3,title_standoff = 0)
 
 
-
+    figg.update_layout(xaxis_range=[-0.1,1.1],yaxis_range = [-0.1,1.1])
     figg.update_traces(line=dict(width=3),marker = dict(size=7),opacity=0.8)
     
     pv = pd.merge(pd.merge(pv1,pv2,on='data'),pv3,on='data')
@@ -1492,8 +1553,4 @@ def build_dot(data_sel, method_sel,
     fig2.update_traces(line=dict(width=3))
     fig2.update_xaxes(matches=None)
     return fig2,fig1
-
-
-
-
 

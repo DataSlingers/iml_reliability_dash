@@ -173,7 +173,7 @@ In the regression task, the standard deviation of predicted values is used as th
 
 
 
-#### 11 Dimension Reduction Data Sets
+#### 12 Dimension Reduction Data Sets
 |Data | # observations |# features |# classes |Type |Citation|
 |:--- |    :----:      |    :----:  |    :----:    |     :----: |:----:| 
 |Statlog|2310 | 19 | 7 | image segmentation database | \citet{} |
@@ -181,6 +181,7 @@ In the regression task, the standard deviation of predicted values is used as th
 |WDBC| 569 | 30 | 2 |||
 |Tetragonula| 236 | 13 |||
 |Author | 841 | 69 | 4 | word counts from chapters written by four famous English-language authors| [[5]](#5) |
+|Madelon | 2000 | 500 | 2 | artificial dataset | [[4]](#4)|
 |TCGA Breast Cancer Data | 445 | 353 | 5 | | \citet{koboldt2012comprehensive}|
 |Psychiatrist | 30 | 24  | 2 |||
 |Veronica | 206 | 583 | 8 |||

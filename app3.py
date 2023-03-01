@@ -31,6 +31,8 @@ cross_split = pd.read_csv('cross_dr_split.csv')
 # accs_split = pd.read_csv('dr_accs_split.csv')
 
 
+data_options = df_split['data'].unique().tolist()
+method_options = df_split['method'].unique().tolist()
 criteria_options = df['criteria'].unique().tolist()
 rank_options = df['rank'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
@@ -40,7 +42,7 @@ plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
 #                        'dot':'Consistency/predictive accuracy vs. methods',
-                        'fit':'Scatter plots of interpretation consistency, predictive consistency, and preditvie accuracy',
+                        'fit':'Consistency vs. predictive accuracy',
                        # 'cor': 'Correlation between onsistency and predictive accuracy'
                        }
 plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all data sets',
@@ -99,7 +101,7 @@ palette_data = {
       'WDBC':'cyan',
      'Tetragonula': 'indigo',
       'Author':'yellow',           
-    'Ceramic':'slateblue',   
+    'Madelon' :'greenyellow', 
       'TCGA':'hotpink',
     'Psychiatrist':"green", 
     'Veronica':"firebrick",   
@@ -217,6 +219,7 @@ def generate_control_card():
             
             html.Div(id='controls-container_dr', children=[
             
+                       html.Br(),
                 html.P("Select: Noise Type"),
                 dcc.RadioItems(
                     id="noise-select_dr",
@@ -232,6 +235,7 @@ def generate_control_card():
                     value=0.5,
 
                 ),
+                html.Hr(),
             ]),
                      
                      
@@ -272,8 +276,8 @@ def generate_control_card():
             html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_dr",
-                options=[{"label": i, "value": i} for i in datas],
-                value=datas[:],
+                options=[{"label": i, "value": i} for i in data_options],
+                value=data_options[:],
                 multi=True,
             ),
             html.Br(),
@@ -302,10 +306,10 @@ def generate_control_card():
 
             html.Hr(),
            
-#             dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
-#             dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+            dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
+            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
 
-#             html.Hr(),
+            html.Hr(),
         
         
         ],
@@ -337,7 +341,6 @@ def App3():
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
             html.Div(id='show_line'),
-            html.Div(id='show_heat2'),
             html.Div(id='show_bump'),
             html.Div(id='show_heatmap'),
             html.Div(id='show_fit'),
@@ -347,7 +350,7 @@ def App3():
             html.Div(id='title_summary_raw'),
             html.Div(id='show_line_raw'),
             html.Div(id='show_scatter_raw'),
-#                html.Div(id='show_acc_raw'),
+               html.Div(id='show_acc_raw'),
          html.Div(id='show_heatmap_raw'),
            
         ], 
@@ -400,85 +403,6 @@ def build_scatter_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_s
 )
     return fig
 
-
-
-def build_heat_consis_dr(data_sel, method_sel,
-                 criteria_sel, noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None
-                 ):
-
-    if noise_sel==None: ## data spkit
-        dff=df_split[(df_split.data.isin(data_sel))
-            &(df_split.criteria==criteria_sel)
-                      &(df_split.clustering == clus_sel)
-                      &(df_split['rank'] ==rank_sel)
-                    &(df_split.method.isin(method_sel))] 
-    else:
-            
-        dff=df[(df.data.isin(data_sel))
-            &(df.method.isin(method_sel))
-            &(df.noise ==noise_sel)
-            &(df.sigma ==float(sigma_sel))
-            &(df['rank'] ==rank_sel)
-            &(df.clustering == clus_sel)
-            &(df.criteria==criteria_sel)] 
-
-    this_palette=dict((i,palette[i]) for i in method_sel)
-    this_line_choice=dict((i,line_choice[i]) for i in method_sel)
-    ###### input new data
-    if new_data is not None:
-        new_data = pd.DataFrame(new_data)
-        neww = new_data[(new_data.noise ==noise_sel)
-                &(new_data['rank'] ==int(rank_sel))
-                &(new_data.sigma ==float(sigma_sel))
-               &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(new_data['method']):
-            this_palette[mm]='black'
-            this_line_choice[mm]='solid'
-
-    
-
-    sub = dff.pivot("data", "method", "Consistency")
-    sub=round(sub,3)
-    sub= pd.DataFrame(sub, index=data_sel)
-    sub=sub[method_sel]
-    h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
-                             color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                  origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
-
-    h.update_layout({
-    'plot_bgcolor':'rgba(0, 0, 0, 0)',
-    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-    })
-    h.layout.height = 500
-    h.layout.width = 1000
-    
-    
-    dff_ac = dff[["data", "method", "Accuracy"]].drop_duplicates()
-    sub = dff_ac.pivot("data", "method", "Accuracy")
-    sub=round(sub,3)
-    sub= pd.DataFrame(sub, index=data_sel)
-    h2=px.imshow(sub, text_auto=True, aspect="auto",
-                 color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                 range_color=(0,1),
-                 origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
-    h2.layout.height = 500
-    h2.layout.width = 700
-
-    fig= make_subplots(rows=1, cols=2, column_widths=[0.5, 0.5], 
-                                horizontal_spacing=0.15,
-                            vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
-
-    for trace in h.data:
-        fig.add_trace(trace, 1, 1)
-    for trace in h2.data:
-        fig.add_trace(trace, 1, 2)
-    fig.update_xaxes(tickangle=45)# for trace in bar1.data:
-    fig.update_layout(                             
-                  coloraxis=dict(colorscale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                                 showscale = False),)
-    
-    return fig
 def build_bump_dr(data_sel, method_sel,
                  criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None):
 ####### filter data
