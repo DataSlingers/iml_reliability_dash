@@ -23,8 +23,8 @@ df = pd.read_csv("dr_auc.csv")
 
 dr_knn=pd.read_csv('dr_knn.csv')
 
-data_options = df['data'].unique().tolist()
-method_options = df['method'].unique().tolist()
+
+
 criteria_options = df['criteria'].unique().tolist()
 rank_options = df['rank'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
@@ -75,21 +75,20 @@ line_choice = {
 #                 'Statlog':"cyan",
 #                 'Madelon' :'greenyellow',
 #                 }
-palette_data = { 
-        'Statlog':'deepskyblue',      
-           'Spam base':"purple", 
-      'WDBC':'cyan',
-     'Tetragonula': 'indigo',
-      'Author':'yellow',           
-    'Madelon' :'greenyellow', 
-      'TCGA':'hotpink',
-    'Psychiatrist':"green", 
-    'Veronica':"firebrick",   
+palette_data = {
     
+      'Statlog':'deepskyblue',      
+           'Spam base':"green", 
+      'WDBC':'slateblue',
+     'Tetragonula': 'cyan',
+      'Author':'yellow',           
+      'TCGA':'hotpink',
+    'Psychiatrist':"firebrick", 
+    'Veronica':"magenta",                   
      'Religion': 'indigo',
-    'PANCAN':"purple",
+   'PANCAN':"purple",
    'Darmanis':'powderblue'
-           }
+               }
 # palette_data = { 
 #         'Statlog':'deepskyblue',      
 #            'Spam base':"purple", 
@@ -249,8 +248,8 @@ def generate_control_card():
             html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_knn",
-                options=[{"label": i, "value": i} for i in data_options],
-                value=data_options[:],
+                options=[{"label": i, "value": i} for i in datas],
+                value=datas[:],
                 multi=True,
             ),
             html.Br(),
@@ -275,10 +274,10 @@ def generate_control_card():
             ),                    
 
 
-#             html.Hr(),
+            html.Hr(),
            
-#             dbc.Button('Submit', id='submit-button',n_clicks=100, color="primary",className="me-1"),
-#             dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+            dbc.Button('Submit', id='submit-button',n_clicks=100, color="primary",className="me-1"),
+            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
             html.Hr(),        ],
     )            
 

@@ -516,10 +516,10 @@ def build_bump(data_sel, method_sel,
                             xref="paper",
                             yref="y"
                            ))
-#     fig.update_layout(margin=dict( r=150))
+    fig.update_layout(margin=dict( r=150))
     
     if new_data is not None:
-        new_rankk = rankk[rankk.data.isin(set(neww.data))]
+        new_rankk = rankk[(rankk.data.isin(set(neww.data)))&(rankk.method.isin(set(neww.method)))]
         
         fig.add_trace(
             go.Scatter(
@@ -646,7 +646,7 @@ def build_heat_consis(data_sel, method_sel,
         for mm in set(new_data['method']):
             this_palette[mm]='black'
             this_line_choice[mm]='solid'
-            
+            method_sel=method_sel+[mm]
         for mm in set(new_data['data']):
             this_palette_data[mm]='black'
             
@@ -713,7 +713,7 @@ def build_line(data_sel, method_sel,
                 &(new_data.criteria==criteria_sel)]
         
         dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
-        
+       
         
         for mm in set(new_data['method']):
             this_palette[mm]='black'
@@ -721,7 +721,6 @@ def build_line(data_sel, method_sel,
         for mm in set(new_data['data']):
             this_palette_data[mm]='black'
 
-            
     fig1 = px.line(dff,x="data", y='Consistency',color = 'method',markers=True,
 
                             color_discrete_map=this_palette,

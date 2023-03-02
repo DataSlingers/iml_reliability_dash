@@ -29,8 +29,8 @@ df_split = pd.read_csv("clustering_split.csv")
 cross_split = pd.read_csv('cross_clus_split.csv')
 # accs_split = pd.read_csv('clustering_accs_split.csv')
 
-data_options = df['data'].unique().tolist()
-method_options = df['method'].unique().tolist()
+
+
 criteria_options = df['criteria'].unique().tolist()
 noise_options =df['noise'].unique().tolist()
 sigma_options =df['sigma'].unique().tolist()
@@ -88,18 +88,19 @@ meths = list(palette.keys())
 #     'PANCAN':"purple",
 #                 }
 palette_data = {'Bean':"powderblue",
-        'Statlog':'deepskyblue',      
-           'Spam base':"purple", 
+       'Call':'cornflowerblue',  
+      'Statlog':'deepskyblue',      
+           'Spam base':"green", 
    'Iris':'lightseagreen',  
-     'Call':'cornflowerblue',  
-      'WDBC':'cyan',
-     'Tetragonula': 'indigo',
+      'WDBC':'slateblue',
+     'Tetragonula': 'cyan',
       'Author':'yellow',           
-    'Ceramic':'slateblue',   
+    'Ceramic':'lightseagreen',   
       'TCGA':'hotpink',
-    'Psychiatrist':"green", 
-    'Veronica':"firebrick",                   
-    'PANCAN':"purple",
+    'Psychiatrist':"firebrick", 
+    'Veronica':"magenta",                   
+     'Religion': 'indigo',
+   'PANCAN':"purple",
                }
 
 
@@ -257,7 +258,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="method-select_clus",
                 options=[{"label": i, "value": i} for i in meths],
-                value=meths[:10],
+                value=meths[:],
                 multi=True,
             ),
             html.Br(),
@@ -269,8 +270,8 @@ def generate_control_card():
             html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_clus",
-                options=[{"label": i, "value": i} for i in data_options],
-                value=data_options[:],
+                options=[{"label": i, "value": i} for i in datas],
+                value=datas[:],
                 multi=True,
             ),
             html.Br(),
@@ -304,9 +305,9 @@ def generate_control_card():
 
             html.Hr(),
            
-#             dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
-#             dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
-#             html.Hr(),
+            dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
+            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+            html.Hr(),
    
         ],
     )     
@@ -339,6 +340,7 @@ def App2():
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
             html.Div(id='show_line'),
+            html.Div(id='show_heat2'),
             html.Div(id='show_bump'),
             html.Div(id='show_heatmap'),
             html.Div(id='show_fit'),
@@ -348,7 +350,7 @@ def App2():
             html.Div(id='title_summary_raw'),
             html.Div(id='show_line_raw'),
             html.Div(id='show_scatter_raw'),
-            html.Div(id='show_acc_raw'),
+#             html.Div(id='show_acc_raw'),
             html.Div(id='show_heatmap_raw'),
 
            
@@ -452,7 +454,94 @@ def build_heat_summary_clus(data_sel,method_sel,
 #                 dcc.Graph(id="line_clus",
 #                           style={'width': '105vh', 'height': '100vh'}),
 #                 ])
+
+
+def build_heat_consis_clus(data_sel, method_sel,
+                 criteria_sel, noise_sel,sigma_sel,new_data=None
+                 ):
+
+####### filter data
+    if noise_sel==None:
+        dff=df_split[(df_split.data.isin(data_sel))
+            &(df_split.method.isin(method_sel))&(df_split.criteria==(criteria_sel))] 
+    else:
+            
+        dff=df[(df.data.isin(data_sel))
+            &(df.method.isin(method_sel))
+            &(df.noise ==noise_sel)
+            &(df.sigma ==float(sigma_sel))
+            &(df.criteria==criteria_sel)] 
+
+    this_palette=dict((i,palette[i]) for i in method_sel)
+    this_line_choice=dict((i,line_choice[i]) for i in method_sel)
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
         
+    ###### input new data
+    if new_data is not None:
+        new_data = pd.DataFrame(new_data)
+        new_data=new_data.replace({'normal':'Normal','laplace':'Laplace'})
+        if noise_sel==None:
+            neww = new_data[(new_data.criteria==criteria_sel)]
+            
+        else:
+            new_data['sigma']=[float(i) for i in new_data['sigma']]
+            neww = new_data[(new_data.noise ==noise_sel)
+                    &(new_data.sigma ==float(sigma_sel))
+                   &(new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
+
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_line_choice[mm]='solid'
+            method_sel=method_sel+[mm]
+        for mm in set(new_data['data']):
+            data_sel=data_sel+[mm]   
+            this_palette_data[mm]='black'
+
+
+    sub = dff.pivot("data", "method", "Consistency")
+    sub=round(sub,3)
+    sub= pd.DataFrame(sub, index=this_palette_data)
+    sub=sub[method_sel]
+    h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
+                             color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                  origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
+
+    h.update_layout({
+    'plot_bgcolor':'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    h.layout.height = 500
+    h.layout.width = 1000
+    
+    
+    dff_ac = dff[["data", "method", "Accuracy"]].drop_duplicates()
+    sub = dff_ac.pivot("data", "method", "Accuracy")
+    sub=round(sub,3)
+    sub= pd.DataFrame(sub, index=this_palette_data)
+    sub=sub[method_sel]
+    h2=px.imshow(sub, text_auto=True, aspect="auto",
+                 color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                 range_color=(0,1),
+                 origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
+    h2.layout.height = 500
+    h2.layout.width = 700
+
+    fig= make_subplots(rows=1, cols=2, column_widths=[0.5, 0.5], 
+                                horizontal_spacing=0.15,
+                            vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Clustering Accuracy'))
+
+    for trace in h.data:
+        fig.add_trace(trace, 1, 1)
+    for trace in h2.data:
+        fig.add_trace(trace, 1, 2)
+    fig.update_xaxes(tickangle=45)# for trace in bar1.data:
+    fig.update_layout(                             
+                  coloraxis=dict(colorscale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                                 showscale = False),)
+    
+    return fig
+
 def build_line_clus(data_sel, method_sel,
                  criteria_sel, noise_sel,sigma_sel,new_data=None
                  ):
@@ -475,11 +564,25 @@ def build_line_clus(data_sel, method_sel,
 
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
-        neww = new_data[(new_data.noise ==noise_sel)
-                &(new_data.sigma ==float(sigma_sel))
-               &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-
+        new_data=new_data.replace({'normal':'Normal','laplace':'Laplace'})
+        if noise_sel==None:
+            neww = new_data[(new_data.criteria==criteria_sel)]
+            
+        else:
+            print(noise_sel,float(sigma_sel),criteria_sel)
+            new_data['sigma']=[float(i) for i in new_data['sigma']]
+            print(set( new_data['sigma']),set( new_data['noise']),set( new_data['criteria']))
+            neww = new_data[(new_data.noise ==noise_sel)
+                    &(new_data.sigma ==float(sigma_sel))
+                   &(new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
+        print(dff[dff.data=='newdata'])
+        print(dff[dff.method=='NEWMETHOD'])
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+            this_line_choice[mm]='dash'
+        for mm in set(new_data['data']):
+            this_palette_data = this_palette_data +[mm]
     fig1 = px.line(dff,x="data", y='Consistency',color = 'method',markers=True,
                         color_discrete_map=this_palette,
                             line_dash = 'method',
@@ -490,6 +593,7 @@ def build_line_clus(data_sel, method_sel,
                  # title=
                  )
 
+
     if new_data is not None:
         fig1.add_trace(
                 go.Scatter(
@@ -497,13 +601,18 @@ def build_line_clus(data_sel, method_sel,
                     y=neww['Consistency'],
                     mode='markers',
                     marker=dict(
-                        color=[this_palette[i] for i in neww['method']],
-                        size=20
-                    ),
+                        color='black',
+                        size=15,
+                        line=dict(
+                                color='MediumPurple',
+                                width=5
+                                    ),
+                ),
                     showlegend=False,
                     hoverinfo='none',                                                                              
                 )
             )
+
     fig2 = px.line(dff,x="data", y='Accuracy',color = 'method',markers=True,
 
                             color_discrete_map=this_palette,
@@ -512,6 +621,25 @@ def build_line_clus(data_sel, method_sel,
                              "method": "Method",'data':'Data'
                          },
                      )
+
+    if new_data is not None:
+        fig2.add_trace(
+                go.Scatter(
+                    x=neww['data'],
+                    y=neww['Accuracy'],
+                    mode='markers',
+                    marker=dict(
+                        color='black',
+                        size=15,
+                        line=dict(
+                                color='MediumPurple',
+                                width=5
+                                    ),
+                ),
+                    showlegend=False,
+                    hoverinfo='none',                                                                              
+                )
+            )
 
     for i in range(len(fig2['data'])):
         fig2['data'][i]['showlegend']=False
@@ -615,13 +743,22 @@ def build_bump_clus(data_sel, method_sel,
 
     if new_data is not None:
         new_data = pd.DataFrame(new_data)
-        neww = new_data[(new_data.noise ==noise_sel)
-                &(new_data.sigma ==float(sigma_sel))
-               &(new_data.criteria==criteria_sel)]
-        dff = pd.concat([dff, neww]) 
-        for mm in set(neww['method']):
-            this_palette[mm]='black'        
-##### bump plot 
+        new_data=new_data.replace({'normal':'Normal','laplace':'Laplace'})
+        if noise_sel==None:
+            neww = new_data[(new_data.criteria==criteria_sel)]
+            
+        else:
+            new_data['sigma']=[float(i) for i in new_data['sigma']]
+
+            neww = new_data[(new_data.noise ==noise_sel)
+                    &(new_data.sigma ==float(sigma_sel))
+                   &(new_data.criteria==criteria_sel)]
+        dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
+
+        for mm in set(new_data['method']):
+            this_palette[mm]='black'
+        for mm in set(new_data['data']):
+            data_sel = data_sel+[mm]
     
 
 ########################
@@ -658,20 +795,26 @@ def build_bump_clus(data_sel, method_sel,
                             yref="y"
                            ))
     fig.update_layout(margin=dict( r=150))
+    
     if new_data is not None:
-        new_rankk = rankk[rankk.data.isin(set(neww.data))]
+        new_rankk = rankk[(rankk.data.isin(set(neww.data)))&(rankk.method.isin(set(neww.method)))]
         fig.add_trace(
             go.Scatter(
                 x=new_rankk['data'],
                 y=new_rankk['ranking'],
                 mode='markers',
                 marker=dict(
-                    color=[this_palette[i] for i in new_rankk['method']],
-                    size=20
+                    color='black',
+                    size=15,
+                    line=dict(
+                            color='MediumPurple',
+                            width=5
+                                ),
                 ),
                 showlegend=False,
                 hoverinfo='none',                                                                               )
                     )
+        
     fig.add_annotation(dict(font=dict(color="grey",size=12),
                         x=-0.05, y=-0.1, 
                         text="Large N",

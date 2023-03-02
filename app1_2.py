@@ -530,7 +530,7 @@ def build_bump_reg(data_sel, method_sel,
                             yref="y"
                            ))
     if new_data is not None:
-        new_rankk = rankk[rankk.data.isin(set(neww.data))]
+        new_rankk = rankk[(rankk.data.isin(set(neww.data)))&(rankk.method.isin(set(neww.method)))]
         
         fig.add_trace(
             go.Scatter(
@@ -674,7 +674,7 @@ def build_heat_consis_reg(data_sel, method_sel,
         for mm in set(new_data['method']):
             this_palette[mm]='black'
             this_line_choice[mm]='solid'
-            
+            method_sel=method_sel+[mm]
         for mm in set(new_data['data']):
             this_palette_data[mm]='black'
 
@@ -741,6 +741,7 @@ def build_line_reg(data_sel, method_sel,
     if new_data is not None:
         
         new_data = pd.DataFrame(new_data)
+        new_data.replace({'normal':'Normal','laplace':'Laplace'})
         neww = new_data[(new_data.K ==k_sel)
                 &(new_data.criteria==criteria_sel)]
         
