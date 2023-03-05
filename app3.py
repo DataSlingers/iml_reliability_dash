@@ -196,6 +196,19 @@ def generate_control_card():
             html.Div(id='new_options'),
  
             html.Hr(),
+            
+            
+            html.P("Select IML questions"),
+            dcc.RadioItems(
+                id="qq",
+                options=[{"label": i, "value": j} for (j,i) in [('Q1','Q1:If we sample a different training set, are the interpretations similar?'), ('Q2','Q2: Do two IML methods generate similar interpretations on the same data?'),('Q3','Q3: Does higher accuracy lead to more consistent interpretations?')]],
+                value='Q1',
+            ),         
+            
+            html.Hr(),
+            
+            
+            
             html.P("Select: Dimension Rank"),
             dcc.Dropdown(
                 id="rank-select_dr",
@@ -267,7 +280,7 @@ def generate_control_card():
                 value=meths[0:8],
                 multi=True,
             ),
-            html.Br(),
+            html.Hr(),            
             html.P("Select: Data Sets"),
             dcc.Dropdown(
                 id="data-select_dr",
@@ -281,30 +294,30 @@ def generate_control_card():
             ########### select figures 
             #################################
 
-            html.P("Select Summary Graphs you want to show"),
-            dcc.Checklist(id="all_summary",
-                          options=[{"label": 'All', "value":'All_summary' }],value= ['All_summary']),
-            dcc.Checklist(id="select_summary",
-                options=[{"label": plot_summary_options[i], "value": i} for i in plot_summary_options],
-                value=list(plot_summary_options.keys()),
-            ),        
+#             html.P("Select Summary Graphs you want to show"),
+#             dcc.Checklist(id="all_summary",
+#                           options=[{"label": 'All', "value":'All_summary' }],value= ['All_summary']),
+#             dcc.Checklist(id="select_summary",
+#                 options=[{"label": plot_summary_options[i], "value": i} for i in plot_summary_options],
+#                 value=list(plot_summary_options.keys()),
+#             ),        
             
-            html.Hr(),
-            html.P("Select Raw Graphs you want to show"),
-            dcc.Checklist(id="all_raw",
-                          options=[{"label": 'All', "value":'All_raw' }],value= ['All_raw']),
-            dcc.Checklist(id="select_raw",
-                options=[{"label": plot_raw_options[i], "value": i} for i in plot_raw_options],
-                value=list(plot_raw_options.keys()),
-            ),         
+#             html.Hr(),
+#             html.P("Select Raw Graphs you want to show"),
+#             dcc.Checklist(id="all_raw",
+#                           options=[{"label": 'All', "value":'All_raw' }],value= ['All_raw']),
+#             dcc.Checklist(id="select_raw",
+#                 options=[{"label": plot_raw_options[i], "value": i} for i in plot_raw_options],
+#                 value=list(plot_raw_options.keys()),
+#             ),         
             
 
-            html.Hr(),
+#             html.Hr(),
            
-            dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
-            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+#             dbc.Button('Submit', id='submit-button',n_clicks=0, color="primary",className="me-1"),
+#             dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
 
-            html.Hr(),
+#             html.Hr(),
         
         
         ],
@@ -335,9 +348,9 @@ def App3():
             ###### summary plots
             html.Div(id='title_summary'),
             html.Div(id='subtitle_summary'),
-            html.Div(id='show_line'),
             html.Div(id='show_heat2'),
             html.Div(id='show_bump'),
+            html.Div(id='show_line'),
             html.Div(id='show_heatmap'),
             html.Div(id='show_fit'),
 #             html.Div(id='show_dot'),

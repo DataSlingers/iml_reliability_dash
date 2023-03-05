@@ -180,34 +180,65 @@ def toggle_container(toggle_value):
 
    
     
-###### select figure 
-@app.callback(
-    Output("select_summary", "value"),
-    Output("all_summary", "value"),
-    Output("select_raw", "value"),
-    Output("all_raw", "value"),
-    Output("reset-button","n_clicks"),
-    Output("submit-button","n_clicks"),
+# ###### select figure 
+# @app.callback(
+#     Output("select_summary", "value"),
+#     Output("all_summary", "value"),
+#     Output("select_raw", "value"),
+#     Output("all_raw", "value"),
+#     Output("reset-button","n_clicks"),
+#     Output("submit-button","n_clicks"),
 
-    Input("select_summary", "value"),
-    Input("all_summary", "value"),
-    Input("select_raw", "value"),
-    Input("all_raw", "value"),
-    Input("reset-button","n_clicks")
-)
+#     Input("select_summary", "value"),
+#     Input("all_summary", "value"),
+#     Input("select_raw", "value"),
+#     Input("all_raw", "value"),
+#     Input("reset-button","n_clicks")
+# )
 
-def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,reset):
-    if reset>0:
-        return plot_summary_options,['All_summary' ],plot_raw_options,['All_raw' ],0,1
-    else:
-        new = list(sync_checklists(select_summary, all_summary,plot_summary_options,kind='summary')+sync_checklists(select_raw, all_raw,plot_raw_options,kind='raw'))+[0,1]
-#         new.append(0)
-        return new
+# def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,reset):
+#     if reset>0:
+#         return plot_summary_options,['All_summary' ],plot_raw_options,['All_raw' ],0,1
+#     else:
+#         new = list(sync_checklists(select_summary, all_summary,plot_summary_options,kind='summary')+sync_checklists(select_raw, all_raw,plot_raw_options,kind='raw'))+[0,1]
+# #         new.append(0)
+#         return new
 
 
 
     
 ######## make figures 
+# @app.callback(    
+#     Output("title_summary", "children"),
+#     Output("subtitle_summary", "children"),
+#     Output("show_heatmap", "children"),
+#     Output("show_line", "children"),
+#     Output("show_heat2", "children"),
+#     Output("show_bump", "children"),
+#     Output("show_fit", "children"),
+# #     Output("show_dot", "children"),
+# #    Output("show_cor", "children"),
+
+#     [Input('url', 'pathname'),
+#     State("select_summary", "value"),
+#     Input('submit-button','n_clicks'),        
+#     ],
+#     prevent_initial_call=False
+
+# )
+
+# def show(pathname,plot_selected,click):
+#     if click and click>0 and pathname!='/knn':
+#         options = ['heatmap','line','heat2','bump','fit']
+# #        options = ['heatmap','line','bump','fit','dot','cor']
+#         title = []
+#         subtitle = []
+#         if len(plot_selected)>0:
+#             title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center','font-weight': 'bold'})
+#             subtitle=html.H5("Aggregated over all data sets", style={"color": "mediumslateblue",'text-align':'center'})
+#         return list([title]+[subtitle]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+#     raise PreventUpdate
+    
 @app.callback(    
     Output("title_summary", "children"),
     Output("subtitle_summary", "children"),
@@ -216,55 +247,69 @@ def update_summary_checklists(select_summary, all_summary,select_raw,all_raw,res
     Output("show_heat2", "children"),
     Output("show_bump", "children"),
     Output("show_fit", "children"),
-#     Output("show_dot", "children"),
-#    Output("show_cor", "children"),
 
-    [Input('url', 'pathname'),
-    State("select_summary", "value"),
-    Input('submit-button','n_clicks'),        
-    ],
-    prevent_initial_call=False
-
-)
-
-def show(pathname,plot_selected,click):
-    if click and click>0 and pathname!='/knn':
-        options = ['heatmap','line','heat2','bump','fit']
-#        options = ['heatmap','line','bump','fit','dot','cor']
-        title = []
-        subtitle = []
-        if len(plot_selected)>0:
-            title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center','font-weight': 'bold'})
-            subtitle=html.H5("Aggregated over all data sets", style={"color": "mediumslateblue",'text-align':'center'})
-        return list([title]+[subtitle]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
-    raise PreventUpdate
-    
-    
-    
-@app.callback(    
     Output("title_summary_raw", "children"),
     Output("show_line_raw", "children"),
     Output("show_scatter_raw", "children"),
 #     Output("show_acc_raw", "children"),
     Output("show_heatmap_raw", "children"),
     [Input('url', 'pathname'),
-    State("select_raw", "value"),
-     Input('submit-button','n_clicks'),        
+    Input("qq", "value"),
+#     Input('submit-button','n_clicks'),        
     ],
-    prevent_initial_call=True
+    prevent_initial_call=False
 
 )
 
-def show_raw(pathname,plot_selected,click):
+  
+def show(pathname,qq):
 
-    if click and click>0 and pathname!='/knn':
-        options = ['line_raw','scatter_raw','heatmap_raw']
-        title = []
-        if len(plot_selected)>0:
-            title=html.H4("Raw Figures", style={"color": "slateblue",'text-align':'center'})
+#     if click and click>0 and pathname!='/knn':
+    if pathname!='/knn':
+        options = ['heatmap','line', 'heat2','bump','fit']
+        options2 = ['line_raw','scatter_raw','heatmap_raw']
+        if qq=='Q1':
+            plot_selected = ['heat2','bump','line']
+            plot_selected2=['line_raw']
+        if qq=='Q2':
+            plot_selected = ['heatmap']  
+            plot_selected2=['heatmap_raw']
+        if qq=='Q3':
+            plot_selected = ['fit']              
+            plot_selected2=['scatter_raw']
+
+        title=html.H4("Summary Figures for "+qq, style={"color": "slateblue",'text-align':'center','font-weight': 'bold'})
+        subtitle=html.H5("Aggregated over all data sets", style={"color": "mediumslateblue",'text-align':'center'})
+        title2=html.H4("Detailed Figures for "+qq, style={"color": "slateblue",'text-align':'center'})
             
-        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
-    raise PreventUpdate    
+        return list([title]+[subtitle]+[display_figure(pp,plot_selected,pathname) for pp in options]+[title2]+
+                  [display_figure(pp,plot_selected2,pathname) for pp in options2] )
+    raise PreventUpdate
+    
+    
+# @app.callback(    
+#     Output("title_summary_raw", "children"),
+#     Output("show_line_raw", "children"),
+#     Output("show_scatter_raw", "children"),
+# #     Output("show_acc_raw", "children"),
+#     Output("show_heatmap_raw", "children"),
+#     [Input('url', 'pathname'),
+#     State("select_raw", "value"),
+#      Input('submit-button','n_clicks'),        
+#     ],
+#     prevent_initial_call=True
+
+# )
+
+# def show_raw(pathname,plot_selected,click):
+
+#     if click and click>0 and pathname!='/knn':
+#         options = [,'scatter_raw',']
+#         title = []
+#         if len(plot_selected)>0:
+            
+#         return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+#     raise PreventUpdate    
 
 @app.callback(    
     Output("title_summary_knn", "children"),
