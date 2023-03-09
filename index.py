@@ -258,7 +258,6 @@ def toggle_container(toggle_value):
 #     Input('submit-button','n_clicks'),        
     ],
     prevent_initial_call=False
-
 )
 
   
@@ -313,45 +312,37 @@ def show(pathname,qq):
 
 @app.callback(    
     Output("title_summary_knn", "children"),
+    Output("subtitle_summary_knn", "children"),
     Output("show_line_knn", "children"),
+    Output("show_heat2_knn", "children"),
     Output("show_bump_knn", "children"),
-    [State('url', 'pathname'),
-     State("select_summary", "value"),
-     Input('submit-button','n_clicks'),        
-    ],
-    prevent_initial_call=True)
 
-def show_knn(pathname,plot_selected,click):
-
-    if click and click>0 and pathname=='/knn':
-        options = ['line','bump']  
-        title = []
-        if len(plot_selected)>0:
-            title=html.H4("Summary Figures", style={"color": "slateblue",'text-align':'center'})
-
-        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
-    raise PreventUpdate    
-    
-@app.callback(    
     Output("title_raw_knn", "children"),
     Output("show_line_raw_knn", "children"),
     Output("show_k_raw_knn", "children"),
-    [State('url', 'pathname'),
-     State("select_raw", "value"),
-     Input('submit-button','n_clicks'),        
+    [Input('url', 'pathname'),
     ],
-    prevent_initial_call=True)
+    prevent_initial_call=False
+ )
 
-def show_raw_knn(pathname,plot_selected,click):
+  
+def show_knn(pathname):
 
-    if click and click>0 and pathname=='/knn':
-        options = ['line_raw','k_raw']  
-        title = []
-        if len(plot_selected)>0:
-            title=html.H4("Raw Figures", style={"color": "slateblue",'text-align':'center'})
+#     if click and click>0 and pathname!='/knn':
+    if pathname=='/knn':
+        options = ['line','heat2','bump']
+        options2 = ['line_raw','k_raw']
+        plot_selected = ['line','heat2','bump']
+        plot_selected2=['line_raw','k_raw']
+       
+        title=html.H4("Summary Figures for Q1", style={"color": "slateblue",'text-align':'center','font-weight': 'bold'})
+        subtitle=html.H5("Aggregated over all data sets", style={"color": "mediumslateblue",'text-align':'center'})
+        title2=html.H4("Detailed Figures for Q1", style={"color": "slateblue",'text-align':'center'})
+        
+        return list([title]+[subtitle]+[display_figure(pp,plot_selected,pathname) for pp in options]+[title2]+
+                   [display_figure(pp,plot_selected2,pathname) for pp in options2] )
+    raise PreventUpdate
 
-        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
-    raise PreventUpdate     
 ########################################
 ######## make figures for new data 
 ########################################
@@ -470,30 +461,30 @@ def show_new(pathname,plot_selected,click):
         
     raise PreventUpdate    
 
-@app.callback(    
-    Output("title_summary_knn_new", "children"),
-    Output("show_line_knn_new", "children"),
-    Output("show_bump_knn_new", "children"),
+# @app.callback(    
+#     Output("title_summary_knn_new", "children"),
+#     Output("show_line_knn_new", "children"),  
+# #     Output("show_heat2_knn_new", "children"),
+#     Output("show_bump_knn_new", "children"),
 
-    [ State('url', 'pathname'),
-        State("select_summary_new", "value"),
-        Input('submit-button_new','n_clicks'),        
-    ],
-    prevent_initial_call=True
+#     [ State('url', 'pathname'),
+#     ],
+#     prevent_initial_call=True
 
-)
+# )
 
-def show_knn_new(pathname,plot_selected,click):
+# def show_knn_new(pathname,plot_selected):
 
-    if click and click>0 and pathname=='/knn':
-        options = ['line_new','heat2_new','bump_new']      
-        title = []
-        if len(plot_selected)>0:
-            title=html.H4("Summary Figures with New Data", style={"color": "slateblue",'text-align':'center'})
+#     if pathname=='/knn':
+#         options = ['line_new','bump_new']  
+#         plot_selected=options
+#         title = []
+#         if len(plot_selected)>0:
+#             title=html.H4("Summary Figures with New Data", style={"color": "slateblue",'text-align':'center'})
 
-        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+#         return list([title]+[display_figure(pp,plot_selected,pathname) for pp in options])
     
-    raise PreventUpdate    
+#     raise PreventUpdate    
     
     
 @app.callback(
@@ -1873,131 +1864,7 @@ def update_fit_dr2(data_sel_dr,
                    rank_sel_dr,
                       clus_sel_dr,data)
     return fig1,fig2
-@app.callback(
-    [Output("cor1_dr", "figure"),
-     Output("cor2_dr", "figure"),
-    ],
-    #Output("cor_dr", "figure"),
-    [
-        Input("data-select_dr", "value"),
-        Input("method-select_dr", "value"),
-        Input("criteria-select_dr", "value"),
-        Input("noise-select_dr", "value"),
-        Input("sigma-select_dr", "value"),
-        Input("rank-select_dr", "value"),
-         Input("clus-select_dr", "value"),
- ],
-)
 
-def update_cor_dr(data_sel_dr, 
-                     method_sel_dr,
-                    criteria_sel_dr,
-                    noise_sel_dr,
-                     sigma_sel_dr,
-                      rank_sel_dr,clus_sel_dr
-                 ):
-    
-
-    fig1,fig2 =build_cor_dr(data_sel_dr, 
-                 method_sel_dr,
-                criteria_sel_dr,
-                noise_sel_dr,
-                 sigma_sel_dr,
-                  rank_sel_dr,clus_sel_dr)
-    return fig1,fig2         
-@app.callback(
-   [Output("cor1_new_dr", "figure"),
-     Output("cor2_new_dr", "figure"),
-    ],
-    #Output("cor_new_dr", "figure"),
-        [
-     Input("data-select_dr", "value"),
-        Input("method-select_dr", "value"),
-        Input("criteria-select_dr", "value"),
-        Input("noise-select_dr", "value"),
-        Input("sigma-select_dr", "value"),
-        Input("rank-select_dr", "value"),
-            Input("clus-select_dr", "value"),
-        Input('stored-data', 'data')
-    ],
-)
-
-def update_cor_dr2(data_sel_dr, 
-                     method_sel_dr,
-                    criteria_sel_dr,
-                    noise_sel_dr,
-                     sigma_sel_dr,
-                   rank_sel_dr,clus_sel_dr,data
-                 ):
-    fig1,fig2 =build_cor_dr(data_sel_dr, 
-                     method_sel_dr,
-                    criteria_sel_dr,
-                    noise_sel_dr,
-                     sigma_sel_dr,
-                   rank_sel_dr,clus_sel_dr,data)
-    return fig1,fig2             
-
-@app.callback(
-    [Output("dot1_dr", "figure"),
-     Output("dot2_dr", "figure"),
-    ],
-    [
-        Input("data-select_dr", "value"),
-        Input("method-select_dr", "value"),
-        Input("criteria-select_dr", "value"),
-        Input("noise-select_dr", "value"),
-        Input("sigma-select_dr", "value"),
-        Input("rank-select_dr", "value"),
-           Input("clus-select_dr", "value"),
- ],
-)
-        
-
-def update_dot_dr(data_sel_dr, method_sel_dr,
-                    criteria_sel_dr,
-                    noise_sel_dr,
-                     sigma_sel_dr,rank_sel_dr,
-                      clus_select_dr
-                 ):
-    
-    fig1,fig2=build_dot_dr(data_sel_dr, method_sel_dr,
-                    criteria_sel_dr,
-                    noise_sel_dr,
-                     sigma_sel_dr,
-                               rank_sel_dr,
-                      clus_select_dr
-                 )
-    return fig1,fig2
-@app.callback(
-    [Output("dot1_new_dr", "figure"),
-     Output("dot2_new_dr", "figure"),
-    ],
-    [
-        Input("data-select_dr", "value"),
-        Input("method-select_dr", "value"),
-        Input("criteria-select_dr", "value"),
-        Input("noise-select_dr", "value"),
-        Input("sigma-select_dr", "value"),
-          Input("clus-select_dr", "value"),
-      Input('stored-data', 'data')
-    ],
-)
-        
-
-def update_dot_dr2(data_sel_dr, method_sel_dr,
-                    criteria_sel_dr,
-                    noise_sel_dr,
-                     sigma_sel_dr,rank_sel_dr,
-                      clus_select_dr,data
-                 ):
-    
-    fig1,fig2=build_dot_dr(data_sel_dr, method_sel_dr,
-                    criteria_sel_dr,
-                    noise_sel_dr,
-                     sigma_sel_dr,rank_sel_dr,
-                      clus_select_dr,data
-                 )
-    return fig1,fig2
 
 
 @app.callback(

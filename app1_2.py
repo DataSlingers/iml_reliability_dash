@@ -153,7 +153,7 @@ palette  = {
        'MLP':"green",
         'Epsilon-LRP (MLP)':"green",
         'Guided Backpropagation (MLP)':"olivedrab",  
-            'Permutation (MLP)':"lightsalmon",       
+            'Permutation (MLP)':"orange",       
                'Shapley Value (MLP)':'gold',
         'deepLIFT (MLP)':"darkcyan",
         'Integrated Gradients (MLP)':'seagreen',    
@@ -190,14 +190,14 @@ line_choice = {'LASSO':'solid',
 
 palette_data = {
          'News':"powderblue",   #671
-    'Blog':"cornflowerblue",  #187.13
-    'Satellite': 'slateblue' ,# 178 
-    'Star':'cyan',#55  
-    'Communities' :"green",#20   '
+    'Blog':"deepskyblue",  #187.13
+    'Satellite': 'cornflowerblue' ,# 178 
+    'Star':'slateblue',#55  
+    'Communities' :"gold",#20   '
     'Bike':"orange",  
-    'CPU':'yellow',  
+    'CPU':'salmon',  
     'Wine':'lightseagreen',  
-    'Music':'greenyellow',    
+    'Music':'olivedrab',    
     'Residential':'hotpink', #3.6  
     'Tecator':'firebrick',#1.9 
     'Word':"indigo",#0.9'
@@ -698,7 +698,6 @@ def build_heat_consis_reg(data_sel, method_sel,
     
     
     dff_ac = dff[["data", "model", "Accuracy"]].drop_duplicates()
-    print(dff_ac)
     sub2 = dff_ac.pivot("data", "model", "Accuracy")
     sub2=round(sub2,3)
     sub2= pd.DataFrame(sub2, index=this_palette_data)
@@ -1259,6 +1258,7 @@ def build_heat_raw_reg(data_sel, method_sel,
                                  showscale = False),)
     fig.update_xaxes(tickangle=45)
 #     fig['layout'].update(height=800, width=800)
+    fig.for_each_yaxis(lambda xaxis: xaxis.update(showticklabels=True))
     return fig
 
 
@@ -1387,7 +1387,7 @@ def build_line_raw_reg(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.05,
+                      facet_col="data",facet_col_wrap=4,facet_row_spacing=0.05,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
     fig.update_xaxes(matches=None,showticklabels=True)
@@ -1408,6 +1408,7 @@ def build_line_raw_reg(data_sel, method_sel,
                     hoverinfo='none',                                                                              
                 )
             )
+    fig.for_each_xaxis(lambda xaxis: xaxis.update(showticklabels=True))
         
     return fig
                 
@@ -1436,9 +1437,9 @@ def build_scatter_raw_reg(data_sel, method_sel,
             
             
             
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="Consistency", y="Accuracy", color='method', 
 #                      trendline="ols",
-                     opacity=0.5, facet_col="data",facet_col_wrap=3,
+                     opacity=0.5, facet_col="data",facet_col_wrap=4,
                      #width=1000, height=800,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
@@ -1449,8 +1450,8 @@ def build_scatter_raw_reg(data_sel, method_sel,
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
-            y=neww['Consistency'],
+            x=neww['Consistency'],
+            y=neww['Accuracy'],
             mode='markers',
             marker=dict(
                 color=[this_palette[i] for i in neww['method']],
@@ -1463,6 +1464,7 @@ def build_scatter_raw_reg(data_sel, method_sel,
         )
     fig.update_traces(marker_size=10)
     fig.update_xaxes(matches=None,showticklabels=True)
+    fig.for_each_xaxis(lambda xaxis: xaxis.update(showticklabels=True))
 
     return fig
              

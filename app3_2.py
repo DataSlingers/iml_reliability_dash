@@ -33,7 +33,6 @@ plot_summary_options = {'heatmap':'Consistency heatmap across methods',
                         'line':'Consistency across data sets',
                         'bump':'Bump plot of the most consistent methods across data sets',
                         'fit':'Scatter plots of interpretation consistency, predictive consistency, and preditvie accuracy',
-                       # 'cor': 'Correlation between onsistency and predictive accuracy'
                        }
 plot_raw_options_knn = {
                    'line_raw':'Consistency vs. predictive accuracy for all data sets',
@@ -45,12 +44,12 @@ palette = {
             'PCA': 'indigo',
             'Spectral (NN)': 'magenta',
             'Spectral (RBF)': 'violet',
-            'MDS':'blue',
-              'NMDS':'cyan', 
-            'Isomap':'lime',
+            'MDS':'slateblue',
+              'NMDS':'skyblue', 
+            'Isomap':'limegreen',
             't-SNE': 'green',
-            'UMAP':'limegreen',
-            'DAE':'yellow',
+            'UMAP':'olivedrab',
+            'DAE':'gold',
             'Random Projection':'grey'
             }
 meths = list(palette.keys())
@@ -66,44 +65,23 @@ line_choice = {
             'DAE':'dot',
             'Random Projection':'solid'
             }
-# palette_data = {
-#                 'PANCAN':"purple",
-#                 'DNase':"firebrick",
-#                 'Religion': 'indigo',
-#                 'Author':'yellow',
-#                 'Spam base':"green",
-#                 'Statlog':"cyan",
-#                 'Madelon' :'greenyellow',
-#                 }
+
+
+
 palette_data = {
+    'Statlog':'cornflowerblue',      
+    'Spam base':"gold", 
+     'WDBC':'slateblue',
+     'Tetragonula': 'deepskyblue',
     
-      'Statlog':'deepskyblue',      
-           'Spam base':"green", 
-      'WDBC':'slateblue',
-     'Tetragonula': 'cyan',
-      'Author':'yellow',           
-      'TCGA':'hotpink',
+    'Author':'salmon',           
+    'TCGA':'hotpink',
     'Psychiatrist':"firebrick", 
     'Veronica':"magenta",                   
-     'Religion': 'indigo',
-   'PANCAN':"purple",
-   'Darmanis':'powderblue'
-               }
-# palette_data = { 
-#         'Statlog':'deepskyblue',      
-#            'Spam base':"purple", 
-#       'WDBC':'cyan',
-#      'Tetragonula': 'indigo',
-#       'Author':'yellow',           
-#     'Ceramic':'slateblue',   
-#       'TCGA':'hotpink',
-#     'Psychiatrist':"green", 
-#     'Veronica':"firebrick",   
-    
-#      'Religion': 'indigo',
-#     'PANCAN':"purple",
-#    'Darmanis':'powderblue'
-#            }
+    'PANCAN':"purple",
+    'Darmanis':'indigo'
+              }
+
 markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
@@ -192,7 +170,16 @@ def generate_control_card():
             ),
             html.Div(id='new_options'),
                       
+            html.Hr(),
             ###############################
+            html.P("Select IML questions"),
+            dcc.RadioItems(
+                id="qq",
+                options=[{"label": 'Q1:If we sample a different training set, are the interpretations similar?', "value": 'Q1'}],
+                value='Q1',
+            ),         
+            
+            
             ###############################
             html.Hr(),
             html.P("Select: Dimension Rank"),
@@ -237,7 +224,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="method-select_knn",
                 options=[{"label": i, "value": i} for i in meths],
-                value=method_options[:],
+                value=meths[:],
                 multi=True,
             ),
             html.Br(),
@@ -253,31 +240,31 @@ def generate_control_card():
                 multi=True,
             ),
             html.Br(),
-            #################################
-            ########### select figures 
-            #################################
-            html.P("Select Summary Graphs you want to show"),
-            dcc.Checklist(id="all_summary",
-                          options=[{"label": 'All', "value":'All_summary' }],value= ['All_summary']),
-            dcc.Checklist(id="select_summary",
-                options=[{"label": plot_summary_options[i], "value": i} for i in plot_summary_options],
-                value=list(plot_summary_options.keys()),
-            ),        
+#             #################################
+#             ########### select figures 
+#             #################################
+#             html.P("Select Summary Graphs you want to show"),
+#             dcc.Checklist(id="all_summary",
+#                           options=[{"label": 'All', "value":'All_summary' }],value= ['All_summary']),
+#             dcc.Checklist(id="select_summary",
+#                 options=[{"label": plot_summary_options[i], "value": i} for i in plot_summary_options],
+#                 value=list(plot_summary_options.keys()),
+#             ),        
             
-            html.Hr(),
-            html.P("Select Raw Graphs you want to show"),
-            dcc.Checklist(id="all_raw",
-                          options=[{"label": 'All', "value":'All_raw' }],value= ['All_raw']),
-            dcc.Checklist(id="select_raw",
-                options=[{"label": plot_raw_options_knn[i], "value": i} for i in plot_raw_options_knn],
-                value=list(plot_raw_options_knn.keys()),
-            ),                    
+#             html.Hr(),
+#             html.P("Select Raw Graphs you want to show"),
+#             dcc.Checklist(id="all_raw",
+#                           options=[{"label": 'All', "value":'All_raw' }],value= ['All_raw']),
+#             dcc.Checklist(id="select_raw",
+#                 options=[{"label": plot_raw_options_knn[i], "value": i} for i in plot_raw_options_knn],
+#                 value=list(plot_raw_options_knn.keys()),
+#             ),                    
 
 
-            html.Hr(),
+#             html.Hr(),
            
-            dbc.Button('Submit', id='submit-button',n_clicks=100, color="primary",className="me-1"),
-            dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
+#             dbc.Button('Submit', id='submit-button',n_clicks=100, color="primary",className="me-1"),
+#             dbc.Button('Reset',id='reset-button',n_clicks=0, color="secondary",className="me-1"),
             html.Hr(),        ],
     )            
 
@@ -306,8 +293,9 @@ def App3_2():
             html.Div(id='title_summary_knn'),
             html.Div(id='subtitle_summary_knn'),
             ###### summary plots
-            html.Div(id='show_line_knn'),
+            html.Div(id='show_heat2_knn'),
             html.Div(id='show_bump_knn'),
+            html.Div(id='show_line_knn'),
             ######### raw plots 
             html.Div(id='title_raw_knn'),
             html.Div(id='show_line_raw_knn'),

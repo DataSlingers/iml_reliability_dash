@@ -52,12 +52,12 @@ palette = {
             'PCA': 'indigo',
             'Spectral (NN)': 'magenta',
             'Spectral (RBF)': 'violet',
-            'MDS':'blue',
-            #  'NMDS':'cyan', 
-            'Isomap':'lime',
+            'MDS':'slateblue',
+              'NMDS':'skyblue', 
+            'Isomap':'limegreen',
             't-SNE': 'green',
-            'UMAP':'limegreen',
-            'DAE':'yellow',
+            'UMAP':'olivedrab',
+            'DAE':'gold',
             'Random Projection':'grey'
             }
 meths = list(palette.keys())
@@ -95,19 +95,20 @@ line_choice = {
 # }
 
 
+
 palette_data = {
+    'Statlog':'cornflowerblue',      
+    'Spam base':"gold", 
+     'WDBC':'slateblue',
+     'Tetragonula': 'deepskyblue',
     
-      'Statlog':'deepskyblue',      
-           'Spam base':"green", 
-      'WDBC':'slateblue',
-     'Tetragonula': 'cyan',
-      'Author':'yellow',           
-      'TCGA':'hotpink',
+    'Author':'salmon',           
+    'TCGA':'hotpink',
+    'Psychiatrist':"firebrick", 
     'Veronica':"magenta",                   
-     'Religion': 'indigo',
-   'PANCAN':"purple",
-   'Darmanis':'powderblue'
-               }
+    'PANCAN':"purple",
+    'Darmanis':'indigo'
+              }
 markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
@@ -709,17 +710,13 @@ def build_line_dr(data_sel, method_sel,
             neww = new_data[(new_data.criteria==criteria_sel)&(new_data['rank'] ==rank_sel)]
             
         else:
-            print(noise_sel,float(sigma_sel),criteria_sel)
             new_data['sigma']=[float(i) for i in new_data['sigma']]
-            print(set( new_data['sigma']),set( new_data['noise']),set( new_data['criteria']))
             neww = new_data[(new_data.noise ==noise_sel)
                     &(new_data.sigma ==float(sigma_sel))
                             &(new_data['rank'] ==rank_sel)
                    &(new_data.criteria==criteria_sel)]
-            print(neww)
         dff = pd.concat([dff, neww],join='inner', ignore_index=True) 
-        print(dff[dff.data=='newdata'])
-        print(dff[dff.method=='NEWMETHOD'])
+
         for mm in set(new_data['method']):
             this_palette[mm]='black'
             this_line_choice[mm]='dash'
@@ -912,7 +909,6 @@ def build_fit_dr(data_sel, method_sel,
     model = px.get_trendline_results(fig1)
     nn=len(fig1['data'])//2
     for i in range(0,len(fig1['data']),2):
-        print(i)
         fig1["data"][i+1]['customdata'] = fig1["data"][i]['customdata']
         order = np.argsort(fig1["data"][i]['x'])
         fig1["data"][i]['x'] = fig1["data"][i]['x'][order]
@@ -943,8 +939,8 @@ def build_fit_dr(data_sel, method_sel,
     if new_data is not None:
         fig1.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
-            y=neww['Consistency'],
+            y=neww['Accuracy'],
+            x=neww['Consistency'],
             mode='markers',
             marker=dict(
                 color=[this_palette[i] for i in neww['method']],
@@ -1016,8 +1012,8 @@ def build_fit_dr(data_sel, method_sel,
     if new_data is not None:
         fig2.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
-            y=neww['Consistency'],
+            y=neww['Accuracy'],
+            x=neww['Consistency'],
             mode='markers',
             marker=dict(
                 color=[this_palette[i] for i in neww['method']],
@@ -1235,7 +1231,7 @@ def build_scatter_raw_dr(data_sel, method_sel,
             
             
             
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="Consistency", y="Accuracy", color='method', 
 #                      trendline="ols",
                opacity=0.5,       facet_col="data",facet_col_wrap=3,
                      #width=1000, height=800,
@@ -1253,8 +1249,8 @@ def build_scatter_raw_dr(data_sel, method_sel,
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
-            y=neww['Consistency'],
+            x=neww['Consistency'],
+            y=neww['Accuracy'],
             mode='markers',
             marker=dict(
                 color=[this_palette[i] for i in neww['method']],
@@ -1413,7 +1409,6 @@ def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,r
         else:
             cross_ave = cross_split[cross_split.data.isin(data_sel)&(cross_split['clustering'] == clus_sel)&(cross_split['rank']==rank_sel)&(cross['criteria']==criteria_sel)]
         cross_ave=cross_ave.groupby(['method1','method2'],as_index=False)['value'].mean()
-        print(cross_ave)
         sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
 
         sub = sub.pivot("method1", "method2", "value")

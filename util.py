@@ -310,13 +310,13 @@ def display_figure(pp,plot_selected,pathname):
                 if pp=='line_raw' and pathname in paths:
                     pp='line_raw2'
                 this_height = '100vh'
-                this_width = '100vh'
+                this_width = '120vh'
 
             elif pp == 'heatmap_raw':
 #                     this_height = '500vh'
                 #this_width = '80vh'             
-                 this_height = '200vh'
-                 this_width = '250vh'
+                 this_height = '300vh'
+                 this_width = '180vh'
 
             else:
                 this_width = '100vh'

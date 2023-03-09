@@ -37,17 +37,17 @@ sigma_options =df['sigma'].unique().tolist()
 
 
 palette = {
-            'HC (single)':"firebrick",
+            'HC (single)':"indigo",
             'HC (average)':"magenta",
-            'HC (complete)':'indigo',
+            'HC (complete)':'firebrick',
             'HC (ward)':"violet",
             'K-Means':"blue",
             'K-Means++' :'navy',
             'Gaussian MM':'pink', 
-            'Birch':"yellow",
+            'Birch':"gold",
             'Spectral (NN)':"green",
             'Spectral (RBF)':'limegreen',
-            'K-Means (minibatch)':"cyan",
+            'K-Means (minibatch)':"slateblue",
     }
 
 line_choice = {
@@ -87,24 +87,26 @@ meths = list(palette.keys())
 #     'Religion': 'indigo',
 #     'PANCAN':"purple",
 #                 }
+
+
 palette_data = {'Bean':"powderblue",
-       'Call':'cornflowerblue',  
-      'Statlog':'deepskyblue',      
-           'Spam base':"green", 
-   'Iris':'lightseagreen',  
-      'WDBC':'slateblue',
-     'Tetragonula': 'cyan',
-      'Author':'yellow',           
-    'Ceramic':'lightseagreen',   
-      'TCGA':'hotpink',
-    'Psychiatrist':"firebrick", 
+    'Call':'deepskyblue',  
+    'Statlog':'cornflowerblue',      
+    'Spam base':"gold", 
+                
+    'Iris':'lightseagreen',  
+     'WDBC':'slateblue',
+     'Tetragonula':'deepskyblue',  
+                
+                
+    'Author':'salmon',           
+    'Ceramic' :'olivedrab', 
+    'TCGA':'hotpink',
+    'Psychiatrist':"firebrick",                   
     'Veronica':"magenta",                   
-     'Religion': 'indigo',
-   'PANCAN':"purple",
+    'Religion': 'indigo',
+    'PANCAN':"purple",
                }
-
-
-
 
 markers_choice = {
                 'K-Means':"0",
@@ -265,7 +267,7 @@ def generate_control_card():
             html.P("Select: Interpretability Method"),
             dcc.Dropdown(
                 id="method-select_clus",
-                options=[{"label": i, "value": i} for i in meths],
+                options=[{"label": i, "value": i} for i in meths[:10]],
                 value=meths[:],
                 multi=True,
             ),
@@ -934,8 +936,8 @@ def build_fit_clus(data_sel, method_sel,
     if new_data is not None:
         fig1.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
-            y=neww['Consistency'],
+            x=neww['Consistency'],
+            y=neww['Accuracy'],
             mode='markers',
             marker=dict(
                 color=[this_palette[i] for i in neww['method']],
@@ -1008,8 +1010,8 @@ def build_fit_clus(data_sel, method_sel,
     if new_data is not None:
         fig2.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
-            y=neww['Consistency'],
+            x=neww['Consistency'],
+            y=neww['Accuracy'],
             mode='markers',
             marker=dict(
                 color=[this_palette[i] for i in neww['method']],
@@ -1135,7 +1137,6 @@ def build_line_raw_clus(data_sel, method_sel,
             &(df.criteria==criteria_sel)] 
        
 
-
     this_palette=dict((i,palette[i]) for i in method_sel)
     this_line_choice=dict((i,line_choice[i]) for i in method_sel)
     this_palette_data =  [i for i in palette_data.keys() if i in data_sel]   
@@ -1151,6 +1152,7 @@ def build_line_raw_clus(data_sel, method_sel,
             this_palette[mm]='black'
             this_line_choice[mm]='solid'
             
+    print(dff)
     fig = px.line(dff,x="sigma", y='Consistency',color = 'method',
 
                             color_discrete_map=this_palette,
@@ -1219,7 +1221,7 @@ def build_scatter_raw_clus(data_sel, method_sel,
             
             
             
-    fig = px.scatter(dff, x="Accuracy", y="Consistency", color='method', 
+    fig = px.scatter(dff, x="Consistency", y="Accuracy", color='method', 
 #                      trendline="ols",
                  opacity=0.5,    facet_col="data",facet_col_wrap=3,
                      #width=1000, height=800,
@@ -1236,8 +1238,8 @@ def build_scatter_raw_clus(data_sel, method_sel,
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
-            x=neww['Accuracy'],
-            y=neww['Consistency'],
+            x=neww['Consistency'],
+            y=neww['Accuracy'],
             mode='markers',
             marker=dict(
                 color=[this_palette[i] for i in neww['method']],
