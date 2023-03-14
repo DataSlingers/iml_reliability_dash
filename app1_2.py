@@ -33,7 +33,7 @@ df['Accuracy']= np.exp(-msee)
 cross = pd.read_csv('cross_reg.csv')
 cross_pred=pd.read_csv('fi_cross_pred_reg.csv')
 # cross_pred['Consistency']=1-(cross_pred['value']-min(cross_pred['value']))/max(cross_pred['value'])-min(cross_pred['value'])
-cross_pred['Consistency']=np.exp(-cross_pred['value'])
+cross_pred['Consistency']=np.exp(-cross_pred['MSE'])
 
 puris=pd.read_csv('feature_impo_pur_reg.csv')
 
@@ -150,8 +150,8 @@ palette  = {
          'Permutation (XGB)':"peru", 
    'Shapley Value (XGB)': "magenta",       
     ## green 
-       'MLP':"green",
-        'Epsilon-LRP (MLP)':"green",
+       'MLP':"teal",
+        'Epsilon-LRP (MLP)':"teal",
         'Guided Backpropagation (MLP)':"olivedrab",  
             'Permutation (MLP)':"orange",       
                'Shapley Value (MLP)':'gold',
@@ -565,6 +565,7 @@ def build_bump_reg(data_sel, method_sel,
                         xref='paper',
                         yref='paper', 
                         showarrow=False))
+    fig.update_layout(margin=dict( r=150))
     return fig  
 
         
@@ -612,6 +613,7 @@ def build_acc_bar_reg(data_sel, method_sel,
 #     return fig
 def build_heat_summary_reg(data_sel, method_sel,
                  k_sel, criteria_sel,new_data=None):
+
         cross_ave = cross[cross.data.isin(data_sel)]
         cross_ave=cross_ave.groupby(['method1','method2','criteria','K'],as_index=False)['value'].mean()
         sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
@@ -620,14 +622,16 @@ def build_heat_summary_reg(data_sel, method_sel,
         sub = sub.fillna(0)+sub.fillna(0).T
         np.fill_diagonal(sub.values, 1)
         sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
+
+        
         
         sub2 = cross_pred[(cross_pred.method1!='LASSO')&(cross_pred.method2!='LASSO')]
         sub2=sub2.groupby(['method1','method2'],as_index=False)['Consistency'].mean()
         sub2 = sub2.pivot("method1", "method2", "Consistency")
         sub2 = sub2.fillna(0)+sub2.fillna(0).T
         np.fill_diagonal(sub2.values, 1)
-        sub2=round(sub2,3)
-        
+        sub2=round(sub2.reindex(columns=['SVM','Ridge','Tree','RF','XGB','MLP']).reindex(['SVM','Ridge','Tree','RF','XGB','MLP']),3)
+  
         fig = make_subplots(rows=1, cols=2, column_widths=[0.6, 0.4], 
                             horizontal_spacing=0.15,
                         vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
@@ -701,7 +705,7 @@ def build_heat_consis_reg(data_sel, method_sel,
     sub2 = dff_ac.pivot("data", "model", "Accuracy")
     sub2=round(sub2,3)
     sub2= pd.DataFrame(sub2, index=this_palette_data)
-    sub2=sub2[['Ridge','SVM','Tree','RF','XGB','MLP']]
+    sub2=sub2[['SVM','Ridge','Tree','RF','XGB','MLP']]
     h2=px.imshow(sub2, text_auto=True, aspect="auto",
                  color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
                  range_color=(0,1),

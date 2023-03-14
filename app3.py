@@ -50,12 +50,12 @@ plot_raw_options = {'scatter_raw':'Consistency vs. number of features for all da
 
 palette = {
             'PCA': 'indigo',
-            'Spectral (NN)': 'magenta',
-            'Spectral (RBF)': 'violet',
+            'Spectral (NN)': 'teal',
+            'Spectral (RBF)': 'limegreen',
             'MDS':'slateblue',
               'NMDS':'skyblue', 
-            'Isomap':'limegreen',
-            't-SNE': 'green',
+            'Isomap':'magenta',
+            't-SNE': 'violet',
             'UMAP':'olivedrab',
             'DAE':'gold',
             'Random Projection':'grey'

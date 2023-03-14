@@ -14,7 +14,7 @@ from home import Homepage
 import plotly.express as px
 from dash.dependencies import Input, Output, State, ClientsideFunction
 from dash.exceptions import PreventUpdate
-meths  = ['LogisticRidge','LogisticLASSO', 'SVM','Tree','RF',
+meths  = ['SVM','LogisticRidge','LogisticLASSO', 'Tree','RF',
         'XGB', 'deepLIFT (MLP)', 'Integrated Gradients (MLP)',  'Epsilon-LRP (MLP)',
         'Guided Backpropagation (MLP)',           
         'Saliency Maps (MLP)','Occlusion (MLP)',

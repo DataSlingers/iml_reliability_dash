@@ -45,7 +45,7 @@ palette = {
             'K-Means++' :'navy',
             'Gaussian MM':'pink', 
             'Birch':"gold",
-            'Spectral (NN)':"green",
+            'Spectral (NN)':"teal",
             'Spectral (RBF)':'limegreen',
             'K-Means (minibatch)':"slateblue",
     }
@@ -268,7 +268,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="method-select_clus",
                 options=[{"label": i, "value": i} for i in meths[:10]],
-                value=meths[:],
+                value=meths[:10],
                 multi=True,
             ),
             html.Hr(),            
