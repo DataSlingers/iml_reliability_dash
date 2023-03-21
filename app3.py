@@ -15,6 +15,7 @@ import numpy as np
 import plotly.express as px
 import dash_loading_spinners as dls
 from plotly.subplots import make_subplots
+import seaborn as sns
 
 
 
@@ -53,7 +54,7 @@ palette = {
             'Spectral (NN)': 'teal',
             'Spectral (RBF)': 'limegreen',
             'MDS':'slateblue',
-              'NMDS':'skyblue', 
+#               'NMDS':'skyblue', 
             'Isomap':'magenta',
             't-SNE': 'violet',
             'UMAP':'olivedrab',
@@ -66,7 +67,7 @@ line_choice = {
             'Spectral (NN)': 'solid',
             'Spectral (RBF)': 'solid',
             'MDS':'solid',
-            #  'NMDS':'cyan', 
+#             'NMDS':'solid', 
             'Isomap':'dash',
             't-SNE': 'dash',
             'UMAP':'dash',
@@ -104,8 +105,8 @@ palette_data = {
     
     'Author':'salmon',           
     'TCGA':'hotpink',
-    'Psychiatrist':"firebrick", 
     'Veronica':"magenta",                   
+    'Religion':"firebrick", 
     'PANCAN':"purple",
     'Darmanis':'indigo'
               }
@@ -113,7 +114,7 @@ markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
                 'MDS':"0",
-                'NMDS':"0",
+#                 'NMDS':"0",
                 'Spectral (NN)': "0",
                 'Spectral (RBF)': "0",
                 't-SNE': 'x',
@@ -466,7 +467,7 @@ def build_heat_consis_dr(data_sel, method_sel,
     sub= pd.DataFrame(sub, index=this_palette_data)
     sub=sub[method_sel]
     h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
-                             color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                           color_continuous_scale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],
                   origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
 
     h.update_layout({
@@ -480,9 +481,9 @@ def build_heat_consis_dr(data_sel, method_sel,
     dff_ac = dff[["data", "method", "Accuracy"]].drop_duplicates()
     sub = dff_ac.pivot("data", "method", "Accuracy")
     sub=round(sub,3)
+    sub=sub[method_sel]
     sub= pd.DataFrame(sub, index=this_palette_data)
-    h2=px.imshow(sub, text_auto=True, aspect="auto",
-                 color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+    h2=px.imshow(sub, text_auto=True, aspect="auto", color_continuous_scale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],
                  range_color=(0,1),
                  origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
     h2.layout.height = 500
@@ -490,17 +491,21 @@ def build_heat_consis_dr(data_sel, method_sel,
 
     fig= make_subplots(rows=1, cols=2, column_widths=[0.5, 0.5], 
                                 horizontal_spacing=0.15,
-                            vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Clustering Accuracy'))
+                            vertical_spacing=0.05,
+                       subplot_titles=('Interpretation Consistency','Clustering Accuracy'))
 
     for trace in h.data:
         fig.add_trace(trace, 1, 1)
     for trace in h2.data:
         fig.add_trace(trace, 1, 2)
-    fig.update_xaxes(tickangle=45)# for trace in bar1.data:
-    fig.update_layout(                             
-                  coloraxis=dict(colorscale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
-                                 showscale = False),)
-    
+    fig.update_xaxes(tickangle=45)
+    # for trace in bar1.data:
+    fig.update_layout(
+                  coloraxis=dict(colorscale =[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66,sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],showscale = False))
+    fig['layout']['yaxis2']['title']='Data'
+    fig['layout']['xaxis2']['title']='Method'    
+    fig['layout']['yaxis']['title']='Data'
+    fig['layout']['xaxis']['title']='Method'
     return fig
 def build_bump_dr(data_sel, method_sel,
                  criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel,new_data=None):
@@ -522,11 +527,7 @@ def build_bump_dr(data_sel, method_sel,
                       &(df.clustering == clus_sel)
                 ]
         
-        
-        
-        
-        
-        
+    
         
     df_ave = dff.groupby(['method'],as_index=False).mean()
     df_ave['data']='Average'
@@ -611,18 +612,18 @@ def build_bump_dr(data_sel, method_sel,
                     )
 
 
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=-0.05, y=-0.1, 
-                        text="Large N",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=1.1, y=-0.1, 
-                        text="Large P",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=-0.05, y=-0.1, 
+#                         text="Large N",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=1.1, y=-0.1, 
+#                         text="Large P",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
  
     return fig  
 
@@ -649,7 +650,7 @@ def build_bump_dr(data_sel, method_sel,
 #         sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
                
 #         fig = px.imshow(sub, text_auto=True, origin='lower',
-#                         aspect="auto",color_continuous_scale='Purp',
+#                         aspect="auto",color_continuous_scale='
 #                         labels=dict(x="Method", y="Method", color="Consistency"))        
 #         fig.layout.coloraxis.showscale = False
 #         return fig
@@ -794,18 +795,23 @@ def build_line_dr(data_sel, method_sel,
     for trace in fig2.data:
         fig.add_trace(trace, 1, 2)
     fig.update_traces(line=dict(width=3))
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=-0.05, y=-0.1, 
-                        text="Large N",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=0.55, y=-0.1, 
-                        text="Large P",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
+    
+    fig['layout']['xaxis2']['title']='Data'
+    fig['layout']['yaxis2']['title']='Consistency'    
+    fig['layout']['xaxis']['title']='Data'
+    fig['layout']['yaxis']['title']='Consistency'
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=-0.05, y=-0.1, 
+#                         text="Large N",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=0.55, y=-0.1, 
+#                         text="Large P",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
     fig.update_xaxes(categoryorder='array', categoryarray= datas)
 
     fig.update_xaxes(tickangle=45)
@@ -830,7 +836,7 @@ def build_acc_raw_clus(data_sel, method_sel,criteria_sel,noise_sel,sigma_sel,ran
                  &(accs.sigma==sigma_sel)]
 
     fig = px.box(acc, x="method", y="Accuracy", color='method', 
-                     facet_col="data",facet_col_wrap=3,facet_row_spacing=0.1,
+                     facet_col="data",facet_col_wrap=3,facet_row_spacing=0.1,facet_col_spacing=0.05,
                         color_discrete_map =palette, 
                labels=dict(data='Data',Accuracy='Accuracy', method="Method"))
    
@@ -1030,7 +1036,7 @@ def build_fit_dr(data_sel, method_sel,
                  cells=dict(values=np.array(pv1.T)))
                      ])
     fig_pv1.update_layout(title_text='P-values of fitted line (bonferroni corrected)')
-    pv2=round(pv1,3)
+    pv2=round(pv2,3)
     fig_pv2 = go.Figure(data=[go.Table(header=dict(values=['Data','Interpretation Consistency vs. Prediction Accuracy',
             ]),
                  cells=dict(values=np.array(pv2.T)))
@@ -1162,20 +1168,26 @@ def build_line_raw_dr(data_sel, method_sel,
             this_line_choice[mm]='solid'
             
     fig = px.line(dff,x="sigma", y='Consistency',color = 'method',
-
                             color_discrete_map=this_palette,
                                 line_dash = 'method',
                       line_dash_map = this_line_choice,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.05,
+                      facet_col="data",facet_col_wrap=3,facet_row_spacing=0.1,
+#                   facet_col_spacing=0.1,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
-    fig.update_xaxes(matches=None,showticklabels=True)
+#     fig.update_xaxes(matches=None,showticklabels=True)
+    fig.update_xaxes(showticklabels=True)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     fig.update_traces(line=dict(width=3))
-      
+    for i in range(1,5):
+        fig.update_yaxes(title_text='Consistency',row=i, col=1,)
+        for j in range(1,5):
+            fig.update_xaxes(title_text='sigma',row=i, col=j,)
+#             fig.update_yaxes(title_text='Accuracy',row=i, col=j,)
+
     if new_data is not None:
         fig.add_trace(
                 go.Scatter(
@@ -1191,7 +1203,6 @@ def build_line_raw_dr(data_sel, method_sel,
                 )
             )
 
-        
     return fig
                 
 def build_scatter_raw_dr(data_sel, method_sel,
@@ -1233,7 +1244,8 @@ def build_scatter_raw_dr(data_sel, method_sel,
             
     fig = px.scatter(dff, x="Consistency", y="Accuracy", color='method', 
 #                      trendline="ols",
-               opacity=0.5,       facet_col="data",facet_col_wrap=3,
+               opacity=0.5,       facet_col="data",facet_col_wrap=3,facet_row_spacing=0.1,
+                     #facet_col_spacing=0.1,
                      #width=1000, height=800,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
@@ -1243,9 +1255,14 @@ def build_scatter_raw_dr(data_sel, method_sel,
                 )
    
    
-    fig.update_traces(marker_size=10)
-    fig.update_xaxes(matches=None,showticklabels=True)
-    
+    fig.update_traces(marker_size=15)
+    fig.update_xaxes(showticklabels=True)
+#     fig.update_xaxes(matches=None,showticklabels=True)
+    for i in range(1,5):
+        fig.update_yaxes(title_text='Accuracy',row=i, col=1,)
+        for j in range(1,5):
+            fig.update_xaxes(title_text='Consistency',row=i, col=j,)
+#             fig.update_yaxes(title_text='Accuracy',row=i, col=j,)
     if new_data is not None:
         fig.add_trace(
         go.Scatter(
@@ -1261,7 +1278,7 @@ def build_scatter_raw_dr(data_sel, method_sel,
             hoverinfo='none'
         )
         )
-    
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     return fig
            
 def build_heat_raw_dr(data_sel, method_sel,
@@ -1307,12 +1324,16 @@ def build_heat_raw_dr(data_sel, method_sel,
     for i in range(1,5):
         for j in range(2,4):
             fig.update_yaxes(showticklabels=False,row=i, col=j,)
-
+    for i in range(1,5):
+        fig.update_yaxes(title_text='Method',row=i, col=1)
+        for j in range(1,4):
+            fig.update_xaxes(title_text='Method',row=i, col=j,)
     fig.update_traces(coloraxis='coloraxis1',selector=dict(xaxis='x'))
     fig.update_layout(
-                  coloraxis=dict(colorscale='Purp', 
-                                 showscale = False),)
+        coloraxis=dict(colorscale= [(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],showscale = False),)
     fig.update_xaxes(tickangle=45)
+    
+
     return fig
 
 
@@ -1401,28 +1422,30 @@ def build_dot_dr(data_sel, method_sel,
 
 def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,rank_sel,clus_sel
                  ):
-        if noise_sel!=None:
+    if noise_sel!=None:
 
-            cross_ave = cross[cross.data.isin(data_sel)&(cross['clustering'] == clus_sel)&(cross['rank']==rank_sel)
-                            & (cross['sigma']==sigma_sel)&(cross['criteria']==criteria_sel)&(cross['noise']==noise_sel)]
-            
-        else:
-            cross_ave = cross_split[cross_split.data.isin(data_sel)&(cross_split['clustering'] == clus_sel)&(cross_split['rank']==rank_sel)&(cross['criteria']==criteria_sel)]
-        cross_ave=cross_ave.groupby(['method1','method2'],as_index=False)['value'].mean()
-        sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
+        cross_ave = cross[cross.data.isin(data_sel)&(cross['clustering'] == clus_sel)&(cross['rank']==rank_sel)
+                        & (cross['sigma']==sigma_sel)&(cross['criteria']==criteria_sel)&(cross['noise']==noise_sel)]
 
-        sub = sub.pivot("method1", "method2", "value")
-        sub = sub.fillna(0)+sub.fillna(0).T
-        np.fill_diagonal(sub.values, 1)
-        sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
-        
-        
-        fig = px.imshow(sub, text_auto=True, aspect="auto",color_continuous_scale='Purp', origin='lower',
-               labels=dict(x="Method", y="Method", color="Consistency"))
-        fig.update_xaxes(tickangle=45)
-        fig.layout.coloraxis.showscale = False
-        return fig
-    
+    else:
+        cross_ave = cross_split[cross_split.data.isin(data_sel)&(cross_split['clustering'] == clus_sel)&(cross_split['rank']==rank_sel)&(cross['criteria']==criteria_sel)]
+    cross_ave=cross_ave.groupby(['method1','method2'],as_index=False)['value'].mean()
+    sub = cross_ave[(cross_ave['method1'].isin(method_sel))&(cross_ave['method2'].isin(method_sel))]
+
+    sub = sub.pivot("method1", "method2", "value")
+    sub = sub.fillna(0)+sub.fillna(0).T
+    np.fill_diagonal(sub.values, 1)
+    sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
+
+
+    fig = px.imshow(sub, text_auto=True, aspect="auto",
+                        color_continuous_scale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
+                   origin='lower',
+           labels=dict(x="Method", y="Method", color="Consistency"))
+    fig.update_xaxes(tickangle=45)
+    fig.layout.coloraxis.showscale = False
+    return fig
+
 
 
 

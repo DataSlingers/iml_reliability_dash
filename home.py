@@ -159,7 +159,7 @@ In the regression task, the standard deviation of predicted values is used as th
 |Spambase | 4601 | 57 | 2 |Classifying Email as Spam or Non-Spam |[[7]](#7) |
 |Iris | 150 | 4  | 3  |Types of iris plant | [[7]](#7) |
 |WDBC| 569 | 30 | 2 |Breast Cancer Wisconsin (Diagnostic) |[[7]](#7)|
-|Tetragonula| 236 | 13 |Tetragonula bee species|[[24]](#24) |
+|Tetragonula| 236 | 13| 9|Tetragonula bee species|[[24]](#24) |
 |Author | 841 | 69 | 4 | word counts from chapters written by four famous English-language authors|[[7]](#7)|
 |Ceramic | 88 | 17 | 2 |Chemical composition of ceramic samples|[[7]](#7)|
 |TCGA | 445 | 353 | 5 |  Breast Cancer Data| [[12]](#12)|
@@ -179,7 +179,6 @@ In the regression task, the standard deviation of predicted values is used as th
 |Tetragonula| 236 | 13 |Tetragonula bee species|[[24]](#24) |
 |Author | 841 | 69 | 4 | word counts from chapters written by four famous English-language authors|[[7]](#7)|
 |TCGA | 445 | 353 | 5 | Breast Cancer Data | [[12]](#12)|
-|Psychiatrist | 30 | 24  | 2 |Case study psychiatrist| [[25]](#25)|
 |Veronica | 206 | 583 | 8 | AFLP data of Veronica plants| [[26]](#26)|
 |Asian Religions | 590 | 8266 | 8 | characteristics of asian religion | [[14]](#14) |
 |PANCAN | 761 | 13,244 | 5 | high dimensional RNA-seq |[[15]](#15)|

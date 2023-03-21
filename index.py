@@ -9,7 +9,7 @@ from app1 import App1,build_scatter,build_bump,build_heat_summary,build_line,bui
 from app1_2 import App1_2,build_scatter_reg,build_bump_reg,build_heat_summary_reg,build_line_reg,build_fit_reg,build_cor_reg,build_scatter_raw_reg,build_line_raw_reg,build_acc_bar_reg,build_heat_raw_reg,build_dot_reg,build_acc_raw_reg,build_heat_consis_reg
 from app2 import App2,build_scatter_clus,build_bump_clus,build_heat_summary_clus,build_line_clus,build_cor_clus,build_fit_clus,build_line_raw_clus,build_scatter_raw_clus,build_dot_clus,build_acc_bar_clus,build_heat_raw_clus,build_acc_raw_clus,build_heat_consis_clus
 from app3 import App3,build_scatter_dr,build_bump_dr,build_heat_summary_dr,build_line_dr,build_cor_dr,build_fit_dr,build_line_raw_dr,build_scatter_raw_dr,build_acc_bar_dr,build_heat_raw_dr,build_dot_dr,build_acc_raw_dr,build_heat_consis_dr
-from app3_2 import App3_2,build_line_knn,build_bump_knn,build_line_raw_knn,build_k_raw_knn
+from app3_2 import App3_2,build_line_knn,build_bump_knn,build_line_raw_knn,build_k_raw_knn,build_heat_knn
 from home import Homepage
 import plotly.express as px
 from dash.dependencies import Input, Output, State, ClientsideFunction
@@ -313,10 +313,10 @@ def show(pathname,qq):
 @app.callback(    
     Output("title_summary_knn", "children"),
     Output("subtitle_summary_knn", "children"),
-    Output("show_line_knn", "children"),
     Output("show_heat2_knn", "children"),
+    
     Output("show_bump_knn", "children"),
-
+    Output("show_line_knn", "children"),
     Output("title_raw_knn", "children"),
     Output("show_line_raw_knn", "children"),
     Output("show_k_raw_knn", "children"),
@@ -330,9 +330,9 @@ def show_knn(pathname):
 
 #     if click and click>0 and pathname!='/knn':
     if pathname=='/knn':
-        options = ['line','heat2','bump']
+        options = ['heat2','bump','line']
         options2 = ['line_raw','k_raw']
-        plot_selected = ['line','heat2','bump']
+        plot_selected = ['heat2','bump','line']
         plot_selected2=['line_raw','k_raw']
        
         title=html.H4("Summary Figures for Q1", style={"color": "slateblue",'text-align':'center','font-weight': 'bold'})
@@ -443,21 +443,21 @@ def update_summary_checklists(select_summary, all_summary,reset):
 
     [ Input('url', 'pathname'),
         Input("select_summary_new", "value"),
-        Input('submit-button_new','n_clicks'),        
+   
     ],
     prevent_initial_call=True
 
 )
 
-def show_new(pathname,plot_selected,click):
+def show_new(pathname,plot_selected):
 
-    if click and click>0 and pathname!='/knn':
+    if pathname!='/knn':
         options = ['line_new','heat2_new','bump_new'] 
         title = []
         if len(plot_selected)>0:
             title=html.H4("Summary Figures with New Data", style={"color": "slateblue",'text-align':'center'})
 
-        return list([title]+[display_figure(pp,plot_selected,click,pathname) for pp in options])
+        return list([title]+[display_figure(pp,plot_selected,pathname) for pp in options])
         
     raise PreventUpdate    
 
@@ -2023,6 +2023,8 @@ def update_line_knn(data_sel_knn,
                       rank_select_knn
                     )
     return fig
+
+
 @app.callback(
     Output("line_new_knn", "figure"),
     [
@@ -2044,6 +2046,63 @@ def update_line_knn2(data_sel_knn,
                    rank_select_knn,data
                  ):
     fig=build_line_knn(data_sel_knn, 
+                        method_sel_knn,
+                        criteria_sel_knn,
+                    noise_sel_knn,
+                        sigma_sel_knn,
+                      rank_select_knn,data
+                    )
+    return fig
+
+@app.callback(
+    Output("heat2_knn", "figure"),
+    [
+        Input("data-select_knn", "value"),
+        Input("method-select_knn", "value"),
+        Input("criteria-select_knn", "value"),
+        Input("noise-select_knn", "value"),
+        Input("sigma-select_knn", "value"),
+        Input("rank-select_knn", "value"),
+    ],
+)    
+
+def update_heat_knn(data_sel_knn, 
+                     method_sel_knn,
+                     criteria_sel_knn,
+                    noise_sel_knn,
+                     sigma_sel_knn,
+                   rank_select_knn
+                 ):
+    fig=build_heat_knn(data_sel_knn, 
+                        method_sel_knn,
+                            criteria_sel_knn,
+                 noise_sel_knn,
+                        sigma_sel_knn,
+                      rank_select_knn
+                    )
+    return fig
+
+@app.callback(
+    Output("heat_new_knn", "figure"),
+    [
+        Input("data-select_knn", "value"),
+        Input("method-select_knn", "value"),
+        Input("criteria-select_knn", "value"),
+        Input("noise-select_knn", "value"),
+        Input("sigma-select_knn", "value"),
+        Input("rank-select_knn", "value"),
+          Input('stored-data', 'data')
+   ],
+)    
+
+def update_heat_knn2(data_sel_knn, 
+                     method_sel_knn,
+                     criteria_sel_knn,
+                       noise_sel_knn,
+                     sigma_sel_knn,
+                   rank_select_knn,data
+                 ):
+    fig=build_heat_knn(data_sel_knn, 
                         method_sel_knn,
                         criteria_sel_knn,
                     noise_sel_knn,

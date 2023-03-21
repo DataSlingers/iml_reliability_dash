@@ -14,7 +14,7 @@ from nav import Navbar
 import numpy as np
 import plotly.express as px
 from plotly.subplots import make_subplots
-
+import seaborn as sns
 
 
 nav = Navbar()
@@ -44,7 +44,7 @@ palette = {
             'Spectral (NN)': 'teal',
             'Spectral (RBF)': 'limegreen',
             'MDS':'slateblue',
-              'NMDS':'skyblue', 
+#               'NMDS':'skyblue', 
             'Isomap':'magenta',
             't-SNE': 'violet',
             'UMAP':'olivedrab',
@@ -57,7 +57,7 @@ line_choice = {
             'Spectral (NN)': 'solid',
             'Spectral (RBF)': 'solid',
             'MDS':'solid',
-            'NMDS':'solid', 
+#             'NMDS':'solid', 
             'Isomap':'dash',
             't-SNE': 'dash',
             'UMAP':'dash',
@@ -75,8 +75,8 @@ palette_data = {
     
     'Author':'salmon',           
     'TCGA':'hotpink',
-    'Psychiatrist':"firebrick", 
     'Veronica':"magenta",                   
+    'Religion':"firebrick", 
     'PANCAN':"purple",
     'Darmanis':'indigo'
               }
@@ -85,7 +85,7 @@ markers_choice = {
                 'Random Projection':"0",
                 'PCA': "0",
                 'MDS':"0",
-                'NMDS':"0",
+#                 'NMDS':"0",
                 'Spectral (NN)': "0",
                 'Spectral (RBF)': "0",
                 't-SNE': 'x',
@@ -204,7 +204,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="sigma-select_knn",
                 options=[{"label": i, "value": i} for i in sigma_options],
-                value=1,
+                value=0.5,
             
             ),            
             
@@ -343,7 +343,8 @@ def build_line_raw_knn(data_sel, method_sel,criteria_sel,
                       facet_col="data",facet_col_wrap=3,facet_row_spacing=0.05,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
-    fig.update_xaxes(matches=None,showticklabels=True)
+#     fig.update_xaxes(matches=None,showticklabels=True)
+    fig.update_xaxes(showticklabels=True)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     fig.update_traces(line=dict(width=3))
     if new_data is not None:
@@ -360,6 +361,7 @@ def build_line_raw_knn(data_sel, method_sel,criteria_sel,
                     hoverinfo='none',                                                                              
                 )
             )
+    fig.update_xaxes(tickangle=45)
     return fig
 
 def build_line_knn(data_sel, method_sel,criteria_sel,
@@ -383,26 +385,61 @@ def build_line_knn(data_sel, method_sel,criteria_sel,
                             line_dash = 'method',
                   line_dash_map = line_choice,
                   labels={
-                         "method": "Method"
+                         "method": "Method",'data':'Data'
                      },
                  # title=
                  )
+    fig.update_xaxes(tickangle=45)
     fig.update_traces(line=dict(width=3))
     fig.update_xaxes(categoryorder='array', categoryarray= datas)
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=-0.05, y=-0.1, 
-                        text="Large N",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=1.1, y=-0.1, 
-                        text="Large P",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=-0.05, y=-0.1, 
+#                         text="Large N",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=1.1, y=-0.1, 
+#                         text="Large P",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
     return fig
 
+
+
+def build_heat_knn(data_sel, method_sel,criteria_sel,
+                  noise_sel,sigma_sel,rank_sel
+                 ):
+
+####### filter data
+    dff=df[
+        (df.data.isin(data_sel))
+               &(df.method.isin(method_sel))
+               &(df.criteria==criteria_sel)
+               &(df.noise ==noise_sel)
+               &(df.sigma ==float(sigma_sel))
+               &(df['rank'] ==int(rank_sel))
+             ]
+    this_palette_data=dict((i,palette_data[i]) for i in data_sel)
+    sub = dff.pivot("data", "method", "AUC")
+    sub=round(sub,3)
+    sub=sub[method_sel]
+    sub= pd.DataFrame(sub, index=this_palette_data)
+    h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
+                 color_continuous_scale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],
+                  origin='lower',labels=dict(x="Method", y="Data", color="AUC"))
+
+    h.update_layout({
+    'plot_bgcolor':'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+#     h.layout.height = 500
+#     h.layout.width = 1000
+    h.update_layout(coloraxis=dict(showscale = False),)
+    h.update_xaxes(tickangle=45)
+
+    return h
 def build_bump_knn(data_sel, method_sel,
                  criteria_sel,noise_sel,sigma_sel,rank_sel,new_data=None):
 ####### filter data
@@ -445,7 +482,10 @@ def build_bump_knn(data_sel, method_sel,
               category_orders={"data":list(dff.data.unique()),
                               'ranking':[str(i) for i in range(1,len(set(rankk['ranking']))+1)]
                               },
+                                                      labels=dict(data="Data",ranking='Rank'),
+
              )
+    fig.update_xaxes(tickangle=45)
     fig.update_layout(showlegend=False)
     y_annotation = list(top['method'])[::-1]
     intervals = list(top['ranking'])
@@ -476,18 +516,18 @@ def build_bump_knn(data_sel, method_sel,
                 showlegend=False,
                 hoverinfo='none',                                                                               )
                     )
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=-0.05, y=-0.1, 
-                        text="Large N",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=1.1, y=-0.1, 
-                        text="Large P",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=-0.05, y=-0.1, 
+#                         text="Large N",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=1.1, y=-0.1, 
+#                         text="Large P",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
     return fig  
               
                      

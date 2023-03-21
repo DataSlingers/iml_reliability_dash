@@ -13,7 +13,8 @@ from dash.dependencies import Output, Input
 from nav import Navbar
 import numpy as np
 import plotly.express as px
- 
+import seaborn as sns
+
 from plotly.subplots import make_subplots
 
 
@@ -550,21 +551,21 @@ def build_bump_reg(data_sel, method_sel,
                 hoverinfo='none',                                                                               )
                     )
 
-#         fig.update_layout(margin=dict( r=150))
+        fig.update_layout(margin=dict( r=150))
 
 
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=-0.05, y=-0.1, 
-                        text="Large N",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=1.1, y=-0.1, 
-                        text="Large P",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=-0.05, y=-0.1, 
+#                         text="Large N",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=1.1, y=-0.1, 
+#                         text="Large P",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
     fig.update_layout(margin=dict( r=150))
     return fig  
 
@@ -636,10 +637,12 @@ def build_heat_summary_reg(data_sel, method_sel,
                             horizontal_spacing=0.15,
                         vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
 
-        heat1 = px.imshow(sub, text_auto=True, aspect="auto",color_continuous_scale='Purp',
+        heat1 = px.imshow(sub, text_auto=True, aspect="auto",
+                          color_continuous_scale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
                                                         origin='lower',labels=dict(x="Method", y="Method", color="Consistency"))
 
-        heat2 = px.imshow( sub2, text_auto=True, aspect="auto",color_continuous_scale='Purp',
+        heat2 = px.imshow( sub2, text_auto=True, aspect="auto",
+                          color_continuous_scale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
                                                         origin='lower',      labels=dict(x="Method", y="Method", color="Consistency"))
         heat2.layout.height = 500
         heat2.layout.width = 500
@@ -648,12 +651,15 @@ def build_heat_summary_reg(data_sel, method_sel,
         for trace in heat2.data:
             fig.add_trace(trace, 1, 2)
         fig.update_layout(
-                      coloraxis=dict(colorscale='Purp', 
+                      coloraxis=dict(colorscale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
+
                                      showscale = False),)
         fig.update_xaxes(tickangle=45)# for trace in bar1.data:
 
-        
-        
+        fig['layout']['yaxis2']['title']='Method'
+        fig['layout']['xaxis2']['title']='Method'    
+        fig['layout']['yaxis']['title']='Method'
+        fig['layout']['xaxis']['title']='Method'            
         return fig
     
 
@@ -690,7 +696,7 @@ def build_heat_consis_reg(data_sel, method_sel,
     sub= pd.DataFrame(sub, index=this_palette_data)
     sub=sub[method_sel]
     h = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
-                             color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                  color_continuous_scale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],
                   origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
 
     h.update_layout({
@@ -707,7 +713,8 @@ def build_heat_consis_reg(data_sel, method_sel,
     sub2= pd.DataFrame(sub2, index=this_palette_data)
     sub2=sub2[['SVM','Ridge','Tree','RF','XGB','MLP']]
     h2=px.imshow(sub2, text_auto=True, aspect="auto",
-                 color_continuous_scale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                 color_continuous_scale= [(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],
+
                  range_color=(0,1),
                  origin='lower',labels=dict(x="Method", y="Data", color="Consistency"))
     h2.layout.height = 500
@@ -723,9 +730,14 @@ def build_heat_consis_reg(data_sel, method_sel,
         fig.add_trace(trace, 1, 2)
     fig.update_xaxes(tickangle=45)# for trace in bar1.data:
     fig.update_layout(                             
-                  coloraxis=dict(colorscale=[(0, "seashell"),(0.7, "peachpuff"),(1, "darkorange")],
+                  coloraxis=dict(colorscale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],
+
                                  showscale = False),)
     
+    fig['layout']['yaxis2']['title']='Data'
+    fig['layout']['xaxis2']['title']='Method'    
+    fig['layout']['yaxis']['title']='Data'
+    fig['layout']['xaxis']['title']='Method'
     return fig
 
 def build_line_reg(data_sel, method_sel,
@@ -829,22 +841,25 @@ def build_line_reg(data_sel, method_sel,
     for trace in fig2.data:
         fig.add_trace(trace, 1, 2)
     fig.update_traces(line=dict(width=3))
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=-0.05, y=-0.1, 
-                        text="Large N",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
-    fig.add_annotation(dict(font=dict(color="grey",size=12),
-                        x=0.55, y=-0.1, 
-                        text="Large P",
-                        xref='paper',
-                        yref='paper', 
-                        showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=-0.05, y=-0.1, 
+#                         text="Large N",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
+#     fig.add_annotation(dict(font=dict(color="grey",size=12),
+#                         x=0.55, y=-0.1, 
+#                         text="Large P",
+#                         xref='paper',
+#                         yref='paper', 
+#                         showarrow=False))
     fig.update_xaxes(categoryorder='array', categoryarray= datas)
 
     fig.update_xaxes(tickangle=45)
-
+    fig['layout']['xaxis2']['title']='Data'
+    fig['layout']['yaxis2']['title']='Consistency'    
+    fig['layout']['xaxis']['title']='Data'
+    fig['layout']['yaxis']['title']='Consistency'
     return fig 
 
 
@@ -1249,21 +1264,29 @@ def build_heat_raw_reg(data_sel, method_sel,
                     vertical_spacing=0.1,   subplot_titles=(data_sel))                                                                  
 
     for i,dd in enumerate(data_sel):
+
         bar1 = px.imshow(subss[dd],text_auto='.2f', origin='lower',)
         for trace in bar1.data:
             fig.add_trace(trace, i//3+1, i%3+1)
-    for i in range(1,5):
-        for j in range(2,4):
-            fig.update_yaxes(showticklabels=False,row=i, col=j,)
+
 
     fig.update_traces(coloraxis='coloraxis1',selector=dict(xaxis='x'))
     fig.update_layout(
-                  coloraxis=dict(colorscale='Purp', 
+                  coloraxis=dict(colorscale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
+
                                  showscale = False),)
+    fig.for_each_xaxis(lambda xaxis: xaxis.update(showticklabels=True))
     fig.update_xaxes(tickangle=45)
 #     fig['layout'].update(height=800, width=800)
-    fig.for_each_yaxis(lambda xaxis: xaxis.update(showticklabels=True))
+    for i in range(1,5):
+        for j in range(2,4):
+            fig.update_yaxes(showticklabels=False,row=i, col=j,)
+    for i in range(1,6):
+        fig.update_yaxes(title_text='Method',row=i, col=1,)
+        for j in range(1,6):
+            fig.update_xaxes(title_text='Method',row=i, col=j,)
     return fig
+
 
 
 
@@ -1391,10 +1414,11 @@ def build_line_raw_reg(data_sel, method_sel,
                       labels={
                              "method": "Method"
                          },
-                      facet_col="data",facet_col_wrap=4,facet_row_spacing=0.05,
+                      facet_col="data",facet_col_wrap=4,facet_row_spacing=0.1,
                   #width=1000, height=800,
             category_orders={'data':this_palette_data})
-    fig.update_xaxes(matches=None,showticklabels=True)
+#     fig.update_xaxes(matches=None,showticklabels=True)
+    fig.update_xaxes(showticklabels=True)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     fig.update_traces(line=dict(width=3))
       
@@ -1413,7 +1437,11 @@ def build_line_raw_reg(data_sel, method_sel,
                 )
             )
     fig.for_each_xaxis(lambda xaxis: xaxis.update(showticklabels=True))
-        
+    for i in range(1,5):
+        fig.update_yaxes(title_text='Consistency',row=i, col=1,)
+        for j in range(1,5):
+            fig.update_xaxes(title_text='K',row=i, col=j,)
+    
     return fig
                 
 def build_scatter_raw_reg(data_sel, method_sel,
@@ -1443,7 +1471,7 @@ def build_scatter_raw_reg(data_sel, method_sel,
             
     fig = px.scatter(dff, x="Consistency", y="Accuracy", color='method', 
 #                      trendline="ols",
-                     opacity=0.5, facet_col="data",facet_col_wrap=4,
+                     opacity=0.5, facet_col="data",facet_col_wrap=4,facet_row_spacing=0.1, #facet_col_spacing=0.1, 
                      #width=1000, height=800,
                 color_discrete_map=this_palette,
                 symbol='method', symbol_map= this_markers_choice,
@@ -1466,10 +1494,15 @@ def build_scatter_raw_reg(data_sel, method_sel,
             hoverinfo='none'
         )
         )
-    fig.update_traces(marker_size=10)
-    fig.update_xaxes(matches=None,showticklabels=True)
+    fig.update_traces(marker_size=15)
+    fig.update_xaxes(showticklabels=True)
+# s    fig.update_xaxes(matches=None,showticklabels=True)
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     fig.for_each_xaxis(lambda xaxis: xaxis.update(showticklabels=True))
-
+    for i in range(1,5):
+        fig.update_yaxes(title_text='Accuracy',row=i, col=1,)
+        for j in range(1,5):
+            fig.update_xaxes(title_text='Consistency',row=i, col=j,)
     return fig
              
 # def build_heat_raw_reg(data_sel, method_sel,

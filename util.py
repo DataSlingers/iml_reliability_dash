@@ -1,6 +1,7 @@
 from plotly.subplots import make_subplots
 
 
+import seaborn as sns
 from dash import Dash, dcc, html, Input, Output, State, callback_context
 from dash.exceptions import PreventUpdate
 import base64
@@ -304,20 +305,24 @@ def display_figure(pp,plot_selected,pathname):
                 ])
 
             if pp == 'line' or pp=='line_new' or pp=='heat2' or pp=='heat2_new':
-                this_width = '170vh'
-                this_height = '70vh' 
+                if pathname !='/knn':
+                    this_width = '170vh'
+                    this_height = '70vh' 
+                else:
+                    this_width = '100vh'
+                    this_height = '70vh' 
+                    
             elif pp == 'scatter_raw' or pp=='line_raw' or pp=='k_raw' or pp=='acc_raw':
                 if pp=='line_raw' and pathname in paths:
                     pp='line_raw2'
-                this_height = '100vh'
-                this_width = '120vh'
+                this_height = '150vh'
+                this_width = '180vh'
 
             elif pp == 'heatmap_raw':
 #                     this_height = '500vh'
                 #this_width = '80vh'             
                  this_height = '300vh'
                  this_width = '180vh'
-
             else:
                 this_width = '100vh'
                 this_height = '70vh'                   
