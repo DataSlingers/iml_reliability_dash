@@ -279,7 +279,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="method-select_dr",
                 options=[{"label": i, "value": i} for i in meths],
-                value=meths[0:8],
+                value=meths[:],
                 multi=True,
             ),
             html.Hr(),            

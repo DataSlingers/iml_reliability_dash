@@ -40,16 +40,21 @@ option = dcc.Markdown(
 '''
 ### Options 
 
-* Users can select Summary Graphs and/or Raw plots of interest. Click 'Submit' bottum to show the figures, click 'Reset' button to unselect all figures. 
+* Users can select IML questions to address
 ''',
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
 
 up = dcc.Markdown(
 '''
-* Users can upload their own data set, which has to satisfy the format requirement. ...
+* Users can upload their own data set, which has to satisfy the format requirement.  
 ''',
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
 
+pert = dcc.Markdown(
+'''
+* Perturbation selection: select data splitting or noise addition in clustering task.  
+''',
+    mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
 
 
 data = dcc.Markdown(
@@ -67,7 +72,7 @@ meth =dcc.Markdown(
 criteria =dcc.Markdown(
 '''
 * Select criteria: figures are generated with the selected criteria.   
-    * Two options in Feature Importance section: RBO and ARI. 
+    * Three options in Feature Importance section: RBO, Jaccard and Kendall's Tau. 
     * Four options in Clustering Importance section: ARI, Mutual Information (MI), fowlkes mallows, and V measuer(v_measure)
     * Four options in Dimension Reduction+Clustering section: ARI, Mutual Information (MI), fowlkes mallows, and V measuer(v_measure)
     * One options in Dimension Reduction+Local Neighbor section: Jaccard similarity. 
@@ -93,17 +98,23 @@ other=dcc.Markdown(
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
 
 ### Figures 
+
 heat = dcc.Markdown(
 '''
-#### Summary figures: 
-* Consistency heatmap: the cross-method average consistency of interpretations obtain from each pair of IML methods, averaged over 100 repeats and different data sets.
+#### Q2 Summary figures: 
+* Cross-method consistency heatmap: the cross-method average consistency of interpretations obtain from each pair of IML methods, averaged over 100 repeats and different data sets.
 ''',
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
+
+
 line = dcc.Markdown(
 '''
-* Consistency line plot: the average pairwise consistency of interpretations of an IML method aggregated over 100 repeats, with colors representing different methods. The x-axis is the data sets we used, ordered by # feature/# observation ratio, and the y-axis is the consistency score of this task, ranging in \[0,1\].
+#### Q1 Summary Figures
+* Within-method consistency heatmap: the average within-method consistency of interpretations of an IML method aggregated over 100 repeats. The x-axis is the data sets we used, ordered by # feature/# observation ratio, and the y-axis is the consistency score of this task, ranging in \[0,1\].
 ''',
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
+
+
 bump = dcc.Markdown(
 '''
 * Consistency bump plot: ranks IML methods by their consistency in each data set. The methods of the y-axis on the right is ordered by the average consistency across all data sets.
@@ -123,20 +134,32 @@ bump = dcc.Markdown(
 #     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
 dot = dcc.Markdown(
 '''
-* Consistency \& accuracy scatterplots: the consistency scatterplot demonstrates the consistency score against each IML methods, where scatters represents data sets. The size of the scatters demonstrates the prediction accuracy, where larger size indicates higher accuracy. The accuracy scatterplot switches the values of y-axis and scatter size. It plots the model prediction accuracy against each method, for different data sets, and the size of scatters indicate the interpretation consistency.
-
+#### Q3 Summary Figures
+* Interpretation consistency, prediction consistency \& accuracy scatterplots: the figures investigte the relationships between prediction consistency and interpretation consistency, as well as the relationship between prediction consistency and prediction accuracy, either aggregated over each data set or aggregated over each IML method. In each scatter plot, fitted regression lines over one data or one method are plotted.
 ''',
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
+
+pv = dcc.Markdown(
+'''
+* p-value table of fitted regression lines in the interpretation consistency, prediction consistency \& accuracy scatterplots. 
+''',
+    mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
+
+
+
+
 heat_raw = dcc.Markdown(
 '''
-#### Raw Figures: 
-* Raw consistency heatmap and accuracy bar plot: the cross-method average consistency of interpretations in each data set, along with prediction accuracy.  
+
+
+#### Q2 Raw Figures: 
+* Raw cross-methods consistency heatmap: the cross-method average consistency of interpretations in each data set, along with prediction accuracy.  
 ''',
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
 
 scatter = dcc.Markdown(
 '''
-#### Raw Figures: 
+#### Q3 Raw Figures: 
 * Raw consistency \& accuracy scatterplots: the consistency score against prediction accuracy for each data set, where scatters represent different IML methods.
 ''',
     mathjax=True, dangerously_allow_html=True, style={'marginLeft': '5%', 'width': '90%'})
@@ -145,6 +168,7 @@ scatter = dcc.Markdown(
 
 line_raw = dcc.Markdown(
 '''
+#### Q1 Raw Figures: 
 * Raw consistency line plot: the interpretation consistency against some related parameter values of each data set.
     * Featue Importance Section: Line plot of interpretation consistency scores of each data versus number of importance featuers, colored by IML methods.
     
@@ -180,16 +204,16 @@ noise_image = base64.b64encode(open(noisee, 'rb').read())
 heat_sum = 'fig/class_heat.png' # replace with your own image
 heat_sum_image = base64.b64encode(open(heat_sum, 'rb').read())
 
-heat_raww = 'fig/heat_raw.png' # replace with your own image
+heat_raww = 'fig/class_heat_raw.png' # replace with your own image
 heat_raw_image = base64.b64encode(open(heat_raww, 'rb').read())
 
-line_sum = 'fig/class_line.png' # replace with your own image
+line_sum = 'fig/class_heat2.png' # replace with your own image
 line_sum_image = base64.b64encode(open(line_sum, 'rb').read())
 
-line_raww = 'fig/line_raw.png' # replace with your own image
+line_raww = 'fig/class_line_raw.png' # replace with your own image
 line_raw_image = base64.b64encode(open(line_raww, 'rb').read())
 
-scatterr = 'fig/scatter_raw.png' # replace with your own image
+scatterr = 'fig/class_scatter_raw.png' # replace with your own image
 scatter_image = base64.b64encode(open(scatterr, 'rb').read())
 
 dot_sum1 = 'fig/class_fit1.png' # replace with your own image
@@ -197,6 +221,13 @@ dot_sum1_image = base64.b64encode(open(dot_sum1, 'rb').read())
 
 dot_sum2 = 'fig/class_fit2.png' # replace with your own image
 dot_sum2_image = base64.b64encode(open(dot_sum2, 'rb').read())
+
+pv1 = 'fig/class_pv1.png' # replace with your own image
+pv1_image = base64.b64encode(open(pv1, 'rb').read())
+
+pv2 = 'fig/class_pv2.png' # replace with your own image
+pv2_image = base64.b64encode(open(pv2, 'rb').read())
+
 
 bump_sum = 'fig/class_bump.png' # replace with your own image
 bump_sum_image = base64.b64encode(open(bump_sum, 'rb').read())
@@ -208,6 +239,8 @@ aucc_image = base64.b64encode(open(aucc, 'rb').read())
 auc_raw = 'fig/auc_raw.png' # replace with your own image
 auc_raw_image = base64.b64encode(open(auc_raw, 'rb').read())
 
+pertt = 'fig/pert.png' # replace with your own image
+pert_image = base64.b64encode(open(pertt, 'rb').read())
 
 
 
@@ -227,6 +260,8 @@ def App_ins():
         html.Img(src='data:image/png;base64,{}'.format(data_image.decode()),style={'text-align': 'center','width': '200px',"margin-left": "80px"}),        
         meth,
         html.Img(src='data:image/png;base64,{}'.format(meth_image.decode()),style={'text-align': 'center','width': '200px',"margin-left": "80px"}),
+        pert,
+        html.Img(src='data:image/png;base64,{}'.format(pert_image.decode()),style={'text-align': 'center','width': '200px',"margin-left": "80px"}),
         criteria,
         html.Img(src='data:image/png;base64,{}'.format(cri_image.decode()),style={'text-align': 'center','width': '200px',"margin-left": "80px"}),
         noise,
@@ -239,17 +274,24 @@ def App_ins():
         html.Img(src='data:image/png;base64,{}'.format(line_sum_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
         bump,
         html.Img(src='data:image/png;base64,{}'.format(bump_sum_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
+        line_raw, 
+        html.Img(src='data:image/png;base64,{}'.format(line_raw_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
+
+        
         heat,
         html.Img(src='data:image/png;base64,{}'.format(heat_sum_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
+         heat_raw, 
+        html.Img(src='data:image/png;base64,{}'.format(heat_raw_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
+
+        
         dot,
         html.Img(src='data:image/png;base64,{}'.format(dot_sum1_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
         html.Img(src='data:image/png;base64,{}'.format(dot_sum2_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
-        
+         pv,
+        html.Img(src='data:image/png;base64,{}'.format(pv1_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
+        html.Img(src='data:image/png;base64,{}'.format(pv2_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
+           
         ## raw figures
-        heat_raw, 
-        html.Img(src='data:image/png;base64,{}'.format(heat_raw_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
-        line_raw, 
-        html.Img(src='data:image/png;base64,{}'.format(line_raw_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
         scatter,
             html.Img(src='data:image/png;base64,{}'.format(scatter_image.decode()),style={'text-align': 'center','width': '500px',"margin-left": "200px"}),
     
