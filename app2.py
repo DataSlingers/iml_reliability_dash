@@ -445,7 +445,7 @@ def build_heat_summary_clus(data_sel,method_sel,
         sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
         
         
-        fig = px.imshow(sub, text_auto=True, aspect="auto",
+        fig = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
                                        color_continuous_scale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],origin='lower',
                labels=dict(x="Method", y="Method", color="Consistency"))
         fig.update_xaxes(tickangle=45)
@@ -554,7 +554,7 @@ def build_heat_consis_clus(data_sel, method_sel,
         fig.add_trace(trace, 1, 2)
     fig.update_xaxes(tickangle=45)# for trace in bar1.data:
     fig.update_layout(                             
-                  coloraxis=dict(colorscale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],
+                  coloraxis=dict(colorscale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"])],cmin=0,cmax=1,
 
                                  showscale = False),)
     fig['layout']['yaxis2']['title']='Data'
@@ -1345,7 +1345,7 @@ def build_heat_raw_clus(data_sel, method_sel,
             
     fig.update_traces(coloraxis='coloraxis1',selector=dict(xaxis='x'))
     fig.update_layout(
-                  coloraxis=dict(colorscale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
+                  coloraxis=dict(colorscale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],cmin=0,cmax=1,
 
                                  showscale = False),)
     fig.update_xaxes(tickangle=45)

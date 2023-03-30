@@ -501,7 +501,7 @@ def build_heat_consis_dr(data_sel, method_sel,
     fig.update_xaxes(tickangle=45)
     # for trace in bar1.data:
     fig.update_layout(
-                  coloraxis=dict(colorscale =[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66,sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],showscale = False))
+                  coloraxis=dict(colorscale =[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66,sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],cmin=0,cmax=1,showscale = False))
     fig['layout']['yaxis2']['title']='Data'
     fig['layout']['xaxis2']['title']='Method'    
     fig['layout']['yaxis']['title']='Data'
@@ -1330,7 +1330,7 @@ def build_heat_raw_dr(data_sel, method_sel,
             fig.update_xaxes(title_text='Method',row=i, col=j,)
     fig.update_traces(coloraxis='coloraxis1',selector=dict(xaxis='x'))
     fig.update_layout(
-        coloraxis=dict(colorscale= [(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],showscale = False),)
+        coloraxis=dict(colorscale= [(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],cmin=0,cmax=1,showscale = False),)
     fig.update_xaxes(tickangle=45)
     
 
@@ -1438,7 +1438,7 @@ def build_heat_summary_dr(data_sel,method_sel,criteria_sel,noise_sel,sigma_sel,r
     sub=round(sub.reindex(columns=method_sel).reindex(method_sel),3)
 
 
-    fig = px.imshow(sub, text_auto=True, aspect="auto",
+    fig = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
                         color_continuous_scale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
                    origin='lower',
            labels=dict(x="Method", y="Method", color="Consistency"))

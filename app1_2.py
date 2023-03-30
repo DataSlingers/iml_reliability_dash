@@ -163,9 +163,10 @@ palette  = {
 }
 
 
-line_choice = {'LASSO':'solid',
+line_choice = {'SVM':'solid',
+               'LASSO':'solid',
                'Ridge':'solid',
-                 'SVM':'solid',
+                 
               'Tree':'dot',
                   'RF':'dot' ,
                    'XGB':'dot',
@@ -635,13 +636,13 @@ def build_heat_summary_reg(data_sel, method_sel,
   
         fig = make_subplots(rows=1, cols=2, column_widths=[0.6, 0.4], 
                             horizontal_spacing=0.15,
-                        vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Accuracy'))
+                        vertical_spacing=0.05,   subplot_titles=('Interpretation Consistency','Prediction Consistency'))
 
-        heat1 = px.imshow(sub, text_auto=True, aspect="auto",
+        heat1 = px.imshow(sub, text_auto=True, aspect="auto",range_color=(0,1),
                           color_continuous_scale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
                                                         origin='lower',labels=dict(x="Method", y="Method", color="Consistency"))
 
-        heat2 = px.imshow( sub2, text_auto=True, aspect="auto",
+        heat2 = px.imshow( sub2, text_auto=True, aspect="auto",range_color=(0,1),
                           color_continuous_scale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
                                                         origin='lower',      labels=dict(x="Method", y="Method", color="Consistency"))
         heat2.layout.height = 500
@@ -651,7 +652,7 @@ def build_heat_summary_reg(data_sel, method_sel,
         for trace in heat2.data:
             fig.add_trace(trace, 1, 2)
         fig.update_layout(
-                      coloraxis=dict(colorscale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
+                      coloraxis=dict(colorscale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],cmin=0,cmax=1,
 
                                      showscale = False),)
         fig.update_xaxes(tickangle=45)# for trace in bar1.data:
@@ -730,7 +731,7 @@ def build_heat_consis_reg(data_sel, method_sel,
         fig.add_trace(trace, 1, 2)
     fig.update_xaxes(tickangle=45)# for trace in bar1.data:
     fig.update_layout(                             
-                  coloraxis=dict(colorscale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],
+                  coloraxis=dict(colorscale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],cmin=0,cmax=1,
 
                                  showscale = False),)
     
@@ -1272,7 +1273,7 @@ def build_heat_raw_reg(data_sel, method_sel,
 
     fig.update_traces(coloraxis='coloraxis1',selector=dict(xaxis='x'))
     fig.update_layout(
-                  coloraxis=dict(colorscale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],
+                  coloraxis=dict(colorscale=[(0,'whitesmoke'),(0.33, sns.xkcd_rgb['light lavender']),(0.66, sns.xkcd_rgb['lavender']),(1,sns.xkcd_rgb['amethyst'])],cmin=0,cmax=1,
 
                                  showscale = False),)
     fig.for_each_xaxis(lambda xaxis: xaxis.update(showticklabels=True))

@@ -28,7 +28,7 @@ meths  = ['SVM','LogisticRidge','LogisticLASSO', 'Tree','RF',
            'Shapley Value (XGB)' ,
         'Shapley Value (MLP)']
 
-meths2  = ['Ridge','LASSO','SVM',
+meths2  = ['SVM','Ridge','LASSO',
            'Tree','RF','XGB', 
            'deepLIFT (MLP)', 'Integrated Gradients (MLP)',  'Epsilon-LRP (MLP)',
         'Guided Backpropagation (MLP)',           
@@ -117,7 +117,7 @@ def dropdown_options(pathname,radio_value):
     if pathname == '/feature_importance_classification':
         
         if radio_value == 'Selected':
-            value = [['LogisticRidge','SVM', 
+            value = [['SVM', 'LogisticRidge',
                     'Permutation (LogisticRidge)',
                          'Shapley Value (LogisticRidge)' ,
                       'Tree','XGB','RF',
@@ -138,7 +138,7 @@ def dropdown_options(pathname,radio_value):
             value =  meths[12:],
     else:
         if radio_value == 'Selected':
-               value = [['Ridge','SVM', 
+               value = [['SVM', 'Ridge',
                     'Permutation (Ridge)',
                          'Shapley Value (Ridge)' ,
                       'Tree','XGB','RF',
