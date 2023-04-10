@@ -204,7 +204,7 @@ def generate_control_card():
             dcc.Dropdown(
                 id="sigma-select_knn",
                 options=[{"label": i, "value": i} for i in sigma_options],
-                value=0.5,
+                value=0.15,
             
             ),            
             
