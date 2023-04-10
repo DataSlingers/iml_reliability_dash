@@ -553,10 +553,9 @@ def build_heat_consis_clus(data_sel, method_sel,
     for trace in h2.data:
         fig.add_trace(trace, 1, 2)
     fig.update_xaxes(tickangle=45)# for trace in bar1.data:
-    fig.update_layout(                             
-                  coloraxis=dict(colorscale=[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66, sns.xkcd_rgb["tealish"])],cmin=0,cmax=1,
 
-                                 showscale = False),)
+    fig.update_layout(
+                  coloraxis=dict(colorscale =[(0, "whitesmoke"),(0.33,sns.xkcd_rgb["light teal"]),(0.66,sns.xkcd_rgb["tealish"]),(1, sns.xkcd_rgb["dark cyan"])],cmin=0,cmax=1,showscale = False))
     fig['layout']['yaxis2']['title']='Data'
     fig['layout']['xaxis2']['title']='Method'    
     fig['layout']['yaxis']['title']='Data'
